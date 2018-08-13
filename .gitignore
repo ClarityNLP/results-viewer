@@ -8,3 +8,4 @@ prod.env
 _build/
 _templates/
 node_modules/
+build/

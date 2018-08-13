@@ -1,37 +1,59 @@
 import React, { Component } from 'react';
-import { TableSimple } from 'react-pagination-table';
 import axios from 'axios';
-
-const Header = ["Job ID", "Name", "Phenotype ID", "Owner", "Date" ];
-const base_url = process.env.REACT_APP_CLARITY_NLP_URL;
+import ResultViewer from './ResultViewer';
+import TableJobs from './TableJobs';
 
 class JobList extends Component {
 
 
     constructor(props) {
         super(props);
+        this.base_url = props.url;
+        this.selectJob = this.selectJob.bind(this);
+        this.resetJobsList = this.resetJobsList.bind(this);
+
         this.state = {
-            jobs: []
+            jobs: [],
+            job: {},
+            show_list: true
         };
     }
 
+
+
     componentDidMount() {
-        let url = base_url + 'phenotype_jobs/COMPLETED';
+        let url = this.base_url + 'phenotype_jobs/COMPLETED';
         axios.get(url).then(response => {
-            console.log(response)
+            this.setState(prevState => ({
+                jobs: response.data
+            }));
         });
+    }
+
+    resetJobsList() {
+        this.setState(prevState => ({
+            job: {},
+            show_list: true
+        }));
+    }
+
+    selectJob(p, e) {
+        console.log(p);
+        if (p !== null && p['nlp_job_id'] !== -1) {
+            this.setState(prevState => ({
+                job: p,
+                show_list: false
+            }));
+        }
+
     }
 
     render() {
         return (
             <div className="JobList">
-                <TableSimple
-                    title="Phenotype Jobs"
-                    data={ this.state.jobs }
-                    headers={ Header }
-                    columns="nlp_job_id.name.phenotype_id.owner.date"
-                    arrayOption={ [] }
-                />
+                {this.state.show_list ?
+                    <TableJobs jobs={this.state.jobs} selectJob={this.selectJob} url={this.props.url}/> :
+                    <ResultViewer resetJobsList={this.resetJobsList} job={this.state.job} url={this.props.url}/>}
             </div>
         );
     }

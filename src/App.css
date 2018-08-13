@@ -27,9 +27,35 @@
   font-size: 140%;
   font-weight: bold;
   display: inline-block;
-  padding: 20px;
-  vertical-align: top;
-  padding-top: 25px;
+    vertical-align: top;
+    padding: 25px 20px 20px;
+}
+
+.JobList {
+    padding: 20px;
+}
+
+.JobRow {
+    cursor: pointer;
+    font-size: 11pt;
+    font-weight: normal;
+}
+
+.ArrowButtons {
+    margin-right: 10px;
+}
+
+.PhenotypeTitle {
+    vertical-align: middle;
+    font-size: 80%;
+}
+
+.public_fixedDataTableCell_cellContent {
+    font-size: 11pt;
+}
+
+.RawResultsTable {
+    margin-top: 20px;
 }
 
 @keyframes App-logo-spin {
