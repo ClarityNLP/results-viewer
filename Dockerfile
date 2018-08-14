@@ -1,16 +1,20 @@
 FROM node:9.4
 
-# set working directory
-RUN mkdir /usr/src/app
+# Create app directory
 WORKDIR /usr/src/app
 
-# add `/usr/src/app/node_modules/.bin` to $PATH
-ENV PATH /usr/src/app/node_modules/.bin:$PATH
+# Install app dependencies
+# A wildcard is used to ensure both package.json AND package-lock.json are copied
+# where available (npm@5+)
+COPY package*.json ./
 
-# install and cache app dependencies
-COPY . /usr/src/app/
 RUN npm install
 RUN npm install react-scripts@1.1.0 -g --silent
+# If you are building your code for production
+# RUN npm install --only=production
 
-# start app
-CMD ["npm", "start"]
+# Bundle app source
+COPY . .
+
+EXPOSE 8200
+CMD [ "npm", "start" ]
