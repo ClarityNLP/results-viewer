@@ -45,18 +45,28 @@
     margin-right: 10px;
 }
 
+.ToggleButtons {
+    margin: 5px;
+}
+
 .PhenotypeTitle {
     vertical-align: middle;
-    font-size: 80%;
+    font-size: 60%;
+}
+
+table {
+    font-size: 12pt;
 }
 
 .public_fixedDataTableCell_cellContent {
     font-size: 11pt;
 }
 
-.RawResultsTable {
+.RawResultsTable, .SubjectTable {
     margin-top: 20px;
 }
+
+
 
 @keyframes App-logo-spin {
   from { transform: rotate(0deg); }
