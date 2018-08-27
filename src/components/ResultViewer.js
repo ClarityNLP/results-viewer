@@ -39,8 +39,8 @@ class ResultViewer extends Component {
                         </small><span className="PhenotypeTitle">{this.props.job.name}</span>
                             <small className="float-sm-right ToggleButtons"><ButtonGroup>
                                 <Button onClick={() => this.onRadioBtnClick(EXPLORE)} active={this.state.mode_selected === EXPLORE}>Explore</Button>
-                                <Button onClick={() => this.onRadioBtnClick(INTERMEDIATE)} active={this.state.mode_selected === INTERMEDIATE}>Intermediate</Button>
-                                <Button onClick={() => this.onRadioBtnClick(ALL)} active={this.state.mode_selected === ALL}>Final</Button>
+                                <Button onClick={() => this.onRadioBtnClick(INTERMEDIATE)} active={this.state.mode_selected === INTERMEDIATE}>Features</Button>
+                                <Button onClick={() => this.onRadioBtnClick(ALL)} active={this.state.mode_selected === ALL}>Cohort</Button>
                             </ButtonGroup></small>
                             { this.state.mode_selected === EXPLORE || this.state.mode_selected === ANNOTATE ?
                                 <div>
