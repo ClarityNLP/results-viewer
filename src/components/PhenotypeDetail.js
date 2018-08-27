@@ -11,7 +11,7 @@ let getHtmlMarkup = (text, start, end)=> {
     let first = text.substr(0, start);
     let last = text.substr(end, text.length - first.length - keyword.length);
 
-    return first + '<span class="min-highlighting">' + keyword + '</span>' + last;
+    return first + '<span class="full-highlighting">' + keyword + '</span>' + last;
 };
 
 const EntityFrame = ({data, ...props}) => {
@@ -110,9 +110,9 @@ class PhenotypeDetail extends Component {
             <div >
                 {selected_result_index > -1 ?
                     <div className="PhenotypeDetailMain">
-                        <h4>{selected_result.nlpql_feature}
+                        <span><span className="h4"> {selected_result.nlpql_feature}</span>
                             <small>  ({selected_result.raw_definition_text})</small>
-                        </h4>
+                        </span>
                         {results_view}
 
                     </div> :
