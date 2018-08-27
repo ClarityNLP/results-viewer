@@ -5,7 +5,8 @@ import _ from 'lodash';
 
 const ALL = 4;
 const page_size = 100;
-const row_height = 70;
+const row_height = 80;
+const header_height = 50;
 
 
 // Based on example from https://github.com/schrodinger/fixed-data-table-2/blob/master/examples/PaginationExample.js
@@ -190,9 +191,9 @@ class RawResultsView extends Component {
 
 
     render() {
-        const filter_out_columns = ['_id', 'inserted_date', 'phenotype_final'];
-        const long_columns = ['sentence'];
-        const med_columns = ['term', 'section', 'report_date', 'report_id'];
+        const filter_out_columns = ['_id', 'inserted_date', 'phenotype_final', '_id_x', '_id_y', '_id_z'];
+        const long_columns = ['sentence', 'sentence_x', 'sentence_y', 'sentence_z'];
+        const med_columns = ['term', 'section', 'report_date', 'report_id', 'job_date'];
         let {ResultData, width} = this.state;
 
         let w = width - 100;
@@ -223,9 +224,9 @@ class RawResultsView extends Component {
                 <Table
                     rowHeight={row_height}
                     rowsCount={ResultData.getSize()}
-                    headerHeight={50}
+                    headerHeight={header_height}
                     width={w}
-                    height={Math.min(600, (ResultData.getSize() * (row_height + 3)) + 55)}
+                    height={Math.min(600, (ResultData.getSize() * (row_height + 3)) + header_height + 5)}
                     {...this.props}>
                     {columns}
                 </Table>

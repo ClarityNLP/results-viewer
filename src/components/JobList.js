@@ -38,7 +38,7 @@ class JobList extends Component {
     }
 
     selectJob(p, e) {
-        console.log(p);
+        //console.log(p);
         if (p !== null && p['nlp_job_id'] !== -1) {
             this.setState(prevState => ({
                 job: p,
