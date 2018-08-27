@@ -5,15 +5,32 @@ import JobList from "./components/JobList";
 import JobRunner from "./components/JobRunner";
 import { Collapse, Navbar, NavbarToggler, NavbarBrand, Nav, NavItem, NavLink } from 'reactstrap';
 
+// https://html-online.com/articles/get-url-parameters-javascript/
+function getUrlVars() {
+    let vars = {};
+    let parts = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(m,key,value) {
+        vars[key] = value;
+    });
+    return vars;
+}
 
 class App extends Component {
     constructor(props) {
         super(props);
         this.toggleNavbar = this.toggleNavbar.bind(this);
         this.setMode = this.setMode.bind(this);
+        this.params = getUrlVars();
+        let job_id = null;
+        if ('job' in this.params) {
+            job_id = this.params['job']
+        }
+        if ('job_id' in this.params) {
+            job_id = this.params['job_id']
+        }
         this.state = {
             collapsed: true,
-            mode: 'results'
+            mode: 'results',
+            job: job_id
         };
     }
 
@@ -34,7 +51,7 @@ class App extends Component {
   render() {
     let main = <div />;
     if (this.state.mode === 'results') {
-        main = <JobList url={process.env.REACT_APP_CLARITY_NLP_URL}/>;
+        main = <JobList url={process.env.REACT_APP_CLARITY_NLP_URL} job={this.state.job}/>;
     } else if (this.state.mode === 'runner') {
         main = <JobRunner url={process.env.REACT_APP_CLARITY_NLP_URL}/>;
     }

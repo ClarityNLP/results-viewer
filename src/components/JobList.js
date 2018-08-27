@@ -15,7 +15,8 @@ class JobList extends Component {
         this.state = {
             jobs: [],
             job: {},
-            show_list: true
+            show_list: true,
+            job_param: props.job
         };
     }
 
@@ -28,6 +29,16 @@ class JobList extends Component {
                 jobs: response.data
             }));
         });
+        if (this.state.job_param !== null) {
+            let url = this.base_url + 'phenotype_job_by_id/' + this.state.job_param;
+            console.log(this.state.job_param);
+            axios.get(url).then(response => {
+                this.setState(prevState => ({
+                    job: response.data,
+                    show_list: false
+                }));
+            });
+        }
     }
 
     resetJobsList() {
