@@ -5,6 +5,12 @@ import JobList from "./components/JobList";
 import JobRunner from "./components/JobRunner";
 import AllJobList from "./components/AllJobList";
 import { Collapse, Navbar, NavbarToggler, NavbarBrand, Nav, NavItem, NavLink } from 'reactstrap';
+import {
+    UncontrolledDropdown,
+    DropdownToggle,
+    DropdownMenu,
+    DropdownItem } from 'reactstrap';
+import { FaCog } from 'react-icons/fa';
 
 // https://html-online.com/articles/get-url-parameters-javascript/
 function getUrlVars() {
@@ -18,7 +24,7 @@ function getUrlVars() {
 class App extends Component {
     constructor(props) {
         super(props);
-        this.toggleNavbar = this.toggleNavbar.bind(this);
+        this.toggle = this.toggle.bind(this);
         this.setMode = this.setMode.bind(this);
         this.params = getUrlVars();
         let job_id = null;
@@ -29,15 +35,15 @@ class App extends Component {
             job_id = this.params['job_id']
         }
         this.state = {
-            collapsed: true,
+            isOpen: false,
             mode: 'results',
             job: job_id
         };
     }
 
-    toggleNavbar() {
+    toggle() {
         this.setState({
-            collapsed: !this.state.collapsed
+            isOpen: !this.state.isOpen
         });
     }
 
@@ -60,12 +66,11 @@ class App extends Component {
     }
     return (
       <div className="App">
-
-          <Navbar className="App-header" dark>
+          <Navbar expand="md" className="App-header" dark>
               <NavbarBrand href="/" className="mr-auto"><img src={logo} className="App-logo" alt="logo" /> <div className="App-name">ClarityNLP</div></NavbarBrand>
-              <NavbarToggler onClick={this.toggleNavbar} className="mr-2" />
-              <Collapse isOpen={!this.state.collapsed} navbar>
-                  <Nav navbar>
+              <NavbarToggler onClick={this.toggle} />
+              <Collapse isOpen={this.state.isOpen} navbar>
+                  <Nav className="ml-auto" navbar>
                       <NavItem>
                           <NavLink className="NavLink" onClick={() => this.setMode('results')}>Results Viewer</NavLink>
                       </NavItem>
@@ -75,19 +80,24 @@ class App extends Component {
                       <NavItem>
                           <NavLink className="NavLink"  onClick={() => this.setMode('runner')}>NLPQL Runner</NavLink>
                       </NavItem>
-                      <NavItem>
-                          <NavLink href="https://github.com/ClarityNLP/ClarityNLP" target="_blank"
-                                   onClick={() => {this.setState({collapsed: true})}}>
-                            ClarityNLP GitHub</NavLink>
-                      </NavItem>
-                      <NavItem>
-                          <NavLink href="https://claritynlp.readthedocs.io/en/latest/" target="_blank"
-                                   onClick={() => {this.setState({collapsed: true})}}>
-                              ClarityNLP Documentation</NavLink>
-                      </NavItem>
+                      <UncontrolledDropdown nav inNavbar>
+                          <DropdownToggle nav caret>
+                              <FaCog/>
+                          </DropdownToggle>
+                          <DropdownMenu right>
+                              <DropdownItem href="https://claritynlp.readthedocs.io/en/latest/" target="_blank">
+                                  Documentation
+                              </DropdownItem>
+                              <DropdownItem href="https://github.com/ClarityNLP/ClarityNLP" target="_blank">
+                                  GitHub
+                              </DropdownItem>
+
+                          </DropdownMenu>
+                      </UncontrolledDropdown>
                   </Nav>
               </Collapse>
           </Navbar>
+
         <div className="App-intro container-fluid">
             {main}
         </div>

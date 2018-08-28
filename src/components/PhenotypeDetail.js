@@ -58,23 +58,36 @@ class PhenotypeDetail extends Component {
             detail_results = this.detailed_results;
         }
         let {selected_result} = this.state;
-        let results = suffixes.map((s, index) => {
-            let id = selected_result['_id' + s];
-            let detail = {};
-            if (id in detail_results['indexes']) {
-                let detail_idx = detail_results['indexes'][id];
-                detail = detail_results['results'][detail_idx];
-            }
-            return {
-                "index": index,
-                "feature": selected_result['nlpql_feature' + s],
-                "report_date": selected_result['report_date' + s],
-                "text": selected_result['sentence' + s],
-                "id": id,
-                "detail": detail
+        let results = [];
+        if ('sentence_x' in selected_result) {
+            results = suffixes.map((s, index) => {
+                let id = selected_result['_id' + s];
+                let detail = {};
+                if (id in detail_results['indexes']) {
+                    let detail_idx = detail_results['indexes'][id];
+                    detail = detail_results['results'][detail_idx];
+                }
+                return {
+                    "index": index,
+                    "feature": selected_result['nlpql_feature' + s],
+                    "report_date": selected_result['report_date' + s],
+                    "text": selected_result['sentence' + s],
+                    "id": id,
+                    "detail": detail
 
-            };
-        });
+                };
+            });
+        } else {
+            results.push({
+                "index": 0,
+                "feature": selected_result['nlpql_feature'],
+                "report_date": selected_result['report_date'],
+                "text": selected_result['sentence'],
+                "id": selected_result['_id'],
+                "detail": selected_result
+            })
+        }
+
         this.setState({
             results: results
         });

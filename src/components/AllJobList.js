@@ -34,7 +34,7 @@ class AllJobList extends Component {
         const job_items = this.state.jobs.map((p) => {
             return <tr className="JobStatusRow" key={p.nlp_job_id} >
                 <td>{p.nlp_job_id}</td>
-                <td>{p.name}</td>
+                <td>{p.phenotype_name}</td>
                 <td>{p.status}</td>
                 <td>{p.phenotype_id}</td>
                 <td>{p.owner}</td>
