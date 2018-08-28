@@ -41,6 +41,11 @@
     font-weight: normal;
 }
 
+.JobStatusRow {
+    font-size: 11pt;
+    font-weight: normal;
+}
+
 .ArrowButtons {
     margin-right: 10px;
 }

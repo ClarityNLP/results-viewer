@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Button, FormText, Input, ButtonDropdown, DropdownToggle, DropdownMenu, DropdownItem } from 'reactstrap';
+import { Button, Input, ButtonDropdown, DropdownToggle, DropdownMenu, DropdownItem } from 'reactstrap';
 import axios from 'axios';
 import _ from 'lodash';
 import ReactJson from 'react-json-view'
@@ -13,7 +13,6 @@ const RunResponse = ({data, ...props}) => {
 };
 
 const TestResponse = ({data, ...props}) => {
-    let str = JSON.stringify(data);
     return (
         <div >
             <ReactJson src={data} displayObjectSize={false} displayDataTypes={false}/>

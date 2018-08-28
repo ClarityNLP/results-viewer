@@ -31,6 +31,9 @@ class TableJobs extends Component {
 
         return (
             <div>
+                <div className="SubHeader">
+                    NLPQL Results
+                </div>
                 <Table striped>
                     <thead>
                         <tr>

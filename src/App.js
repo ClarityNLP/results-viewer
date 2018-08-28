@@ -3,12 +3,13 @@ import logo from './gtri.png';
 import './App.css';
 import JobList from "./components/JobList";
 import JobRunner from "./components/JobRunner";
+import AllJobList from "./components/AllJobList";
 import { Collapse, Navbar, NavbarToggler, NavbarBrand, Nav, NavItem, NavLink } from 'reactstrap';
 
 // https://html-online.com/articles/get-url-parameters-javascript/
 function getUrlVars() {
     let vars = {};
-    let parts = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(m,key,value) {
+    window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(m,key,value) {
         vars[key] = value;
     });
     return vars;
@@ -54,6 +55,8 @@ class App extends Component {
         main = <JobList url={process.env.REACT_APP_CLARITY_NLP_URL} job={this.state.job}/>;
     } else if (this.state.mode === 'runner') {
         main = <JobRunner url={process.env.REACT_APP_CLARITY_NLP_URL}/>;
+    } else if (this.state.mode === 'all_jobs') {
+        main = <AllJobList url={process.env.REACT_APP_CLARITY_NLP_URL} />;
     }
     return (
       <div className="App">
@@ -65,6 +68,9 @@ class App extends Component {
                   <Nav navbar>
                       <NavItem>
                           <NavLink className="NavLink" onClick={() => this.setMode('results')}>Results Viewer</NavLink>
+                      </NavItem>
+                      <NavItem>
+                          <NavLink className="NavLink" onClick={() => this.setMode('all_jobs')}>Job Status</NavLink>
                       </NavItem>
                       <NavItem>
                           <NavLink className="NavLink"  onClick={() => this.setMode('runner')}>NLPQL Runner</NavLink>

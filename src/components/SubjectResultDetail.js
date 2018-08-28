@@ -87,11 +87,9 @@ class SubjectResultDetail extends Component {
         let new_level = current_level + 1;
 
         return step['data_entities'].map((d, d_index) => {
-            let is_data_entity = false;
             let new_label = (current_label + "." + d_index);
             let obj = {};
             if (d in this.state.entities) {
-                is_data_entity = true;
                 obj = this.state.entities[d];
             } else {
                 obj = this.state.ops[d];
