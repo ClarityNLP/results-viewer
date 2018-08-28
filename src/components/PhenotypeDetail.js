@@ -1,35 +1,10 @@
 import React, { Component } from 'react';
 import axios from 'axios';
+import EntityFrame from './EntityFrame';
+import { FaCheck, FaTimes, FaStickyNote } from 'react-icons/fa';
+import { Button } from 'reactstrap';
 
 const suffixes = ['_x', '_y'];
-
-let getHtmlMarkup = (text, start, end)=> {
-    if (start === 0 && end === 0) {
-        return text;
-    }
-    let keyword = text.substr(start, end - start);
-    let first = text.substr(0, start);
-    let last = text.substr(end, text.length - first.length - keyword.length);
-
-    return first + '<span class="full-highlighting">' + keyword + '</span>' + last;
-};
-
-const EntityFrame = ({data, ...props}) => {
-    let detail = data['detail'];
-    let start = detail['start'] || 0;
-    let end = detail['end'] || 0;
-    let text = data['text'];
-    let html = {
-      '__html': getHtmlMarkup(text, start, end)
-    };
-    return (
-        <div key={data['id']} className="EntityFrame" {...props}>
-            <h5>{data["feature"]}<small className="float-sm-right">
-                {data["report_date"]}</small></h5>
-            <p className="EntitySentence" dangerouslySetInnerHTML={html}/>
-        </div>
-    );
-};
 
 class PhenotypeDetail extends Component {
 
@@ -53,6 +28,7 @@ class PhenotypeDetail extends Component {
         this.id_string = this.ids.join();
     }
 
+
     resetViewAll(detail_results) {
         if (!detail_results) {
             detail_results = this.detailed_results;
@@ -73,7 +49,8 @@ class PhenotypeDetail extends Component {
                     "report_date": selected_result['report_date' + s],
                     "text": selected_result['sentence' + s],
                     "id": id,
-                    "detail": detail
+                    "detail": detail,
+                    "report_id": selected_result['report_id' + s]
 
                 };
             });
@@ -84,7 +61,8 @@ class PhenotypeDetail extends Component {
                 "report_date": selected_result['report_date'],
                 "text": selected_result['sentence'],
                 "id": selected_result['_id'],
-                "detail": selected_result
+                "detail": selected_result,
+                "report_id": selected_result['report_id']
             })
         }
 
@@ -116,16 +94,21 @@ class PhenotypeDetail extends Component {
 
         let results_view = results.map((d) => {
              return (
-                <EntityFrame key={d['index']} data={d} />
+                <EntityFrame key={d['index']} data={d} url={this.url}/>
             );
         });
         return (
             <div >
                 {selected_result_index > -1 ?
                     <div className="PhenotypeDetailMain">
-                        <span><span className="h4"> {selected_result.nlpql_feature}</span>
+                        <div><span className="h4"> {selected_result.nlpql_feature}</span>
                             <small>  ({selected_result.raw_definition_text})</small>
-                        </span>
+                            <span className="float-lg-right">
+                                <Button outline size="sm" color="success"><FaCheck/></Button> { " " }
+                                <Button outline size="sm" color="danger"><FaTimes/></Button> { " " }
+                                <Button outline size="sm" color="info"><FaStickyNote/></Button> { " " }
+                            </span>
+                        </div>
                         {results_view}
 
                     </div> :
