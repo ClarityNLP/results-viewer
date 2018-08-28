@@ -81,7 +81,7 @@ class ExploreResultsSubjects extends Component {
 
     render() {
         let phenotype_id = this.props.job.phenotype_id;
-        const header_items =  ["Subject", "Count" ].map((h) => {
+        const header_items =  ["Patient", "Count" ].map((h) => {
             return <th key={h}>{h}</th>;
         });
         const subjects = this.state.subjects.map((p) => {

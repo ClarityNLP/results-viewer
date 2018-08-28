@@ -139,7 +139,7 @@ class SubjectResultDetail extends Component {
         return (
             <div className="container-fluid">
                 <div className="row SubjectNavRow">
-                    <h4 className="SubjectDetailHeader">#{subject._id}</h4>
+                    <h5 className="SubjectDetailHeader">Patient #{subject._id}</h5>
                     <small className="float-sm-right">
                         <Button outline onClick={(e) => this.props.navigateSubject(-1, e)}><FaArrowLeft/></Button>
                         <span className="SubjectNavigationPosition"> {subject.index + 1}</span>

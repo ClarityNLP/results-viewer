@@ -56,13 +56,13 @@
 
 .PhenotypeTitle {
     vertical-align: middle;
-    font-size: 60%;
+    font-size: 50%;
 }
 
 .SubjectNavRow {
     background-color: #f8f9fa;
     padding: 10px;
-    margin-top: 10px;
+    margin-top: 20px;
 }
 
 table {
@@ -115,6 +115,11 @@ table {
     padding: 8px;
     border: #6c757d 1px solid;
     margin-bottom: 20px;
+}
+
+.PhenotypeDetailMain:hover{
+    box-shadow: 10px 10px 5px grey;
+    cursor: pointer;
 }
 
 
