@@ -15,15 +15,20 @@ class SubjectResultDetail extends Component {
         this.showPhenotype = this.showPhenotype.bind(this);
         this.isActivePhenotype = this.isActivePhenotype.bind(this);
         this.getChildButtons = this.getChildButtons.bind(this);
+        this.showPhenotypeTypDetail = this.showPhenotypeTypDetail.bind(this);
         this.state = {
             subject: props.subject,
             results: props.results,
+            orig_results: props.results,
+            loading: false,
             config: props.config,
             idx: props.idx,
             total: props.total,
             selected_result: {},
             selected_result_index: -1,
             phenotype_id: props.phenotype_id,
+            job: props.job,
+            job_id: props.job.nlp_job_id,
             finals: [],
             ops: {},
             entities: {}
@@ -67,7 +72,27 @@ class SubjectResultDetail extends Component {
         console.log(data);
         this.setState({
             selected_result: data,
-            selected_result_index: index
+            selected_result_index: index,
+            results: this.state.orig_results
+        });
+    }
+
+    showPhenotypeTypDetail(name, d, d_index, e) {
+        if (this.state.loading) {
+            console.log("wait a minute for loading");
+            return;
+        }
+        this.setState({
+            "loading": true,
+            "results": []
+        }, () => {
+            let get_url = this.props.url + 'phenotype_feature_results/' + this.state.job_id + '/' + name;
+            axios.get(get_url).then(response => {
+                this.setState({
+                    results: response.data,
+                    loading: false
+                })
+            });
         });
     }
 
@@ -101,7 +126,9 @@ class SubjectResultDetail extends Component {
                 }
                 let name = obj ? obj['name'] : d;
                 return (<div key={name}>
-                    <Button color={button_colors[new_level]} className="PhenotypeDetailButtons">
+                    <Button color={button_colors[new_level]} className="PhenotypeDetailButtons"
+                            onClick={(e) => this.showPhenotypeTypDetail(name, d, d_index, e)}
+                    >
                    <span className="PhenotypeSubDetailButtons">
                        { new_label + " " + name}</span>
 
