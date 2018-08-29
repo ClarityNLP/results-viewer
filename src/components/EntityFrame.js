@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import axios from 'axios';
+import Moment from 'react-moment';
+import 'moment-timezone';
 
 let getHtmlMarkup = (text, start, end)=> {
     if (start === 0 && end === 0) {
@@ -64,8 +66,9 @@ class EntityFrame extends Component {
             <div key={data['id']} className="EntityFrame"  >
                 <div onClick={() => this.showDocument(data)}>
                     <div>
-                        <span className="h5" onClick={() => this.props.showPhenotypeTypDetail(data["feature"])}>{data["feature"]}<small className="float-sm-right">
-                            {data["report_date"]}</small></span>
+                        <span className="h5" onClick={() => this.props.showPhenotypeTypDetail(data["feature"])}>{data["feature"]}
+                        <small className="float-sm-right"><Moment format="MMM D, YYYY h:mm a">
+                            {data["report_date"]}</Moment></small></span>
                     </div>
                     <p className="EntitySentence" dangerouslySetInnerHTML={html}/>
                 </div>

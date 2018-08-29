@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
 import { Table } from 'reactstrap';
+import Moment from 'react-moment';
+import 'moment-timezone';
 
 class TableJobs extends Component {
 
@@ -20,7 +22,9 @@ class TableJobs extends Component {
                 <td onClick={(e) => this.props.selectJob(p, e)} className="PhenotypeName"><span>{p.phenotype_name}</span></td>
                 <td onClick={(e) => this.props.selectJob(p, e)}>{p.phenotype_id}</td>
                 <td onClick={(e) => this.props.selectJob(p, e)}>{p.status}</td>
-                <td onClick={(e) => this.props.selectJob(p, e)}>{p.date_started}</td>
+                <td onClick={(e) => this.props.selectJob(p, e)}><Moment format="MMM D, YYYY h:mm a">
+                    {p.date_started}
+                </Moment></td>
                 <td>
                     <a href={ this.props.url + "job_results/" + p.nlp_job_id + "/phenotype_intermediate"}>Features</a>
                     <span> | </span>

@@ -47,9 +47,20 @@
     font-weight: normal;
 }
 
-.PhenotypeName:hover {
+
+.JobRow td:nth-child(2){
+    width: 420px;
+}
+
+.JobRow td:nth-child(5){
+    width: 180px;
+}
+
+.JobRow:hover {
     text-decoration: underline;
 }
+
+
 
 .PhenotypeName {
     font-weight: bold;
