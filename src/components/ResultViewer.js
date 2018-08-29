@@ -36,7 +36,7 @@ class ResultViewer extends Component {
                 <div className="row">
                     <div className="col">
                         <h3><small><Button className="btn btn-light ArrowButtons" onClick={this.props.resetJobsList}><FaArrowLeft/></Button>
-                        </small><span className="PhenotypeTitle">{this.props.job.phenotype_name}</span>
+                        </small><span className="PhenotypeTitle">{this.props.job.phenotype_name}</span><span className="PatientCount">{this.state.patient_count}</span>
                             <small className="float-sm-right ToggleButtons"><ButtonGroup>
                                 <Button onClick={() => this.onRadioBtnClick(EXPLORE)} active={this.state.mode_selected === EXPLORE}>Explore</Button>
                                 <Button onClick={() => this.onRadioBtnClick(INTERMEDIATE)} active={this.state.mode_selected === INTERMEDIATE}>Features</Button>

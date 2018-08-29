@@ -23,7 +23,7 @@ class JobList extends Component {
 
 
     componentDidMount() {
-        let url = this.base_url + 'phenotype_jobs/COMPLETED';
+        let url = this.base_url + 'phenotype_jobs/ALL';
         axios.get(url).then(response => {
             this.setState(prevState => ({
                 jobs: response.data

@@ -94,7 +94,7 @@ class PhenotypeDetail extends Component {
 
         let results_view = results.map((d) => {
              return (
-                <EntityFrame key={d['index']} data={d} url={this.url}/>
+                <EntityFrame key={d['index']} data={d} url={this.url} showPhenotypeTypDetail={this.props.showPhenotypeTypDetail}/>
             );
         });
         return (

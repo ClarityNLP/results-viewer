@@ -3,7 +3,6 @@ import logo from './gtri.png';
 import './App.css';
 import JobList from "./components/JobList";
 import JobRunner from "./components/JobRunner";
-import AllJobList from "./components/AllJobList";
 import { Collapse, Navbar, NavbarToggler, NavbarBrand, Nav, NavItem, NavLink } from 'reactstrap';
 import {
     UncontrolledDropdown,
@@ -61,8 +60,6 @@ class App extends Component {
         main = <JobList url={process.env.REACT_APP_CLARITY_NLP_URL} job={this.state.job}/>;
     } else if (this.state.mode === 'runner') {
         main = <JobRunner url={process.env.REACT_APP_CLARITY_NLP_URL}/>;
-    } else if (this.state.mode === 'all_jobs') {
-        main = <AllJobList url={process.env.REACT_APP_CLARITY_NLP_URL} />;
     }
     return (
       <div className="App">
@@ -72,13 +69,10 @@ class App extends Component {
               <Collapse isOpen={this.state.isOpen} navbar>
                   <Nav className="ml-auto" navbar>
                       <NavItem>
-                          <NavLink className="NavLink" onClick={() => this.setMode('results')}>Results Viewer</NavLink>
-                      </NavItem>
-                      <NavItem>
-                          <NavLink className="NavLink" onClick={() => this.setMode('all_jobs')}>Job Status</NavLink>
-                      </NavItem>
-                      <NavItem>
                           <NavLink className="NavLink"  onClick={() => this.setMode('runner')}>NLPQL Runner</NavLink>
+                      </NavItem>
+                      <NavItem>
+                          <NavLink className="NavLink" onClick={() => this.setMode('results')}>Results Viewer</NavLink>
                       </NavItem>
                       <UncontrolledDropdown nav inNavbar>
                           <DropdownToggle nav caret>

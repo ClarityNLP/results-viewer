@@ -77,7 +77,7 @@ class SubjectResultDetail extends Component {
         });
     }
 
-    showPhenotypeTypDetail(name, d, d_index, e) {
+    showPhenotypeTypDetail(name) {
         if (this.state.loading) {
             console.log("wait a minute for loading");
             return;
@@ -128,7 +128,7 @@ class SubjectResultDetail extends Component {
                 let name = obj ? obj['name'] : d;
                 return (<div key={name}>
                     <Button color={button_colors[new_level]} className="PhenotypeDetailButtons"
-                            onClick={(e) => this.showPhenotypeTypDetail(name, d, d_index, e)}
+                            onClick={(e) => this.showPhenotypeTypDetail(name)}
                     >
                    <span className="PhenotypeSubDetailButtons">
                        { new_label + " " + name}</span>
@@ -160,21 +160,22 @@ class SubjectResultDetail extends Component {
         }
         let phenotype_results_detail = results.map((r, index) => {
             return (<PhenotypeDetail url={this.props.url} key={r._id} selected_result={r} selected_result_index={index}
-                             config={config}/>);
+                             config={config} showPhenotypeTypDetail={this.showPhenotypeTypDetail}/> );
         });
 
 
         return (
             <div className="container-fluid">
                 <div className="row SubjectNavRow">
-                    <h5 className="SubjectDetailHeader">Patient #{subject._id}</h5>
-                    <small className="float-sm-right">
+
+                    <small className="SubjectDetailNavigation">
                         <Button outline onClick={(e) => this.props.navigateSubject(-1, e)}><FaArrowLeft/></Button>
                         <span className="SubjectNavigationPosition"> {subject.index + 1}</span>
                         <span className="SubjectNavigationPosition"> of </span>
                         <span className="SubjectNavigationPosition"> {total} </span>
                         <Button outline onClick={(e) => this.props.navigateSubject(1, e)}><FaArrowRight/></Button>
                     </small>
+                    <h5 className="SubjectDetailHeader float-lg-right">Patient #{subject._id}</h5>
                 </div>
                 <div className="row SubjectDetailBody">
                     <div className="col-2">

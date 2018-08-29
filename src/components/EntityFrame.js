@@ -64,7 +64,7 @@ class EntityFrame extends Component {
             <div key={data['id']} className="EntityFrame"  >
                 <div onClick={() => this.showDocument(data)}>
                     <div>
-                        <span className="h5">{data["feature"]}<small className="float-sm-right">
+                        <span className="h5" onClick={() => this.props.showPhenotypeTypDetail(data["feature"])}>{data["feature"]}<small className="float-sm-right">
                             {data["report_date"]}</small></span>
                     </div>
                     <p className="EntitySentence" dangerouslySetInnerHTML={html}/>
