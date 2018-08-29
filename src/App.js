@@ -56,8 +56,9 @@ class App extends Component {
 
   render() {
     let main = <div />;
+    console.log(process.env);
     if (this.state.mode === 'results') {
-        main = <JobList url={process.env.REACT_APP_CLARITY_NLP_URL} job={this.state.job}/>;
+        main = <JobList url={process.env.REACT_APP_CLARITY_NLP_URL} luigi={process.env.REACT_APP_LUIGI_URL} job={this.state.job}/>;
     } else if (this.state.mode === 'runner') {
         main = <JobRunner url={process.env.REACT_APP_CLARITY_NLP_URL}/>;
     }

@@ -9,6 +9,7 @@ class JobList extends Component {
     constructor(props) {
         super(props);
         this.base_url = props.url;
+        this.luigi = props.luigi;
         this.selectJob = this.selectJob.bind(this);
         this.resetJobsList = this.resetJobsList.bind(this);
 
@@ -16,7 +17,7 @@ class JobList extends Component {
             jobs: [],
             job: {},
             show_list: true,
-            job_param: props.job
+            job_param: props.job,
         };
     }
 
@@ -63,7 +64,8 @@ class JobList extends Component {
         return (
             <div className="JobList">
                 {this.state.show_list ?
-                    <TableJobs jobs={this.state.jobs} selectJob={this.selectJob} url={this.props.url}/> :
+                    <TableJobs jobs={this.state.jobs} selectJob={this.selectJob} url={this.props.url}
+                               luigi={this.luigi}/> :
                     <ResultViewer resetJobsList={this.resetJobsList} job={this.state.job} url={this.props.url}/>}
             </div>
         );

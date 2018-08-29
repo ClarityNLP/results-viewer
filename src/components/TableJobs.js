@@ -7,11 +7,21 @@ class TableJobs extends Component {
 
     constructor(props) {
         super(props);
+        this.getStatus = this.getStatus.bind(this);
         this.state = {
         };
     }
 
-
+    getStatus(row) {
+        if (row.status === "COMPLETED") {
+            return (
+                <span>COMPLETED</span>
+            );
+        } else {
+            let luigi = this.props.luigi + '/static/visualiser/index.html#search__search=job=' + row.nlp_job_id;
+            return <span><a target="_blank" href={luigi}>{row.status}</a></span>
+        }
+    }
     render() {
         const header_items =  ["Job ID", "Name", "Phenotype ID", "Status", "Date", "Download" ].map((h) => {
             return <th key={h}>{h}</th>;
@@ -21,7 +31,7 @@ class TableJobs extends Component {
                 <td onClick={(e) => this.props.selectJob(p, e)}>{p.nlp_job_id}</td>
                 <td onClick={(e) => this.props.selectJob(p, e)} className="PhenotypeName"><span>{p.phenotype_name}</span></td>
                 <td onClick={(e) => this.props.selectJob(p, e)}>{p.phenotype_id}</td>
-                <td onClick={(e) => this.props.selectJob(p, e)}>{p.status}</td>
+                <td onClick={(e) => this.props.selectJob(p, e)}>{this.getStatus(p)}</td>
                 <td onClick={(e) => this.props.selectJob(p, e)}><Moment format="MMM D, YYYY h:mm a">
                     {p.date_started}
                 </Moment></td>
