@@ -86,7 +86,8 @@ class SubjectResultDetail extends Component {
             "loading": true,
             "results": []
         }, () => {
-            let get_url = this.props.url + 'phenotype_feature_results/' + this.state.job_id + '/' + name;
+            let get_url = this.props.url + 'phenotype_feature_results/' + this.state.job_id + '/' + name
+                + "/" + this.state.subject.subject;
             axios.get(get_url).then(response => {
                 this.setState({
                     results: response.data,
