@@ -66,9 +66,13 @@ class EntityFrame extends Component {
             <div key={data['id']} className="EntityFrame"  >
                 <div onClick={() => this.showDocument(data)}>
                     <div>
-                        <span className="h5" onClick={() => this.props.showPhenotypeTypDetail(data["feature"])}>{data["feature"]}
-                        <small className="float-sm-right"><Moment format="MMM D, YYYY h:mm a">
-                            {data["report_date"]}</Moment></small></span>
+                        <span className="h5">
+                            {this.props.nlpql_feature === data['feature'] ? <span>{" "}</span> :
+                            <span onClick={() => this.props.showPhenotypeTypDetail(data["feature"])}>{data["feature"]}</span>}
+
+                            <small className="float-sm-right"><Moment format="MMM D, YYYY h:mm a">
+                                {data["report_date"]}</Moment></small>
+                        </span>
                     </div>
                     <p className="EntitySentence" dangerouslySetInnerHTML={html}/>
                 </div>
