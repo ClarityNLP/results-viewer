@@ -124,6 +124,10 @@ table {
 .PhenotypeSubDetailButtons {
 }
 
+.EntitySpacer {
+    height: 15px;
+}
+
 .EntityFrame {
     background-color: #f8f9fa;
     margin: 10px;
@@ -154,8 +158,8 @@ table {
 
 
 
-pre {
-    font-size: 14px;
+pre, .ReportTextPreview {
+    font-size: 12pt;
     line-height: 1.618em;
     word-break: keep-all;
     white-space: -moz-pre-wrap; /* Firefox 1.0-2.0 */
