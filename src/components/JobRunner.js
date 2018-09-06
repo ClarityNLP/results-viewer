@@ -144,7 +144,7 @@ class JobRunner extends Component {
                             </span>
                         </div>
                         <Input className="NLPQLArea" type="textarea" name="text" id="nlpql_input" rows="15"
-                               value={this.state.nlpql} onChange={this.updateNLPQL}
+                               value={this.state.nlpql} onChange={this.updateNLPQL} placeholder="Enter NLPQL here..."
                         />
                         <div>&nbsp;</div>
                         <div>
