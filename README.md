@@ -9,7 +9,7 @@ npm install
 ```
 and 
 ```javascript
-npm serve
+npm start
 ```
 3. The application runs by default [here](http://localhost:8200).
 
