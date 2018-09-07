@@ -2,6 +2,7 @@ import React, {Component} from 'react';
 import {Cell, Column, Table} from 'fixed-data-table-2';
 import axios from 'axios';
 import _ from 'lodash';
+import { Button } from 'reactstrap';
 
 const ALL = 4;
 const page_size = 100;
@@ -191,6 +192,7 @@ class RawResultsView extends Component {
 
 
     render() {
+        console.log("In RawResults");
         const filter_out_columns = ['_id', 'inserted_date', 'phenotype_final', '_id_x', '_id_y', '_id_z'];
         const long_columns = ['sentence', 'sentence_x', 'sentence_y', 'sentence_z'];
         const med_columns = ['term', 'section', 'report_date', 'report_id', 'job_date'];
@@ -230,6 +232,10 @@ class RawResultsView extends Component {
                     {...this.props}>
                     {columns}
                 </Table>
+                <div className="exportButton">
+                  <Button size="lg">Export Results</Button>{' '}
+                </div>
+
             </div>
         )
     }
