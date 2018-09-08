@@ -35,6 +35,10 @@
     padding: 20px;
 }
 
+.JobListIcons {
+    margin-right: 5px;
+}
+
 
 .PatientCount {
     font-size: 50%;

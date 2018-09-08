@@ -1,7 +1,10 @@
 import React, { Component } from 'react';
-import { Table, Input } from 'reactstrap';
+import { Table, Input, Modal, ModalHeader, ModalBody, ModalFooter, Button } from 'reactstrap';
 import Moment from 'react-moment';
 import 'moment-timezone';
+import { FaCode, FaFileAlt } from 'react-icons/fa';
+import ReactJson from 'react-json-view'
+
 
 class TableJobs extends Component {
 
@@ -9,12 +12,48 @@ class TableJobs extends Component {
         super(props);
         this.getStatus = this.getStatus.bind(this);
         this.keyUpHandler = this.keyUpHandler.bind(this);
+        this.toggle = this.toggle.bind(this);
+        this.showJSON = this.showJSON.bind(this);
+        this.showNLPQL = this.showNLPQL.bind(this);
 
         this.state = {
             filter: '',
-            jobs: props.jobs
+            jobs: props.jobs,
+            modal: false,
+            modal_title: "View NLPQL",
+            modal_type: "NLPQL",
+            nlpql: '',
+            config: {}
         };
     }
+
+    toggle() {
+        this.setState({
+            modal: !this.state.modal
+        });
+    }
+
+    showJSON(job, event) {
+
+        this.setState({
+            modal: true,
+            config: JSON.parse(job.config),
+            modal_title: "JSON (" + job.phenotype_name + ")",
+            modal_type: "JSON",
+            nlpql: ''
+        });
+    }
+
+    showNLPQL(job, event) {
+        this.setState({
+            modal: true,
+            config: {},
+            modal_title: "NLPQL (" + job.phenotype_name + ")",
+            modal_type: "NLPQL",
+            nlpql: job.nlpql
+        });
+    }
+
 
     getStatus(row) {
         if (row.status !== "IN_PROGRESS") {
@@ -52,7 +91,7 @@ class TableJobs extends Component {
     }
 
     render() {
-        const header_items =  ["Job ID", "Name", "Phenotype ID", "Status", "Date", "Download" ].map((h) => {
+        const header_items =  ["Job ID", "Name", "Phenotype ID", "Status", "Date", "Download CSV", "View Source" ].map((h) => {
             return <th key={h}>{h}</th>;
         });
         let job_items = this.state.jobs.map((p) => {
@@ -68,6 +107,10 @@ class TableJobs extends Component {
                     <a href={ this.props.url + "job_results/" + p.nlp_job_id + "/phenotype_intermediate"}>Features</a>
                     <span> | </span>
                     <a href={ this.props.url + "job_results/" + p.nlp_job_id + "/phenotype"}>Cohort</a>
+                </td>
+                <td>
+                    <span title="View NLPQL" className="JobListIcons" onClick={(e) => this.showNLPQL(p, e)}><FaFileAlt /></span>
+                    <span title="View JSON" onClick={(e) => this.showJSON(p, e)}><FaCode/></span>
                 </td>
             </tr>;
         });
@@ -90,7 +133,20 @@ class TableJobs extends Component {
                         {job_items}
                     </tbody>
                 </Table>
+                <Modal isOpen={this.state.modal} toggle={this.toggle} className="ReportModal">
+                    <ModalHeader toggle={this.toggle}>{this.state.modal_title}</ModalHeader>
+                    <ModalBody>
+                        {this.state.modal_type === "NLPQL" ?
+                            <div className="ReportTextPreview">{this.state.nlpql}</div> :
+                            <ReactJson src={this.state.config} displayObjectSize={false} displayDataTypes={false}/>
+                        }
+                    </ModalBody>
+                    <ModalFooter>
+                        <Button color="secondary" onClick={this.toggle}>Close</Button>
+                    </ModalFooter>
+                </Modal>
             </div>
+
         )
     }
 }
