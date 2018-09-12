@@ -216,8 +216,7 @@ class RawResultsView extends Component {
     }
 
     exportToOMOP() {
-      let status = 0;
-      let message = "";
+      let __this = this;
       let data = JSON.stringify({
         job_id: this.props.job.nlp_job_id,
         result_name: document.getElementById('omopResultName').value,
@@ -225,26 +224,26 @@ class RawResultsView extends Component {
         concept_id: document.getElementById('omopConceptId').value
       });
 
-      let instance = axios.post(process.env.REACT_APP_EXPORT_URL, data, {
+      axios.post(process.env.REACT_APP_EXPORT_URL, data, {
         headers: {
             'Content-Type': 'application/json'
         }
       })
       .then(function (response) {
-        console.log(response);
-        data = eval(response);
-        console.log(data['data']);
-        message = data['data'];
-        status = response.status;
+        let data = eval(response);
+        let message = data['data'];
+        __this.toggleAlert(true);
+        __this.setState({
+          alertMessage: message
+        });
       })
-      // .catch(function (error) {
-      //   console.log(error);
-      // });
-      // triggering the appropriate alert
-      console.log(instance);
-      this.toggleAlert(true);
-      this.setState({
-        alertMessage: "success"
+      .catch(function (error) {
+        let data = eval(error.response);
+        let message = data['data'];
+        __this.toggleAlert(false);
+        __this.setState({
+          alertMessage: message
+        });
       });
     }
 
