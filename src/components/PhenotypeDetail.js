@@ -91,7 +91,6 @@ class PhenotypeDetail extends Component {
 
     render() {
         let {selected_result, selected_result_index, results} = this.state;
-
         let results_view = results.map((d) => {
              return (
                 <EntityFrame key={d['index']} data={d} url={this.url} showPhenotypeTypDetail={this.props.showPhenotypeTypDetail}
@@ -103,7 +102,7 @@ class PhenotypeDetail extends Component {
             <div >
                 {selected_result_index > -1 ?
                     <div className="PhenotypeDetailMain">
-                        <div><span className="h4"> {selected_result.nlpql_feature}</span>
+                        <div><span className="h4"> {selected_result.nlpql_feature} </span>
                             {selected_result.raw_definition_text && selected_result.raw_definition_text.length > 0 ?
                             <small>  ({selected_result.raw_definition_text})</small> :
                                 <span />}
