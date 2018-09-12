@@ -141,6 +141,7 @@ class RawResultsView extends Component {
     constructor(props) {
         super(props);
         this.updateData = this.updateData.bind(this);
+        this.checkExportApiHealth = this.checkExportApiHealth.bind(this);
         this.openExportModal = this.openExportModal.bind(this);
         this.updateWindowDimensions = this.updateWindowDimensions.bind(this);
         this.toggle = this.toggle.bind(this);
@@ -157,13 +158,30 @@ class RawResultsView extends Component {
             modal: false,
             successAlert: false,
             failureAlert: false,
-            alertMessage: ""
+            alertMessage: "",
+            exportApiHealth: false
         };
+        this.checkExportApiHealth();
     }
 
     toggle() {
       this.setState({
         modal: !this.state.modal
+      });
+    }
+
+    checkExportApiHealth() {
+      let __this = this;
+      axios.get(process.env.REACT_APP_EXPORT_URL)
+      .then(function (response) {
+        __this.setState({
+          exportApiHealth: true
+        });
+      })
+      .catch(function (error) {
+        __this.setState({
+          exportApiHealth: false
+        });
       });
     }
 
@@ -317,7 +335,7 @@ class RawResultsView extends Component {
                     {...this.props}>
                     {columns}
                 </Table>
-                { this.state.ResultData.getSize() > 0?
+                { this.state.ResultData.getSize() > 0 && this.state.exportApiHealth === true?
                 <div className="exportButton">
                   <Button size="lg" onClick={() => { this.openExportModal() }}>Export Results</Button>{' '}
                 </div> :
