@@ -141,6 +141,7 @@ class RawResultsView extends Component {
     constructor(props) {
         super(props);
         this.updateData = this.updateData.bind(this);
+        this.openExportModal = this.openExportModal.bind(this);
         this.updateWindowDimensions = this.updateWindowDimensions.bind(this);
         this.toggle = this.toggle.bind(this);
         this.toggleAlert = this.toggleAlert.bind(this);
@@ -191,6 +192,10 @@ class RawResultsView extends Component {
     }
 
     componentWillUnmount() {
+        this.setState({
+            successAlert: false,
+            failureAlert: true
+        });
         window.removeEventListener('resize', this.updateWindowDimensions);
     }
 
@@ -213,6 +218,14 @@ class RawResultsView extends Component {
             failureAlert: true
         });
       }
+    }
+
+    openExportModal() {
+      this.toggle();
+      this.setState({
+          successAlert: false,
+          failureAlert: false
+      });
     }
 
     // Function to export intermediate results to OMOP database
@@ -306,7 +319,7 @@ class RawResultsView extends Component {
                 </Table>
                 { this.state.ResultData.getSize() > 0?
                 <div className="exportButton">
-                  <Button size="lg" onClick={this.toggle}>Export Results</Button>{' '}
+                  <Button size="lg" onClick={() => { this.openExportModal() }}>Export Results</Button>{' '}
                 </div> :
                 <div></div> }
 
