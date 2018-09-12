@@ -215,6 +215,7 @@ class RawResultsView extends Component {
       }
     }
 
+    // Function to export intermediate results to OMOP database
     exportToOMOP() {
       let __this = this;
       let data = JSON.stringify({
@@ -229,6 +230,7 @@ class RawResultsView extends Component {
             'Content-Type': 'application/json'
         }
       })
+
       .then(function (response) {
         let data = eval(response);
         let message = data['data'];
