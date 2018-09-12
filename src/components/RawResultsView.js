@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 import {Cell, Column, Table} from 'fixed-data-table-2';
 import axios from 'axios';
 import _ from 'lodash';
-import { Button } from 'reactstrap';
+import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Form, FormGroup, Label, Input, Alert } from 'reactstrap';
 
 const ALL = 4;
 const page_size = 100;
@@ -57,6 +57,7 @@ class ResultData {
 
         if (first) {
             axios.get(get_url).then(response => {
+
                 if (response.data.success) {
                     let results = response.data.results;
                     this.new_last_id = response.data.new_last_id;
@@ -88,7 +89,6 @@ class ResultData {
 
     appendResults(results) {
         this._dataList = _.concat(this._dataList, results);
-        console.log(this._dataList.length)
     }
 
     getDataVersion() {
@@ -142,6 +142,8 @@ class RawResultsView extends Component {
         super(props);
         this.updateData = this.updateData.bind(this);
         this.updateWindowDimensions = this.updateWindowDimensions.bind(this);
+        this.toggle = this.toggle.bind(this);
+        this.toggleAlert = this.toggleAlert.bind(this);
         let final_results = (props.mode === ALL);
         let job_id = props.job.nlp_job_id;
         let get_url = this.props.url + 'phenotype_paged_results/' + job_id + '/' + final_results;
@@ -150,12 +152,21 @@ class RawResultsView extends Component {
             end: 0,
             width: 0,
             height: 0,
-            mode: props.mode
+            mode: props.mode,
+            modal: false,
+            successAlert: false,
+            failureAlert: false,
+            alertMessage: ""
         };
     }
 
+    toggle() {
+      this.setState({
+        modal: !this.state.modal
+      });
+    }
+
     componentDidUpdate(prevProps) {
-        // console.log(this.props)
         if (prevProps.mode !== this.props.mode) {
 
             let final_results = (this.props.mode === ALL);
@@ -190,9 +201,69 @@ class RawResultsView extends Component {
         });
     }
 
+    toggleAlert(response) {
+      if (response === true) {
+        this.setState({
+            successAlert: true,
+            failureAlert: false
+        });
+      } else {
+        this.setState({
+            successAlert: false,
+            failureAlert: true
+        });
+      }
+    }
+
+    exportToOMOP() {
+      let status = 0;
+      let message = "";
+      let data = JSON.stringify({
+        job_id: this.props.job.nlp_job_id,
+        result_name: document.getElementById('omopResultName').value,
+        omop_domain: document.getElementById('omopDomain').value,
+        concept_id: document.getElementById('omopConceptId').value
+      });
+
+      let instance = axios.post(process.env.REACT_APP_EXPORT_URL, data, {
+        headers: {
+            'Content-Type': 'application/json'
+        }
+      })
+      .then(function (response) {
+        console.log(response);
+        data = eval(response);
+        console.log(data['data']);
+        message = data['data'];
+        status = response.status;
+      })
+      // .catch(function (error) {
+      //   console.log(error);
+      // });
+      // triggering the appropriate alert
+      console.log(instance);
+      this.toggleAlert(true);
+      this.setState({
+        alertMessage: "success"
+      });
+    }
+
+    populateResultListInModal(result_names) {
+      let array = Array.from(result_names);
+      let items = [];
+      for (let i=0; i<array.length; i++) {
+        items.push(<option key={array[i]}>{array[i]}</option>);
+      }
+      return items;
+    }
 
     render() {
-        console.log("In RawResults");
+      // iterating over the results to get the unique nlpql_feature names
+      let result_names = new Set();
+      this.state.ResultData._dataList.forEach(function(resultData) {
+        result_names.add(resultData.nlpql_feature);
+      });
+
         const filter_out_columns = ['_id', 'inserted_date', 'phenotype_final', '_id_x', '_id_y', '_id_z'];
         const long_columns = ['sentence', 'sentence_x', 'sentence_y', 'sentence_z'];
         const med_columns = ['term', 'section', 'report_date', 'report_id', 'job_date'];
@@ -232,11 +303,58 @@ class RawResultsView extends Component {
                     {...this.props}>
                     {columns}
                 </Table>
+                { this.state.ResultData.getSize() > 0?
                 <div className="exportButton">
-                  <Button size="lg">Export Results</Button>{' '}
+                  <Button size="lg" onClick={this.toggle}>Export Results</Button>{' '}
+                </div> :
+                <div></div> }
+
+                <div id = "exportResultModal">
+                  <Modal isOpen={this.state.modal} toggle={this.toggle} className={this.props.className}>
+                    <ModalHeader toggle={this.toggle}>Export Results - Job ID: {this.props.job.nlp_job_id}</ModalHeader>
+                    <Form>
+                    <ModalBody>
+                        {this.state.successAlert === true ?
+                          <Alert color="success">
+                            {this.state.alertMessage}
+                          </Alert> :
+                          <div></div>
+                        }
+                        {this.state.failureAlert === true ?
+                          <Alert color="danger">
+                            {this.state.alertMessage}
+                          </Alert> :
+                          <div></div>
+                        }
+                        <FormGroup>
+                          <Label for="resultName">Result Name</Label>
+                          <Input type="select" name="resultName" id="omopResultName">
+                          {this.populateResultListInModal(result_names)}
+                          </Input>
+                        </FormGroup>
+                        <FormGroup>
+                          <Label for="conceptId">Concept ID</Label>
+                          <Input type="text" name="conceptId" id="omopConceptId" placeholder="Enter Concept ID"/>
+                        </FormGroup>
+                        <FormGroup>
+                          <Label for="domain">OMOP Domain</Label>
+                          <Input type="select" name="domain" id="omopDomain">
+                            <option>Observation</option>
+                            <option>Condition</option>
+                            <option>Measurement</option>
+                          </Input>
+                        </FormGroup>
+                    </ModalBody>
+                    <ModalFooter>
+                      <Button color="primary" onClick={() => { this.exportToOMOP() }}>Export</Button>{' '}
+                    </ModalFooter>
+                    </Form>
+                  </Modal>
                 </div>
 
             </div>
+
+
         )
     }
 }
