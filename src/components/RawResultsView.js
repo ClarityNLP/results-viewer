@@ -324,68 +324,76 @@ class RawResultsView extends Component {
             />);
         });
         return (
-            <div className="RawResultsTable">
+        <div>
+          { this.state.ResultData.getSize() > 0 ?
+            <div>
+                <div className="RawResultsTable">
 
-                <Table
-                    rowHeight={row_height}
-                    rowsCount={ResultData.getSize()}
-                    headerHeight={header_height}
-                    width={w}
-                    height={Math.min(600, (ResultData.getSize() * (row_height + 3)) + header_height + 5)}
-                    {...this.props}>
-                    {columns}
-                </Table>
-                { this.state.ResultData.getSize() > 0 && this.state.exportApiHealth === true?
-                <div className="exportButton">
-                  <Button size="lg" onClick={() => { this.openExportModal() }}>Export Results</Button>{' '}
-                </div> :
-                <div></div> }
+                    <Table
+                        rowHeight={row_height}
+                        rowsCount={ResultData.getSize()}
+                        headerHeight={header_height}
+                        width={w}
+                        height={Math.min(600, (ResultData.getSize() * (row_height + 3)) + header_height + 5)}
+                        {...this.props}>
+                        {columns}
+                    </Table>
+                    { this.state.ResultData.getSize() > 0 && this.state.exportApiHealth === true?
+                    <div className="exportButton">
+                      <Button size="lg" onClick={() => { this.openExportModal() }}>Export Results</Button>{' '}
+                    </div> :
+                    <div></div> }
 
-                <div id = "exportResultModal">
-                  <Modal isOpen={this.state.modal} toggle={this.toggle} className={this.props.className}>
-                    <ModalHeader toggle={this.toggle}>Export Results - Job ID: {this.props.job.nlp_job_id}</ModalHeader>
-                    <Form>
-                    <ModalBody>
-                        {this.state.successAlert === true ?
-                          <Alert color="success">
-                            {this.state.alertMessage}
-                          </Alert> :
-                          <div></div>
-                        }
-                        {this.state.failureAlert === true ?
-                          <Alert color="danger">
-                            {this.state.alertMessage}
-                          </Alert> :
-                          <div></div>
-                        }
-                        <FormGroup>
-                          <Label for="resultName">Result Name</Label>
-                          <Input type="select" name="resultName" id="omopResultName">
-                          {this.populateResultListInModal(result_names)}
-                          </Input>
-                        </FormGroup>
-                        <FormGroup>
-                          <Label for="conceptId">Concept ID</Label>
-                          <Input type="text" name="conceptId" id="omopConceptId" placeholder="Enter Concept ID"/>
-                        </FormGroup>
-                        <FormGroup>
-                          <Label for="domain">OMOP Domain</Label>
-                          <Input type="select" name="domain" id="omopDomain">
-                            <option>Observation</option>
-                            <option>Condition</option>
-                            <option>Measurement</option>
-                          </Input>
-                        </FormGroup>
-                    </ModalBody>
-                    <ModalFooter>
-                      <Button color="primary" onClick={() => { this.exportToOMOP() }}>Export</Button>{' '}
-                    </ModalFooter>
-                    </Form>
-                  </Modal>
+                    <div id = "exportResultModal">
+                      <Modal isOpen={this.state.modal} toggle={this.toggle} className={this.props.className}>
+                        <ModalHeader toggle={this.toggle}>Export Results - Job ID: {this.props.job.nlp_job_id}</ModalHeader>
+                        <Form>
+                        <ModalBody>
+                            {this.state.successAlert === true ?
+                              <Alert color="success">
+                                {this.state.alertMessage}
+                              </Alert> :
+                              <div></div>
+                            }
+                            {this.state.failureAlert === true ?
+                              <Alert color="danger">
+                                {this.state.alertMessage}
+                              </Alert> :
+                              <div></div>
+                            }
+                            <FormGroup>
+                              <Label for="resultName">Result Name</Label>
+                              <Input type="select" name="resultName" id="omopResultName">
+                              {this.populateResultListInModal(result_names)}
+                              </Input>
+                            </FormGroup>
+                            <FormGroup>
+                              <Label for="conceptId">Concept ID</Label>
+                              <Input type="text" name="conceptId" id="omopConceptId" placeholder="Enter Concept ID"/>
+                            </FormGroup>
+                            <FormGroup>
+                              <Label for="domain">OMOP Domain</Label>
+                              <Input type="select" name="domain" id="omopDomain">
+                                <option>Observation</option>
+                                <option>Condition</option>
+                                <option>Measurement</option>
+                              </Input>
+                            </FormGroup>
+                        </ModalBody>
+                        <ModalFooter>
+                          <Button color="primary" onClick={() => { this.exportToOMOP() }}>Export</Button>{' '}
+                        </ModalFooter>
+                        </Form>
+                      </Modal>
+                    </div>
+
                 </div>
-
+            </div> :
+            <div class="emptyResults">
+              No results present.
             </div>
-
+          }
+        </div>
 
         )
     }
