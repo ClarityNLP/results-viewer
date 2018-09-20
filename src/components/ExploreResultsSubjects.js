@@ -90,7 +90,6 @@ class ExploreResultsSubjects extends Component {
                 <td>{p.count}</td>
             </tr>;
         });
-        console.log(this.state.subjects);
         return (
           <div>
             {this.state.subjects.length > 0 ?
