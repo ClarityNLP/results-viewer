@@ -90,29 +90,36 @@ class ExploreResultsSubjects extends Component {
                 <td>{p.count}</td>
             </tr>;
         });
-
+        console.log(this.state.subjects);
         return (
-            <div>
-                {this.state.show_subject_list ?
-                    <Table className="SubjectTable" striped>
-                        <thead>
-                        <tr>
-                            {header_items}
-                        </tr>
-                        </thead>
-                        <tbody>
-                        {subjects}
-                        </tbody>
-                    </Table>
-                    :
-                    <div>
-                        <SubjectResultDetail url={this.props.url} phenotype_id={phenotype_id} job={this.props.job}
-                                            config={this.state.config} subject={this.state.selected_subject}
-                                             results={this.state.current_results} idx={this.state.selected_index}
-                                            total={this.state.subjects.length} navigateSubject={this.navigateSubject}/>
-                    </div>
-                }
-            </div>
+          <div>
+            {this.state.subjects.length > 0 ?
+                <div>
+                    {this.state.show_subject_list ?
+                        <Table className="SubjectTable" striped>
+                            <thead>
+                            <tr>
+                                {header_items}
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {subjects}
+                            </tbody>
+                        </Table>
+                        :
+                        <div>
+                            <SubjectResultDetail url={this.props.url} phenotype_id={phenotype_id} job={this.props.job}
+                                                config={this.state.config} subject={this.state.selected_subject}
+                                                 results={this.state.current_results} idx={this.state.selected_index}
+                                                total={this.state.subjects.length} navigateSubject={this.navigateSubject}/>
+                        </div>
+                    }
+                </div> :
+                <div class="emptyResults">
+                  No results present.
+                </div>
+            }
+          </div>
         )
     }
 }

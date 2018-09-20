@@ -226,3 +226,9 @@ pre, .ReportTextPreview {
   margin-top: 5%;
   text-align: center;
 }
+
+.emptyResults {
+  margin-top: 20%;
+  text-align: center;
+
+}
