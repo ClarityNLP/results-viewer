@@ -389,7 +389,7 @@ class RawResultsView extends Component {
 
                 </div>
             </div> :
-            <div class="emptyResults">
+            <div className="emptyResults">
               No results present.
             </div>
           }
