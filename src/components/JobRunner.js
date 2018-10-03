@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Button, Input, ButtonDropdown, DropdownToggle, DropdownMenu, DropdownItem } from 'reactstrap';
+import { Button, Input } from 'reactstrap';
 import axios from 'axios';
 import _ from 'lodash';
 import ReactJson from 'react-json-view'
@@ -36,7 +36,6 @@ class JobRunner extends Component {
 
         this.state = {
             dropdownOpen: false,
-            nlpql_samples: [],
             nlpql: '',
             test_response: {},
             run_response: {}
@@ -71,12 +70,6 @@ class JobRunner extends Component {
     }
 
     componentDidMount() {
-        let url = this.base_url + 'nlpql_samples';
-        axios.get(url).then(response => {
-            this.setState(prevState => ({
-                nlpql_samples: response.data
-            }));
-        });
     }
 
     handleButtonAction(action) {
@@ -114,11 +107,7 @@ class JobRunner extends Component {
     }
 
     render() {
-        let nlpql_dropdown = this.state.nlpql_samples.map((n) => {
-            return (
-                <DropdownItem key={n} onClick={() => this.getNLPQLSample(n)}>{n}</DropdownItem>
-            );
-        });
+
         let response_view = <div />;
         if (!_.isEmpty(this.state.test_response)) {
             response_view = <TestResponse data={this.state.test_response} />
@@ -131,14 +120,8 @@ class JobRunner extends Component {
                     <div className="col-6">
                         <div className="NLPQLAreaHeader">
                             <span className="h4 SubHeader">NLPQL Runner</span>{'  '}
-                            <ButtonDropdown size="sm" isOpen={this.state.dropdownOpen} toggle={this.toggle}>
-                                <DropdownToggle caret>
-                                    View NLPQL Samples
-                                </DropdownToggle>
-                                <DropdownMenu>
-                                    {nlpql_dropdown}
-                                </DropdownMenu>
-                            </ButtonDropdown>
+                            <a href="https://github.com/ClarityNLP/ClarityNLP/tree/master/nlpql" target="_blank" className="SampleLink">
+                                View Samples</a>
                             <span className="float-lg-right">
                                 <Button onClick={() => this.clear()} color="link">Clear</Button>
                             </span>
