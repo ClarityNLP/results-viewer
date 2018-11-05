@@ -24,6 +24,10 @@ if (argv.indexOf('--env=gtri-production') > -1) {
   process.env.PORT = "8200";
   process.env.REACT_APP_API_HOST = "18.220.133.76:5000/";
 }
+if (argv.indexOf('--env=gtri-optimized') > -1) {
+  process.env.PORT = "8200";
+  process.env.REACT_APP_API_HOST = "3.16.75.68:5000/";
+}
 
 const path = require('path');
 const chalk = require('chalk');
