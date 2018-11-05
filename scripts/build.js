@@ -17,12 +17,16 @@ require('../config/env');
 //override api endpoints based on build argument
 let argv = process.argv.slice(2);
 if (argv.indexOf('--env=emory-staging') > -1) {
-  process.env.PORT = "8200"
-  process.env.REACT_APP_API_HOST = "claritynlp.bmi.emory.edu:5000/";
+  process.env.PORT = "8200";
+  process.env.REACT_APP_CLARITY_NLP_URL = "http://claritynlp.bmi.emory.edu:5000/";
+  process.env.REACT_APP_LUIGI_URL = "http://claritynlp.bmi.emory.edu:8082";
+  process.env.REACT_APP_EXPORT_URL = "http://claritynlp.bmi.emory.edu:5001/export_ohdsi";
 }
 if (argv.indexOf('--env=gtri-production') > -1) {
   process.env.PORT = "8200";
-  process.env.REACT_APP_API_HOST = "18.220.133.76:5000/";
+  process.env.REACT_APP_CLARITY_NLP_URL = "http://18.220.133.76:5000/";
+  process.env.REACT_APP_LUIGI_URL = "http://18.220.133.76:8082";
+  process.env.REACT_APP_EXPORT_URL = "http://18.220.133.76:5001/export_ohdsi";
 }
 if (argv.indexOf('--env=gtri-optimized') > -1) {
   process.env.PORT = "8200";

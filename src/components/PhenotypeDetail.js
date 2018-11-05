@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import axios from 'axios';
 import EntityFrame from './EntityFrame';
 import { FaCheck, FaTimes, FaStickyNote } from 'react-icons/fa';
-import { Button } from 'reactstrap';
+import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Input, Alert } from 'reactstrap';
 
 const suffixes = ['_x', '_y'];
 
@@ -11,14 +11,24 @@ class PhenotypeDetail extends Component {
     constructor(props) {
         super(props);
         this.resetViewAll = this.resetViewAll.bind(this);
+        this.writeFeedback = this.writeFeedback.bind(this);
+        this.saveComments = this.saveComments.bind(this);
+        this.toggle = this.toggle.bind(this);
+        this.toggleAlert = this.toggleAlert.bind(this);
+        this.onDismiss = this.onDismiss.bind(this);
         this.state = {
             view_mode: "all",
             selected_result_index: props.selected_result_index,
             selected_result: props.selected_result,
-            results: []
+            results: [],
+            successAlert: false,
+            failureAlert:false
         };
         this.url = props.url;
         this.detailed_results = {};
+        this.user_comments = "";
+        // this.successful_export = false;
+        // this.failed_export = false;
 
         this.ids = [];
         if ('_id' in props.selected_result) this.ids.push(props.selected_result['_id']);
@@ -26,6 +36,64 @@ class PhenotypeDetail extends Component {
         if ('_id_y' in props.selected_result) this.ids.push(props.selected_result['_id_y']);
         if ('_id_z' in props.selected_result) this.ids.push(props.selected_result['_id_z']);
         this.id_string = this.ids.join();
+    }
+
+    // Function to save the comment entered by the user
+    saveComments() {
+      let comment = document.getElementById("feedbackComments").value;
+      this.user_comments = comment;
+      this.toggle();
+    }
+
+    onDismiss() {
+      this.setState({
+          successAlert: false,
+          failureAlert: false
+      });
+    }
+
+    // Function to toggle between success and failure alerts
+    toggleAlert(response) {
+      if (response === true) {
+        this.setState({
+            successAlert: true,
+            failureAlert: false
+        });
+      } else {
+        this.setState({
+            successAlert: false,
+            failureAlert: true
+        });
+      }
+    }
+
+    // Function to write nlpql feedback back to mongoDB
+    writeFeedback(option) {
+      let data = {}
+      data['job_id'] = this.props.job_id;
+      data['patient_id'] = Number(this.props.patient_id);
+      data['comments'] = this.user_comments;
+      if (option === 1) {
+        data['is_correct'] = 'true';
+      } else {
+        data['is_correct'] = 'false';
+      }
+
+      let payload = JSON.stringify(data);
+      let request_url = this.url + 'write_nlpql_feedback';
+      let __this = this;
+
+      axios.post(request_url, payload, {
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      })
+      .then(function (response) {
+          __this.toggleAlert(true);
+      })
+      .catch(function (error) {
+          __this.toggleAlert(false);
+      });
     }
 
 
@@ -89,6 +157,12 @@ class PhenotypeDetail extends Component {
         }
     }
 
+    toggle() {
+      this.setState({
+        modal: !this.state.modal
+      });
+    }
+
     render() {
         let {selected_result, selected_result_index, results} = this.state;
         let results_view = results.map((d) => {
@@ -98,6 +172,7 @@ class PhenotypeDetail extends Component {
                 />
             );
         });
+
         return (
             <div >
                 {selected_result_index > -1 ?
@@ -107,16 +182,35 @@ class PhenotypeDetail extends Component {
                             <small>  ({selected_result.raw_definition_text})</small> :
                                 <span />}
                             <span className="float-lg-right">
-                                <Button outline size="sm" color="success"><FaCheck/></Button> { " " }
-                                <Button outline size="sm" color="danger"><FaTimes/></Button> { " " }
-                                <Button outline size="sm" color="info"><FaStickyNote/></Button> { " " }
+                                <Button outline size="sm" color="success" onClick={() => { this.writeFeedback(1) }}><FaCheck/></Button> { " " }
+                                <Button outline size="sm" color="danger" onClick={() => { this.writeFeedback(2) }}><FaTimes/></Button> { " " }
+                                <Button outline size="sm" color="info" onClick={() => { this.toggle() }}><FaStickyNote/></Button> { " " }
                             </span>
                         </div>
                         {results_view}
-
+                        {this.state.successAlert === true ?
+                          <Alert color="success" toggle={this.onDismiss}><font size="3">Thank you for submitting feedback.</font></Alert> : <span />
+                        }
+                        {this.state.failureAlert === true ?
+                          <Alert color="danger" toggle={this.onDismiss}><font size = "3">Could not submit feedback. Contact Admin.</font></Alert> : <span />
+                        }
                     </div> :
                     <span/>
+
                 }
+
+                <div id = "commentsModal">
+                  <Modal isOpen={this.state.modal} toggle={this.toggle} className={this.props.className}>
+                    <ModalHeader toggle={this.toggle}>Enter Comment</ModalHeader>
+                    <ModalBody>
+                      <Input type="textarea" name="comments" id="feedbackComments" defaultValue={this.user_comments}></Input>
+                    </ModalBody>
+                    <ModalFooter>
+                      <Button color="primary" onClick={() => { this.saveComments() }}>Save Comment</Button>{' '}
+                    </ModalFooter>
+                  </Modal>
+                </div>
+
             </div>
         )
     }

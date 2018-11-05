@@ -79,6 +79,10 @@
     margin-right: 10px;
 }
 
+.SampleLink {
+    font-size: 10pt;
+}
+
 .ToggleButtons {
     margin: 5px;
 }
@@ -230,5 +234,4 @@ pre, .ReportTextPreview {
 .emptyResults {
   margin-top: 20%;
   text-align: center;
-
 }
