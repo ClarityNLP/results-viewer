@@ -31,6 +31,8 @@ if (argv.indexOf('--env=gtri-production') > -1) {
 if (argv.indexOf('--env=gtri-optimized') > -1) {
   process.env.PORT = "8200";
   process.env.REACT_APP_API_HOST = "3.16.75.68:5000/";
+  process.env.REACT_APP_LUIGI_URL = "http://3.16.75.68:8082";
+  process.env.REACT_APP_EXPORT_URL = "http://3.16.75.68:5001/export_ohdsi";
 }
 
 const path = require('path');
