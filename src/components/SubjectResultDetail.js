@@ -158,6 +158,10 @@ class SubjectResultDetail extends Component {
             });
 
         }
+        let results_type = typeof results;
+        if (results_type === 'string') {
+            results = JSON.parse(results);
+        }
         let phenotype_results_detail = results.map((r, index) => {
             return (<PhenotypeDetail url={this.props.url} key={r._id} selected_result={r} selected_result_index={index}
                              config={config} patient_id={subject._id} job_id={this.state.job_id} showPhenotypeTypDetail={this.showPhenotypeTypDetail}/> );
