@@ -97,7 +97,7 @@ class TableJobs extends Component {
         this.setState({
             can_continue_action: false
         });
-        let action_url = this.props.url + "delete_job/" + this.state.job_id
+        let action_url = this.props.url + "delete_job/" + this.state.job_id;
         if (this.state.job_modal_type === "KILL") {
             action_url = this.props.url + "kill_job/" + this.state.job_id
         }
@@ -113,7 +113,7 @@ class TableJobs extends Component {
                     job_modal: false,
                     can_continue_action: true
                 });
-            }, 1000)
+            }, 100)
         });
     }
 
@@ -165,7 +165,7 @@ class TableJobs extends Component {
                 <td onClick={(e) => this.props.selectJob(p, e)} className="PhenotypeName"><span>{p.phenotype_name}</span></td>
                 <td onClick={(e) => this.props.selectJob(p, e)}>{p.phenotype_id}</td>
                 <td onClick={(e) => this.props.selectJob(p, e)}>{this.getStatus(p)}</td>
-                <td onClick={(e) => this.props.selectJob(p, e)}><Moment format="MMM D, YYYY h:mm a">
+                <td style={{"minWidth": "120px"}} onClick={(e) => this.props.selectJob(p, e)}><Moment format="MMM D, YYYY h:mm a">
                     {p.date_started}
                 </Moment></td>
                 <td>
@@ -173,7 +173,7 @@ class TableJobs extends Component {
                     <span> | </span>
                     <a href={ this.props.url + "job_results/" + p.nlp_job_id + "/phenotype"}>Cohort</a>
                 </td>
-                <td>
+                <td style={{"minWidth": "100px"}}>
                     <span title="View NLPQL" className="JobListIcons" onClick={(e) => this.showNLPQL(p, e)}><FaFileAlt /></span>
                     <span title="View JSON" onClick={(e) => this.showJSON(p, e)}><FaCode/></span>
                     <span style={{"paddingRight": "20px"}}>&nbsp;</span>
