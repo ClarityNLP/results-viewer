@@ -168,10 +168,12 @@ class TableJobs extends Component {
                 <td style={{"minWidth": "120px"}} onClick={(e) => this.props.selectJob(p, e)}><Moment format="MMM D, YYYY h:mm a">
                     {p.date_started}
                 </Moment></td>
-                <td>
-                    <a href={ this.props.url + "job_results/" + p.nlp_job_id + "/phenotype_intermediate"}>Features</a>
+                <td style={{"minWidth": "240px"}}>
+                    <a href={ this.props.url + "job_results/" + p.nlp_job_id + "/features"}>Features</a>
                     <span> | </span>
-                    <a href={ this.props.url + "job_results/" + p.nlp_job_id + "/phenotype"}>Cohort</a>
+                    <a href={ this.props.url + "job_results/" + p.nlp_job_id + "/cohort"}>Cohort</a>
+                    <span> | </span>
+                    <a href={ this.props.url + "job_results/" + p.nlp_job_id + "/annotations"}>Annotations</a>
                 </td>
                 <td style={{"minWidth": "100px"}}>
                     <span title="View NLPQL" className="JobListIcons" onClick={(e) => this.showNLPQL(p, e)}><FaFileAlt /></span>
