@@ -57,7 +57,7 @@ class EntityFrame extends Component {
         let text = data['text'].trim();
         let get_url = this.url + 'document/' + data['report_id'];
         axios.get(get_url).then(response => {
-            console.log(response.data);
+            // console.log(response.data);
             let new_report_text = response.data.report_text;
             let match = getHtmlMatch(text, start, end)
             let highlight =  '<span class="full-highlighting">' + match + '</span>';

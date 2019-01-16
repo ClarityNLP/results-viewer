@@ -64,6 +64,12 @@
     text-decoration: underline;
 }
 
+.DetailCountHeader {
+    font-size: medium;
+    padding-top: 10px;
+    padding-left: 12px;
+}
+
 
 
 .PhenotypeName {
@@ -111,7 +117,13 @@ table {
 }
 
 .SubjectDetailNavigation {
-    width: 85%;
+    min-width: 70%;
+
+}
+
+.SubjectDetailHeader {
+    min-width: 30%;
+    text-align: right;
 }
 
 .SubjectNavigationPosition {

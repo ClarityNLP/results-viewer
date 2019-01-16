@@ -70,9 +70,12 @@ class ExploreResultsSubjects extends Component {
                 s_list[i]['index'] = i;
                 s_list[i]['subject'] = s_list[i]['_id']
             }
+            s_list = s_list.filter(s => s['subject'] !== '');
+
             this.setState(prevState => ({
                 subjects: s_list
             }));
+            this.props.setSubjects(s_list);
         });
         this.setState(prevState => ({
             config: JSON.parse(this.props.job.config)
@@ -81,7 +84,7 @@ class ExploreResultsSubjects extends Component {
 
     render() {
         let phenotype_id = this.props.job.phenotype_id;
-        const header_items =  ["Patient", "Matching Events" ].map((h) => {
+        const header_items =  ["Subject", "Matching Events" ].map((h) => {
             return <th key={h}>{h}</th>;
         });
         const subjects = this.state.subjects.map((p) => {

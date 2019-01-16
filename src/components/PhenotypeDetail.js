@@ -123,11 +123,23 @@ class PhenotypeDetail extends Component {
                 };
             });
         } else {
+            let text = '';
+            const tags = ['sentence', 'text', 'report_text', 'term', 'value'];
+            for (let i in tags) {
+                let tag = tags[i];
+                if (selected_result.hasOwnProperty(tag)) {
+                    text = selected_result[tag];
+                    break;
+                }
+            }
+            if (text.length === 0) {
+                text = JSON.stringify(selected_result);
+            }
             results.push({
                 "index": 0,
                 "feature": selected_result['nlpql_feature'],
                 "report_date": selected_result['report_date'],
-                "text": selected_result['sentence'],
+                "text": text,
                 "id": selected_result['_id'],
                 "detail": selected_result,
                 "report_id": selected_result['report_id']

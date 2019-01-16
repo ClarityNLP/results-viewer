@@ -166,6 +166,7 @@ class SubjectResultDetail extends Component {
             return (<PhenotypeDetail url={this.props.url} key={r._id} selected_result={r} selected_result_index={index}
                              config={config} patient_id={subject._id} job_id={this.state.job_id} showPhenotypeTypDetail={this.showPhenotypeTypDetail}/> );
         });
+        let detail_count = results.length;
 
         return (
             <div className="container-fluid">
@@ -178,7 +179,7 @@ class SubjectResultDetail extends Component {
                         <span className="SubjectNavigationPosition"> {total} </span>
                         <Button outline onClick={(e) => this.props.navigateSubject(1, e)}><FaArrowRight/></Button>
                     </small>
-                    <h5 className="SubjectDetailHeader float-lg-right">Patient #{subject._id}</h5>
+                    <h5 className="SubjectDetailHeader float-lg-right">{subject._id + " (" + detail_count + " records)"}</h5>
                 </div>
                 <div className="row SubjectDetailBody">
                     <div className="col-2">

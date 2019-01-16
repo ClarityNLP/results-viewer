@@ -15,8 +15,10 @@ class ResultViewer extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            mode_selected: 1
+            mode_selected: 1,
+            patient_count: 0
         };
+        this.setSubjects = this.setSubjects.bind(this);
     }
 
     componentDidMount() {
@@ -30,13 +32,25 @@ class ResultViewer extends Component {
         this.setState({ mode_selected });
     }
 
+    setSubjects(s) {
+        if (s) {
+            this.setState({
+                'patient_count': s.length
+            });
+        }
+    }
+
     render() {
         return (
             <div className="container-fluid">
                 <div className="row">
                     <div className="col">
                         <h3><small><Button className="btn btn-light ArrowButtons" onClick={this.props.resetJobsList}><FaArrowLeft/></Button>
-                        </small><span className="PhenotypeTitle">{this.props.job.phenotype_name}</span><span className="PatientCount">{this.state.patient_count}</span>
+                        </small><span className="PhenotypeTitle">{this.props.job.phenotype_name}</span>
+                            {  this.state.mode_selected === ANNOTATE  ?
+
+                                <span/> :<span
+                            className="PatientCount">{"  (" + this.state.patient_count + " subjects)"}</span>}
                             <small className="float-sm-right ToggleButtons"><ButtonGroup>
                                 <Button onClick={() => this.onRadioBtnClick(EXPLORE)} active={this.state.mode_selected === EXPLORE}>Explore</Button>
                                 <Button onClick={() => this.onRadioBtnClick(INTERMEDIATE)} active={this.state.mode_selected === INTERMEDIATE}>Features</Button>
@@ -44,7 +58,7 @@ class ResultViewer extends Component {
                             </ButtonGroup></small>
                             { this.state.mode_selected === EXPLORE || this.state.mode_selected === ANNOTATE ?
                                 <div>
-                                    <ExploreResultsSubjects job={this.props.job} url={this.props.url} />
+                                    <ExploreResultsSubjects job={this.props.job} url={this.props.url} setSubjects={this.setSubjects} />
                                 </div>:
                                 <div>
                                     <RawResultsView job={this.props.job} mode={this.state.mode_selected} url={this.props.url} />
