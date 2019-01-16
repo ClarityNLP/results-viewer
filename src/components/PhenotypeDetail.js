@@ -72,7 +72,7 @@ class PhenotypeDetail extends Component {
       let data = {};
       data['feature'] = this.state.selected_result['nlpql_feature'];
       data['job_id'] = this.props.job_id;
-      data['subject'] = Number(this.props.subject);
+      data['subject'] = this.props.subject;
       data['comments'] = this.user_comments;
       data["result_id"] = this.state.selected_result['_id'];
       data["report_id"] = this.state.selected_result['report_id'];
