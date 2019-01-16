@@ -69,30 +69,36 @@ class PhenotypeDetail extends Component {
 
     // Function to write nlpql feedback back to mongoDB
     writeFeedback(option) {
-      let data = {}
+      let data = {};
+      data['feature'] = this.state.selected_result['nlpql_feature'];
       data['job_id'] = this.props.job_id;
       data['patient_id'] = Number(this.props.patient_id);
       data['comments'] = this.user_comments;
+      data["result_id"] = this.state.selected_result['_id'];
+      data["report_id"] = this.state.selected_result['report_id'];
       if (option === 1) {
         data['is_correct'] = 'true';
-      } else {
+      } else if (option === 2) {
         data['is_correct'] = 'false';
+      } else {
+          data['is_correct'] = '';
       }
 
       let payload = JSON.stringify(data);
       let request_url = this.url + 'write_nlpql_feedback';
-      let __this = this;
 
       axios.post(request_url, payload, {
         headers: {
           'Content-Type': 'application/json'
         }
       })
-      .then(function (response) {
-          __this.toggleAlert(true);
+      .then(response => {
+          console.log(response.data);
+          this.toggleAlert(true);
       })
-      .catch(function (error) {
-          __this.toggleAlert(false);
+      .catch(error => {
+          console.log(error);
+          this.toggleAlert(false);
       });
     }
 
