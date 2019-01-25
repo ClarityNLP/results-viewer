@@ -168,12 +168,27 @@ export default class QueryEditor extends Component {
     });
   };
 
-  buildArrayString = s => {
+  buildArrayStringWithQuotes = s => {
     let arr = s.split(",");
 
     let tmp = "[";
     for (let i = 0; i < arr.length; i++) {
       tmp += '"' + arr[i].trim() + '"';
+      if (i < arr.length - 1) {
+        tmp += ", ";
+      }
+    }
+    tmp += "]";
+
+    return tmp;
+  };
+
+  buildArrayStringWithoutQuotes = s => {
+    let arr = s.split(",");
+
+    let tmp = "[";
+    for (let i = 0; i < arr.length; i++) {
+      tmp += arr[i].trim();
       if (i < arr.length - 1) {
         tmp += ", ";
       }
@@ -194,6 +209,9 @@ export default class QueryEditor extends Component {
     } = this.state;
 
     let text = "documentset " + documentsetName + ":\n\t";
+    this.setState({
+      documentSets: [...this.state.documentSets, documentsetName]
+    });
 
     let hasTypes =
       documentsetReportTypes.length > 0 && documentsetReportTypes[0].length > 0;
@@ -207,7 +225,7 @@ export default class QueryEditor extends Component {
     if (hasTypes && !hasTags && !hasSource && !hasFilterQuery && !hasQuery) {
       text +=
         "Clarity.createReportTypeList(" +
-        this.buildArrayString(documentsetReportTypes) +
+        this.buildArrayStringWithQuotes(documentsetReportTypes) +
         ");\n\n";
     } else if (
       hasTags &&
@@ -218,25 +236,29 @@ export default class QueryEditor extends Component {
     ) {
       text +=
         "Clarity.createReportTagList(" +
-        this.buildArrayString(documentsetReportTags) +
+        this.buildArrayStringWithQuotes(documentsetReportTags) +
         ");\n\n";
     } else {
       let payloadKeys = [];
 
       if (hasTypes) {
         payloadKeys.push(
-          "report_types: " + this.buildArrayString(documentsetReportTypes)
+          "report_types: " +
+            this.buildArrayStringWithQuotes(documentsetReportTypes)
         );
       }
 
       if (hasTags) {
         payloadKeys.push(
-          "report_tags: " + this.buildArrayString(documentsetReportTags)
+          "report_tags: " +
+            this.buildArrayStringWithQuotes(documentsetReportTags)
         );
       }
 
       if (hasSource) {
-        payloadKeys.push("source: " + this.buildArrayString(documentsetSource));
+        payloadKeys.push(
+          "source: " + this.buildArrayStringWithQuotes(documentsetSource)
+        );
       }
 
       if (hasFilterQuery) {
@@ -267,9 +289,6 @@ export default class QueryEditor extends Component {
     }
 
     this.handleSubmit(text);
-    this.setState({
-      documentSets: [...this.state.documentSets, documentsetName]
-    });
   };
 
   insertDocumentLimit = () => {
@@ -325,7 +344,8 @@ export default class QueryEditor extends Component {
         });
     } else {
       let text = "termset " + termsetName + ":\n";
-      text = text + "\t" + this.buildArrayString(termsetTerms) + "\n\n";
+      text =
+        text + "\t" + this.buildArrayStringWithQuotes(termsetTerms) + "\n\n";
 
       this.handleSubmit(text);
     }
@@ -392,20 +412,28 @@ export default class QueryEditor extends Component {
     //termset
     if (customTermset.length > 0 && customTermset[0].length > 0) {
       if (featureAlgorithm === "TermProximityTask") {
-        payload.push("termset1: " + this.buildArrayString(customTermset));
+        payload.push(
+          "termset1: " + this.buildArrayStringWithoutQuotes(customTermset)
+        );
       } else {
-        payload.push("termset: " + this.buildArrayString(customTermset));
+        payload.push(
+          "termset: " + this.buildArrayStringWithoutQuotes(customTermset)
+        );
       }
     }
 
     //termset2
     if (customTermset2.length > 0 && customTermset2[0].length > 0) {
-      payload.push("termset2: " + this.buildArrayString(customTermset2));
+      payload.push(
+        "termset2: " + this.buildArrayStringWithoutQuotes(customTermset2)
+      );
     }
 
     //documentset
     if (customDocumentset.length > 0 && customDocumentset[0].length > 0) {
-      payload.push("documentset: " + this.buildArrayString(customDocumentset));
+      payload.push(
+        "documentset: " + this.buildArrayStringWithoutQuotes(customDocumentset)
+      );
     }
 
     // cohort
@@ -420,7 +448,9 @@ export default class QueryEditor extends Component {
 
     //sections
     if (customSections.length > 0 && customSections[0].length > 0) {
-      payload.push("sections: " + this.buildArrayString(customSections));
+      payload.push(
+        "sections: " + this.buildArrayStringWithQuotes(customSections)
+      );
     }
 
     if (featureAlgorithm === "ngram") {
@@ -482,7 +512,9 @@ export default class QueryEditor extends Component {
     if (featureAlgorithm === "ValueExtraction") {
       //enum list
       if (customEnumList.length > 0 && customEnumList[0].length > 0) {
-        payload.push("enum_list: " + this.buildArrayString(customEnumList));
+        payload.push(
+          "enum_list: " + this.buildArrayStringWithQuotes(customEnumList)
+        );
       }
 
       // min val
@@ -550,7 +582,13 @@ export default class QueryEditor extends Component {
   clear = () => {
     let editor = window.ace.edit("editor");
     editor.setValue("");
-    this.setState({ phenotypePresent: false });
+    this.setState({
+      phenotypePresent: false,
+      termSets: [],
+      documentSets: [],
+      cohorts: [],
+      features: []
+    });
   };
 
   componentDidMount() {
