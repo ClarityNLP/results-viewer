@@ -75,6 +75,17 @@ class DocumentSetModal extends React.Component {
                 />
               </FormGroup>
 
+              <FormGroup>
+                <Label for="documentsetQuery">Query</Label>
+                <Input
+                  type="text"
+                  id="documentsetQuery"
+                  name="documentsetQuery"
+                  value={this.props.documentsetQuery}
+                  onChange={this.props.handleInputChange}
+                />
+              </FormGroup>
+
               <div id="documentsetList">
                 <FormGroup>
                   <Label for="documentsetReportTypes">Report Types</Label>
@@ -107,17 +118,6 @@ class DocumentSetModal extends React.Component {
                     id="documentsetFilterQuery"
                     name="documentsetFilterQuery"
                     value={this.props.documentsetFilterQuery}
-                    onChange={this.props.handleInputChange}
-                  />
-                </FormGroup>
-
-                <FormGroup>
-                  <Label for="documentsetQuery">Query</Label>
-                  <Input
-                    type="text"
-                    id="documentsetQuery"
-                    name="documentsetQuery"
-                    value={this.props.documentsetQuery}
                     onChange={this.props.handleInputChange}
                   />
                 </FormGroup>

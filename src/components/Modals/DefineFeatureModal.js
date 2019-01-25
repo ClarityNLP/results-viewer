@@ -34,7 +34,7 @@ class DefineFeatureModal extends React.Component {
   };
 
   renderInputsForAlgorithm = () => {
-    let { featureAlgorithm, termSets } = this.props;
+    const { featureAlgorithm, termSets, documentSets, cohorts } = this.props;
 
     let customTermsetDiv = (
       <FormGroup>
@@ -84,13 +84,21 @@ class DefineFeatureModal extends React.Component {
       <FormGroup>
         <Label for="customDocumentset">Document Set</Label>
         <Input
-          type="text"
+          type="select"
           id="customDocumentset"
           name="customDocumentset"
-          value={this.props.customDocumentset}
           onChange={this.props.handleInputChange}
-          placeholder="Enter comma separated terms."
-        />
+          multiple
+        >
+          <option />
+          {documentSets.map((value, index) => {
+            return (
+              <option key={index} value={value}>
+                {value}
+              </option>
+            );
+          })}
+        </Input>
       </FormGroup>
     );
 
@@ -126,12 +134,21 @@ class DefineFeatureModal extends React.Component {
       <FormGroup>
         <Label for="customCohort">Cohort</Label>
         <Input
-          type="text"
+          type="select"
           id="customCohort"
           name="customCohort"
-          value={this.props.customCohort}
           onChange={this.props.handleInputChange}
-        />
+          multiple
+        >
+          <option />
+          {cohorts.map((value, index) => {
+            return (
+              <option key={index} value={value}>
+                {value}
+              </option>
+            );
+          })}
+        </Input>
       </FormGroup>
     );
 
@@ -385,6 +402,7 @@ class DefineFeatureModal extends React.Component {
         {customTermsetDiv}
         {featureAlgorithm === "TermProximityTask" ? customTermset2Div : null}
         {customDocumentsetDiv}
+        {customCohortDiv}
         {featureAlgorithm === "ValueExtraction" ? customEnumListDiv : null}
         {featureAlgorithm === "ProviderAssertion" ||
         featureAlgorithm === "TermFinder" ||
@@ -392,7 +410,6 @@ class DefineFeatureModal extends React.Component {
         featureAlgorithm === "NamedEntityRecognition"
           ? customSectionsDiv
           : null}
-        {customCohortDiv}
         {featureAlgorithm === "ProviderAssertion" ||
         featureAlgorithm === "TermFinder"
           ? customVocabularyDiv

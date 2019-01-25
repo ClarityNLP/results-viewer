@@ -59,9 +59,15 @@ export default class QueryEditor extends Component {
       customDescendants: false,
       customAncestors: false,
       customCaseSensitive: false,
-      resultName: "",
-      resultLogic: "",
-      termSets: []
+      resultsName: "",
+      resultsFeature: "",
+      resultsBooleanOperator: "",
+      resultsLogic: "",
+      resultsSubField: "",
+      termSets: [],
+      documentSets: [],
+      cohorts: [],
+      features: []
     };
   }
 
@@ -81,7 +87,7 @@ export default class QueryEditor extends Component {
 
       value = value.toString();
     }
-    console.log(value);
+
     this.setState({
       [name]: value
     });
@@ -135,8 +141,11 @@ export default class QueryEditor extends Component {
       customDescendants: false,
       customAncestors: false,
       customCaseSensitive: false,
-      resultName: "",
-      resultLogic: ""
+      resultsName: "",
+      resultsFeature: "",
+      resultsBooleanOperator: "",
+      resultsLogic: "",
+      resultsSubField: ""
     });
   };
 
@@ -258,6 +267,9 @@ export default class QueryEditor extends Component {
     }
 
     this.handleSubmit(text);
+    this.setState({
+      documentSets: [...this.state.documentSets, documentsetName]
+    });
   };
 
   insertDocumentLimit = () => {
@@ -292,23 +304,25 @@ export default class QueryEditor extends Component {
       payload = payload.slice(0, payload.length - 1); //removing the last extra ',' character
       payload += "];";
 
-      // making request to the expander API
-      window.$.ajax({
-        type: "POST",
-        url: this.state.termExpanderUrl,
-        contentType: "text/plain",
-        data: payload,
-        success: function(data) {
-          data = data.replace(":", ":\n\t");
-
-          this.handleSubmit(data);
-          let editor = window.ace.edit("editor");
-          editor.insert("\n\n");
+      fetch(this.state.termExpanderUrl, {
+        method: "POST",
+        headers: {
+          "Content-Type": "text/plain"
         },
-        error: function(XMLHttpRequest, textStatus, errorThrown) {
-          alert("Term Expander Unavailable. Reason: " + errorThrown);
-        }
-      });
+        body: payload
+      })
+        .then(response => {
+          return response.text().then(data => {
+            data = data.replace(":", ":\n\t");
+
+            this.handleSubmit(data);
+            let editor = window.ace.edit("editor");
+            editor.insert("\n\n");
+          });
+        })
+        .catch(err => {
+          alert("Term Expander Unavailable. Reason: " + err.message);
+        });
     } else {
       let text = "termset " + termsetName + ":\n";
       text = text + "\t" + this.buildArrayString(termsetTerms) + "\n\n";
@@ -328,6 +342,9 @@ export default class QueryEditor extends Component {
       "cohort " + cohortName + ": OHDSI.getCohort(" + cohortID + ");\n\n";
 
     this.handleSubmit(text);
+    this.setState({
+      cohorts: [...this.state.cohorts, cohortName]
+    });
   };
 
   insertLogicalContext = () => {
@@ -494,13 +511,38 @@ export default class QueryEditor extends Component {
     text += "\n\t});\n\n";
 
     this.handleSubmit(text);
+    this.setState({
+      features: [
+        ...this.state.features,
+        {
+          name: featureName,
+          algorithm: featureAlgorithm
+        }
+      ]
+    });
   };
 
   insertResult = () => {
-    const { resultName, resultLogic } = this.state;
+    const {
+      resultsName,
+      resultsLogic,
+      resultsFeature,
+      resultsBooleanOperator,
+      resultsSubField
+    } = this.state;
 
     let text =
-      "define final " + resultName + ":\n\twhere " + resultLogic + ";\n\n";
+      "define final " +
+      resultsName +
+      ":\n\twhere " +
+      resultsFeature +
+      "." +
+      resultsSubField +
+      " " +
+      resultsBooleanOperator +
+      " " +
+      resultsLogic +
+      ";\n\n";
 
     this.handleSubmit(text);
   };
@@ -592,6 +634,8 @@ export default class QueryEditor extends Component {
               id="featureModal"
               buttonLabel="Define Feature"
               termSets={this.state.termSets}
+              documentSets={this.state.documentSets}
+              cohorts={this.state.cohorts}
               featureName={this.state.featureName}
               featureAlgorithm={this.state.featureAlgorithm}
               customTermset={this.state.customTermset}
@@ -624,8 +668,11 @@ export default class QueryEditor extends Component {
             <DefineResultModal
               id="resultModal"
               buttonLabel="Define Result"
-              resultName={this.state.resultName}
-              resultLogic={this.state.resultLogic}
+              features={this.state.features}
+              resultsName={this.state.resultsName}
+              resultsFeature={this.state.resultsFeature}
+              resultsBooleanOperator={this.state.resultsBooleanOperator}
+              resultsLogic={this.state.resultsLogic}
               isDisabled={!this.state.phenotypePresent}
               handleInputChange={this.handleInputChange}
               handleSubmit={this.insertResult}
