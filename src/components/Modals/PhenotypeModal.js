@@ -1,7 +1,18 @@
 /* eslint react/no-multi-comp: 0, react/prop-types: 0 */
 
 import React from "react";
-import { Button, Collapse, Form, FormGroup, Label, Input } from "reactstrap";
+import {
+  Button,
+  Collapse,
+  Form,
+  FormGroup,
+  Label,
+  Input,
+  FormFeedback,
+  CardHeader,
+  CardBody
+} from "reactstrap";
+import plus_icon from "../../assets/img/icon--plus.png";
 
 class PhenotypeModal extends React.Component {
   constructor(props) {
@@ -9,12 +20,17 @@ class PhenotypeModal extends React.Component {
 
     this.toggle = this.toggle.bind(this);
     this.handleInputChange = this.handleInputChange.bind(this);
+    this.allInputsAreValid = this.allInputsAreValid.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
 
     this.state = {
       collapse: false,
-      phenotypeName: "",
-      phenotypeVersion: ""
+      name: "",
+      version: "",
+      validation: {
+        name: "",
+        version: ""
+      }
     };
   }
 
@@ -28,21 +44,62 @@ class PhenotypeModal extends React.Component {
     const target = event.target;
     let value = target.value;
     const name = target.name;
+    let isValid = value.trim() !== "" ? "is-valid" : "is-invalid";
 
     this.setState({
-      [name]: value
+      [name]: value,
+      validation: {
+        ...this.state.validation,
+        [name]: isValid
+      }
     });
+  }
+
+  allInputsAreValid() {
+    const { validation } = this.state;
+
+    let allValidInputs = true;
+    let validCheck = {
+      name: "",
+      version: ""
+    };
+
+    if (validation.name !== "is-valid") {
+      validCheck.name = "is-invalid";
+      allValidInputs = false;
+    } else {
+      validCheck.name = "is-valid";
+    }
+
+    if (validation.version !== "is-valid") {
+      validCheck.version = "is-invalid";
+      allValidInputs = false;
+    } else {
+      validCheck.version = "is-valid";
+    }
+
+    this.setState({
+      validation: validCheck
+    });
+
+    return allValidInputs;
   }
 
   handleSubmit = event => {
     event.preventDefault();
 
-    const { phenotypeName, phenotypeVersion } = this.state;
+    const { name, version } = this.state;
+    let valid = this.allInputsAreValid();
+
+    if (!valid) {
+      return;
+    }
+
     let text =
       'phenotype "' +
-      phenotypeName +
+      name +
       '" version "' +
-      phenotypeVersion +
+      version +
       '";\n\n' +
       'include ClarityCore version "1.0" called Clarity;\n\n';
 
@@ -51,44 +108,51 @@ class PhenotypeModal extends React.Component {
   };
 
   render() {
-    const { phenotypeName, phenotypeVersion, collapse } = this.state;
+    const { name, version, collapse, validation } = this.state;
 
     return (
       <div>
-        <Button color="primary" onClick={this.toggle}>
-          Add Phenotype
-        </Button>
-        <Collapse isOpen={collapse}>
-          <Form>
-            <FormGroup>
-              <Label for="phenotypeName">Phenotype Name</Label>
-              <Input
-                type="text"
-                id="phenotypeName"
-                name="phenotypeName"
-                value={phenotypeName}
-                onChange={this.handleInputChange}
-              />
-            </FormGroup>
-            <FormGroup>
-              <Label for="phenotypeVersion">Phenotype Version</Label>
-              <Input
-                type="text"
-                id="phenotypeVersion"
-                name="phenotypeVersion"
-                value={phenotypeVersion}
-                onChange={this.handleInputChange}
-              />
-            </FormGroup>
-            <Button
-              color="success"
-              type="submit"
-              id="submit"
-              onClick={this.handleSubmit}
-            >
-              Save changes
-            </Button>
-          </Form>
+        <CardHeader onClick={this.toggle}>
+          <img src={plus_icon} className="mr-2" /> Phenotype
+        </CardHeader>
+        <Collapse isOpen={collapse} data-parent="#formAccordion">
+          <CardBody>
+            <Form>
+              <FormGroup>
+                <Label for="name">Name</Label>
+                <Input
+                  type="text"
+                  id="name"
+                  name="name"
+                  value={name}
+                  className={validation.name}
+                  onChange={this.handleInputChange}
+                />
+                <FormFeedback>Please enter a name.</FormFeedback>
+              </FormGroup>
+
+              <FormGroup>
+                <Label for="version">Version</Label>
+                <Input
+                  type="text"
+                  id="version"
+                  name="version"
+                  value={version}
+                  className={validation.version}
+                  onChange={this.handleInputChange}
+                />
+                <FormFeedback>Please enter a version.</FormFeedback>
+              </FormGroup>
+              <Button
+                color="success"
+                type="submit"
+                id="submit"
+                onClick={this.handleSubmit}
+              >
+                Save changes
+              </Button>
+            </Form>
+          </CardBody>
         </Collapse>
       </div>
     );

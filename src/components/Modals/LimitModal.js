@@ -1,7 +1,19 @@
 /* eslint react/no-multi-comp: 0, react/prop-types: 0 */
 
 import React from "react";
-import { Button, Collapse, Form, FormGroup, Label, Input } from "reactstrap";
+import {
+  Button,
+  Collapse,
+  Form,
+  FormGroup,
+  Label,
+  Input,
+  CardHeader,
+  CardBody,
+  Row,
+  Col
+} from "reactstrap";
+import plus_icon from "../../assets/img/icon--plus.png";
 
 class LimitModal extends React.Component {
   constructor(props) {
@@ -43,30 +55,38 @@ class LimitModal extends React.Component {
 
     return (
       <div>
-        <Button color="primary" onClick={this.toggle}>
-          Set Query Limit
-        </Button>
-        <Collapse isOpen={collapse}>
-          <Form>
-            <FormGroup>
-              <Label for="limit">Query Limit</Label>
-              <Input
-                type="number"
-                id="limit"
-                name="limit"
-                value={limit}
-                onChange={this.handleInputChange}
-              />
-            </FormGroup>
-            <Button
-              color="success"
-              type="submit"
-              id="submit"
-              onClick={this.handleSubmit}
-            >
-              Save changes
-            </Button>
-          </Form>
+        <CardHeader onClick={this.toggle}>
+          <img src={plus_icon} className="mr-2" /> Query Limit
+        </CardHeader>
+        <Collapse isOpen={collapse} data-parent="#formAccordion">
+          <CardBody>
+            <Form>
+              <FormGroup>
+                <Label for="limit">Limit</Label>
+                <Input
+                  type="number"
+                  id="limit"
+                  name="limit"
+                  value={limit}
+                  onChange={this.handleInputChange}
+                />
+              </FormGroup>
+
+              <Row className="justify-content-end">
+                <Col md="4">
+                  <Button
+                    color="success"
+                    type="submit"
+                    id="submit"
+                    size="lg"
+                    onClick={this.handleSubmit}
+                  >
+                    Save changes
+                  </Button>
+                </Col>
+              </Row>
+            </Form>
+          </CardBody>
         </Collapse>
       </div>
     );

@@ -1,7 +1,17 @@
 /* eslint react/no-multi-comp: 0, react/prop-types: 0 */
 
 import React from "react";
-import { Button, Collapse, Form, FormGroup, Label, Input } from "reactstrap";
+import {
+  Button,
+  Collapse,
+  Form,
+  FormGroup,
+  Label,
+  Input,
+  CardHeader,
+  CardBody
+} from "reactstrap";
+import plus_icon from "../../assets/img/icon--plus.png";
 
 class DocumentSetModal extends React.Component {
   constructor(props) {
@@ -144,6 +154,7 @@ class DocumentSetModal extends React.Component {
 
     this.props.appendDocumentSet(name);
     this.props.updateNLPQL(text);
+    this.toggle();
   };
 
   render() {
@@ -159,91 +170,93 @@ class DocumentSetModal extends React.Component {
 
     return (
       <div>
-        <Button color="primary" onClick={this.toggle}>
-          Add Document Set
-        </Button>
+        <CardHeader onClick={this.toggle}>
+          <img src={plus_icon} className="mr-2" /> Document Set
+        </CardHeader>
         <Collapse isOpen={collapse}>
-          <Form>
-            <FormGroup>
-              <Label for="name">Name</Label>
-              <Input
-                type="text"
-                id="name"
-                name="name"
-                value={name}
-                onChange={this.handleInputChange}
-              />
-            </FormGroup>
-
-            <FormGroup>
-              <Label for="sources">Data Source</Label>
-              <Input
-                type="text"
-                id="sources"
-                name="sources"
-                value={sources}
-                onChange={this.handleInputChange}
-                placeholder="Enter comma separated terms."
-              />
-            </FormGroup>
-
-            <FormGroup>
-              <Label for="query">Query</Label>
-              <Input
-                type="text"
-                id="query"
-                name="query"
-                value={query}
-                onChange={this.handleInputChange}
-              />
-            </FormGroup>
-
-            <div id="documentsetList">
+          <CardBody>
+            <Form>
               <FormGroup>
-                <Label for="reportTypes">Report Types</Label>
+                <Label for="name">Name</Label>
                 <Input
                   type="text"
-                  id="reportTypes"
-                  name="reportTypes"
-                  value={reportTypes}
+                  id="name"
+                  name="name"
+                  value={name}
+                  onChange={this.handleInputChange}
+                />
+              </FormGroup>
+
+              <FormGroup>
+                <Label for="sources">Data Source</Label>
+                <Input
+                  type="text"
+                  id="sources"
+                  name="sources"
+                  value={sources}
                   onChange={this.handleInputChange}
                   placeholder="Enter comma separated terms."
                 />
               </FormGroup>
 
               <FormGroup>
-                <Label for="reportTags">Report Tags</Label>
+                <Label for="query">Query</Label>
                 <Input
                   type="text"
-                  id="reportTags"
-                  name="reportTags"
-                  value={reportTags}
-                  onChange={this.handleInputChange}
-                  placeholder="Enter comma separated terms."
-                />
-              </FormGroup>
-
-              <FormGroup>
-                <Label for="filterQuery">Filter Query</Label>
-                <Input
-                  type="text"
-                  id="filterQuery"
-                  name="filterQuery"
-                  value={filterQuery}
+                  id="query"
+                  name="query"
+                  value={query}
                   onChange={this.handleInputChange}
                 />
               </FormGroup>
-            </div>
 
-            <Button
-              color="success"
-              type="submit"
-              id="submit"
-              onClick={this.handleSubmit}
-            >
-              Save changes
-            </Button>
-          </Form>
+              <div id="documentsetList">
+                <FormGroup>
+                  <Label for="reportTypes">Report Types</Label>
+                  <Input
+                    type="text"
+                    id="reportTypes"
+                    name="reportTypes"
+                    value={reportTypes}
+                    onChange={this.handleInputChange}
+                    placeholder="Enter comma separated terms."
+                  />
+                </FormGroup>
+
+                <FormGroup>
+                  <Label for="reportTags">Report Tags</Label>
+                  <Input
+                    type="text"
+                    id="reportTags"
+                    name="reportTags"
+                    value={reportTags}
+                    onChange={this.handleInputChange}
+                    placeholder="Enter comma separated terms."
+                  />
+                </FormGroup>
+
+                <FormGroup>
+                  <Label for="filterQuery">Filter Query</Label>
+                  <Input
+                    type="text"
+                    id="filterQuery"
+                    name="filterQuery"
+                    value={filterQuery}
+                    onChange={this.handleInputChange}
+                  />
+                </FormGroup>
+              </div>
+
+              <Button
+                color="success"
+                type="submit"
+                id="submit"
+                onClick={this.handleSubmit}
+              >
+                Save changes
+              </Button>
+            </Form>
+          </CardBody>
         </Collapse>
       </div>
     );

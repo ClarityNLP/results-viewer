@@ -1,7 +1,17 @@
 /* eslint react/no-multi-comp: 0, react/prop-types: 0 */
 
 import React from "react";
-import { Button, Collapse, Form, FormGroup, Label, Input } from "reactstrap";
+import {
+  Button,
+  Collapse,
+  Form,
+  FormGroup,
+  Label,
+  Input,
+  CardHeader,
+  CardBody
+} from "reactstrap";
+import plus_icon from "../../assets/img/icon--plus.png";
 
 class DefineFeatureModal extends React.Component {
   constructor(props) {
@@ -41,11 +51,9 @@ class DefineFeatureModal extends React.Component {
     };
   }
 
-  toggle = () => {
-    this.setState({
-      modal: !this.state.modal
-    });
-  };
+  toggle() {
+    this.setState({ collapse: !this.state.collapse });
+  }
 
   handleInputChange = event => {
     const target = event.target;
@@ -67,6 +75,36 @@ class DefineFeatureModal extends React.Component {
     this.setState({
       [name]: value
     });
+  };
+
+  buildArrayStringWithQuotes = s => {
+    let arr = s.split(",");
+
+    let tmp = "[";
+    for (let i = 0; i < arr.length; i++) {
+      tmp += '"' + arr[i].trim() + '"';
+      if (i < arr.length - 1) {
+        tmp += ", ";
+      }
+    }
+    tmp += "]";
+
+    return tmp;
+  };
+
+  buildArrayStringWithoutQuotes = s => {
+    let arr = s.split(",");
+
+    let tmp = "[";
+    for (let i = 0; i < arr.length; i++) {
+      tmp += arr[i].trim();
+      if (i < arr.length - 1) {
+        tmp += ", ";
+      }
+    }
+    tmp += "]";
+
+    return tmp;
   };
 
   handleSubmit = event => {
@@ -231,6 +269,7 @@ class DefineFeatureModal extends React.Component {
     // Constructing custom task element
     let text = "define " + featureName + ":\n\t";
     text += "Clarity." + featureAlgorithm + "({\n\t\t";
+
     for (let i = 0; i < payload.length; i++) {
       text += payload[i];
       if (i < payload.length - 1) {
@@ -239,16 +278,39 @@ class DefineFeatureModal extends React.Component {
     }
     text += "\n\t});\n\n";
 
-    this.appendFeature({
+    this.props.appendFeature({
       name: featureName,
       algorithm: featureAlgorithm
     });
+
     this.props.updateNLPQL(text);
     this.toggle();
   };
 
   renderInputsForAlgorithm = () => {
-    const { featureAlgorithm, termSets, documentSets, cohorts } = this.props;
+    const {
+      featureAlgorithm,
+      customSections,
+      customEnumList,
+      customGroupby,
+      customNgramN,
+      customMinFreq,
+      customVocabulary,
+      customWordDist,
+      customMinVal,
+      customMaxVal,
+      customAnyOrder,
+      customFilterNums,
+      customFilterStops,
+      customFilterPunct,
+      customLemmas,
+      customLimitTermset,
+      customSynonyms,
+      customDescendants,
+      customAncestors,
+      customCaseSensitive
+    } = this.state;
+    const { termSets, documentSets, cohorts } = this.props;
 
     let customTermsetDiv = (
       <FormGroup>
@@ -323,7 +385,7 @@ class DefineFeatureModal extends React.Component {
           type="text"
           id="customSections"
           name="customSections"
-          value={this.props.customSections}
+          value={customSections}
           onChange={this.handleInputChange}
           placeholder="Enter comma separated terms."
         />
@@ -337,7 +399,7 @@ class DefineFeatureModal extends React.Component {
           type="text"
           id="customEnumList"
           name="customEnumList"
-          value={this.props.customEnumList}
+          value={customEnumList}
           onChange={this.handleInputChange}
           placeholder="Enter comma separated terms."
         />
@@ -373,7 +435,7 @@ class DefineFeatureModal extends React.Component {
           type="text"
           id="customGroupby"
           name="customGroupby"
-          value={this.props.customGroupby}
+          value={customGroupby}
           onChange={this.handleInputChange}
         />
       </FormGroup>
@@ -386,7 +448,7 @@ class DefineFeatureModal extends React.Component {
           type="text"
           id="customNgramN"
           name="customNgramN"
-          value={this.props.customNgramN}
+          value={customNgramN}
           onChange={this.handleInputChange}
         />
       </FormGroup>
@@ -399,7 +461,7 @@ class DefineFeatureModal extends React.Component {
           type="text"
           id="customMinFreq"
           name="customMinFreq"
-          value={this.props.customMinFreq}
+          value={customMinFreq}
           onChange={this.handleInputChange}
         />
       </FormGroup>
@@ -412,7 +474,7 @@ class DefineFeatureModal extends React.Component {
           type="text"
           id="customVocabulary"
           name="customVocabulary"
-          value={this.props.customVocabulary}
+          value={customVocabulary}
           onChange={this.handleInputChange}
         />
       </FormGroup>
@@ -425,7 +487,7 @@ class DefineFeatureModal extends React.Component {
           type="text"
           id="customWordDist"
           name="customWordDist"
-          value={this.props.customWordDist}
+          value={customWordDist}
           onChange={this.handleInputChange}
         />
       </FormGroup>
@@ -438,7 +500,7 @@ class DefineFeatureModal extends React.Component {
           type="text"
           id="customMinVal"
           name="customMinVal"
-          value={this.props.customMinVal}
+          value={customMinVal}
           onChange={this.handleInputChange}
         />
       </FormGroup>
@@ -451,7 +513,7 @@ class DefineFeatureModal extends React.Component {
           type="text"
           id="customMaxVal"
           name="customMaxVal"
-          value={this.props.customMaxVal}
+          value={customMaxVal}
           onChange={this.handleInputChange}
         />
       </FormGroup>
@@ -464,7 +526,7 @@ class DefineFeatureModal extends React.Component {
             type="checkbox"
             id="customAnyOrder"
             name="customAnyOrder"
-            checked={this.props.customAnyOrder}
+            checked={customAnyOrder}
             onChange={this.handleInputChange}
           />{" "}
           Any Order
@@ -479,7 +541,7 @@ class DefineFeatureModal extends React.Component {
             type="checkbox"
             id="customFilterNums"
             name="customFilterNums"
-            checked={this.props.customFilterNums}
+            checked={customFilterNums}
             onChange={this.handleInputChange}
           />{" "}
           Filter Numbers
@@ -494,7 +556,7 @@ class DefineFeatureModal extends React.Component {
             type="checkbox"
             id="customFilterStops"
             name="customFilterStops"
-            checked={this.props.customFilterStops}
+            checked={customFilterStops}
             onChange={this.handleInputChange}
           />{" "}
           Filter Stops
@@ -509,7 +571,7 @@ class DefineFeatureModal extends React.Component {
             type="checkbox"
             id="customFilterPunct"
             name="customFilterPunct"
-            checked={this.props.customFilterPunct}
+            checked={customFilterPunct}
             onChange={this.handleInputChange}
           />{" "}
           Filter Punctuations
@@ -524,7 +586,7 @@ class DefineFeatureModal extends React.Component {
             type="checkbox"
             id="customLemmas"
             name="customLemmas"
-            checked={this.props.customLemmas}
+            checked={customLemmas}
             onChange={this.handleInputChange}
           />{" "}
           Lemmas
@@ -539,7 +601,7 @@ class DefineFeatureModal extends React.Component {
             type="checkbox"
             id="customLimitTermset"
             name="customLimitTermset"
-            checked={this.props.customLimitTermset}
+            checked={customLimitTermset}
             onChange={this.handleInputChange}
           />{" "}
           Limit to Termset
@@ -554,7 +616,7 @@ class DefineFeatureModal extends React.Component {
             type="checkbox"
             id="customSynonyms"
             name="customSynonyms"
-            checked={this.props.customSynonyms}
+            checked={customSynonyms}
             onChange={this.handleInputChange}
           />{" "}
           Include Synonyms
@@ -569,7 +631,7 @@ class DefineFeatureModal extends React.Component {
             type="checkbox"
             id="customDescendants"
             name="customDescendants"
-            checked={this.props.customDescendants}
+            checked={customDescendants}
             onChange={this.handleInputChange}
           />{" "}
           Include Descendants
@@ -584,7 +646,7 @@ class DefineFeatureModal extends React.Component {
             type="checkbox"
             id="customAncestors"
             name="customAncestors"
-            checked={this.props.customAncestors}
+            checked={customAncestors}
             onChange={this.handleInputChange}
           />{" "}
           Include Ancestors
@@ -599,7 +661,7 @@ class DefineFeatureModal extends React.Component {
             type="checkbox"
             id="customCaseSensitive"
             name="customCaseSensitive"
-            checked={this.props.customCaseSensitive}
+            checked={customCaseSensitive}
             onChange={this.handleInputChange}
           />{" "}
           Case Sensitive
@@ -662,64 +724,66 @@ class DefineFeatureModal extends React.Component {
 
     return (
       <div>
-        <Button color="primary" onClick={this.toggle}>
-          Add a Feature
-        </Button>
+        <CardHeader onClick={this.toggle}>
+          <img src={plus_icon} className="mr-2" /> Feature
+        </CardHeader>
         <Collapse isOpen={collapse}>
-          <Form>
-            <FormGroup>
-              <Label for="featureName">Feature Name</Label>
-              <Input
-                type="text"
-                id="featureName"
-                name="featureName"
-                value={featureName}
-                onChange={this.handleInputChange}
-              />
-            </FormGroup>
+          <CardBody>
+            <Form>
+              <FormGroup>
+                <Label for="featureName">Feature Name</Label>
+                <Input
+                  type="text"
+                  id="featureName"
+                  name="featureName"
+                  value={featureName}
+                  onChange={this.handleInputChange}
+                />
+              </FormGroup>
 
-            <FormGroup>
-              <Label for="featureAlgorithm">Select Algorithm</Label>
-              <Input
-                type="select"
-                id="featureAlgorithm"
-                name="featureAlgorithm"
-                value={featureAlgorithm}
-                onChange={this.handleInputChange}
+              <FormGroup>
+                <Label for="featureAlgorithm">Select Algorithm</Label>
+                <Input
+                  type="select"
+                  id="featureAlgorithm"
+                  name="featureAlgorithm"
+                  value={featureAlgorithm}
+                  onChange={this.handleInputChange}
+                >
+                  <option value="None" />
+                  <option value="MeasurementFinder">Measurement Finder</option>
+                  <option value="NamedEntityRecognition">
+                    Named Entity Recognition
+                  </option>
+                  <option value="ngram">Ngram</option>
+                  <option value="POSTagger">POS Tagger</option>
+                  <option value="ProviderAssertion">Provider Assertion</option>
+                  <option value="TermProximityTask">Term Proximity Task</option>
+                  <option value="TermFinder">Term Finder</option>
+                  <option value="ValueExtraction">Value Extraction</option>
+                  <option value="GleasonScoreTask">Gleason Score Task</option>
+                  <option value="RaceFinderTask">Race Finder Task</option>
+                  <option value="PFTFinder">PFT Finder</option>
+                  <option value="TextStats">Text Stats</option>
+                  <option value="TNMStager">TNM Stager</option>
+                  <option value="TransfusionNursingNotesParser">
+                    Transfusion Nursing Notes Parser
+                  </option>
+                </Input>
+              </FormGroup>
+
+              {this.renderInputsForAlgorithm()}
+
+              <Button
+                color="success"
+                type="submit"
+                id="submit"
+                onClick={this.handleSubmit}
               >
-                <option value="None" />
-                <option value="MeasurementFinder">Measurement Finder</option>
-                <option value="NamedEntityRecognition">
-                  Named Entity Recognition
-                </option>
-                <option value="ngram">Ngram</option>
-                <option value="POSTagger">POS Tagger</option>
-                <option value="ProviderAssertion">Provider Assertion</option>
-                <option value="TermProximityTask">Term Proximity Task</option>
-                <option value="TermFinder">Term Finder</option>
-                <option value="ValueExtraction">Value Extraction</option>
-                <option value="GleasonScoreTask">Gleason Score Task</option>
-                <option value="RaceFinderTask">Race Finder Task</option>
-                <option value="PFTFinder">PFT Finder</option>
-                <option value="TextStats">Text Stats</option>
-                <option value="TNMStager">TNM Stager</option>
-                <option value="TransfusionNursingNotesParser">
-                  Transfusion Nursing Notes Parser
-                </option>
-              </Input>
-            </FormGroup>
-
-            {this.renderInputsForAlgorithm()}
-
-            <Button
-              color="success"
-              type="submit"
-              id="submit"
-              onClick={this.handleSubmit}
-            >
-              Save changes
-            </Button>
-          </Form>
+                Save changes
+              </Button>
+            </Form>
+          </CardBody>
         </Collapse>
       </div>
     );

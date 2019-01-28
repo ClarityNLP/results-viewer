@@ -3,7 +3,7 @@ import axios from "axios";
 import _ from "lodash";
 import ReactJson from "react-json-view";
 import QueryBuilder from "./QueryBuilder";
-import { Button, Row, Col } from "reactstrap";
+import { Button, Row, Col, Container } from "reactstrap";
 
 const RunResponse = ({ data, ...props }) => {
   return (
@@ -106,54 +106,56 @@ class JobRunner extends Component {
     const { response_view, nlpql } = this.state;
 
     return (
-      <div className="JobRunner container-fluid">
-        <div className="row">
-          <div className="col-12">
-            <div className="NLPQLAreaHeader">
-              <span className="h4 SubHeader">NLPQL Runner</span>
-              {"  "}
-              <a
-                href="https://github.com/ClarityNLP/ClarityNLP/tree/master/nlpql"
-                target="_blank"
-                className="SampleLink"
-                rel="noopener noreferrer"
-              >
-                View Samples
-              </a>
-            </div>
-            <QueryBuilder
-              query={nlpql}
-              updateNLPQL={this.updateNLPQL}
-              response_view={response_view}
-              clear={this.clear}
-            />
-            {/* <Button
-                color="link"
-                onClick={() => this.handleButtonAction("nlpql_expander")}
-              >
-                Expand Terms
-              </Button>{" "} */}
-            <Row className="justify-content-end mt-4">
-              <Col md="2">
+      <Container className="JobRunner">
+        <Row className="NLPQLAreaHeader justify-content-end mt-4">
+          {/* <Col md="3">
+            <h4>NLPQL Runner</h4>
+            <Row>
+              <Col md="6">
                 <Button
-                  color="warning"
-                  onClick={() => this.handleButtonAction("nlpql_tester")}
+                  color="link"
+                  href="https://github.com/ClarityNLP/ClarityNLP/tree/master/nlpql"
+                  target="_blank"
+                  className="d-block"
                 >
-                  Test NLPQL
+                  View Samples
                 </Button>
               </Col>
-              <Col md="2">
+              <Col md="6">
                 <Button
-                  color="success"
-                  onClick={() => this.handleButtonAction("nlpql")}
+                  color="link"
+                  onClick={() => this.handleButtonAction("nlpql_expander")}
                 >
-                  Run NLPQL
+                  Expand Terms
                 </Button>
               </Col>
             </Row>
-          </div>
-        </div>
-      </div>
+          </Col> */}
+
+          <Col md="3">
+            <Button
+              color="warning"
+              onClick={() => this.handleButtonAction("nlpql_tester")}
+            >
+              Test NLPQL
+            </Button>
+          </Col>
+          <Col md="3">
+            <Button
+              color="success"
+              onClick={() => this.handleButtonAction("nlpql")}
+            >
+              Run NLPQL
+            </Button>
+          </Col>
+        </Row>
+        <QueryBuilder
+          query={nlpql}
+          updateNLPQL={this.updateNLPQL}
+          response_view={response_view}
+          clear={this.clear}
+        />
+      </Container>
     );
   }
 }

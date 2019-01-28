@@ -239,8 +239,10 @@ pre,
 #editor,
 #response {
   width: 100%;
-  height: 400px;
-  overflow: scroll;
+}
+
+#editor pre {
+  padding: 50px;
 }
 
 .modal-container {

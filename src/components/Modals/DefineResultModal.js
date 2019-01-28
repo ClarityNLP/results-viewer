@@ -3,86 +3,137 @@
 import React from "react";
 import {
   Button,
-  Modal,
-  ModalHeader,
-  ModalBody,
-  ModalFooter,
+  Collapse,
   Form,
   FormGroup,
   Label,
   Input,
   Row,
-  Col
+  Col,
+  CardHeader,
+  CardBody
 } from "reactstrap";
 import algorithmParameters from "./algorithms";
+import plus_icon from "../../assets/img/icon--plus.png";
 
 class DefineResultModal extends React.Component {
   constructor(props) {
     super(props);
+
+    this.toggle = this.toggle.bind(this);
+    this.handleInputChange = this.handleInputChange.bind(this);
+    this.handleFeatureInputChange = this.handleFeatureInputChange.bind(this);
+    this.handleSubmit = this.handleSubmit.bind(this);
+
     this.state = {
-      modal: false,
-      algorithm: ""
+      collapse: false,
+      algorithm: "",
+      name: "",
+      feature: "",
+      subField: "",
+      booleanOperator: "",
+      valueToCompare: ""
     };
   }
 
-  toggle = () => {
+  toggle() {
+    this.setState({ collapse: !this.state.collapse });
+  }
+
+  handleInputChange = event => {
+    const target = event.target;
+    const options = event.target.options;
+    let value = target.type === "checkbox" ? target.checked : target.value;
+    const name = target.name;
+
+    if (options) {
+      value = [];
+      for (let i = 0, l = options.length; i < l; i++) {
+        if (options[i].selected) {
+          value.push(options[i].value);
+        }
+      }
+
+      value = value.toString();
+    }
+
     this.setState({
-      modal: !this.state.modal
+      [name]: value
     });
   };
 
-  handleSubmit = event => {
-    event.preventDefault();
-    this.props.handleSubmit();
-    this.toggle();
-  };
-
-  handleInputChange = e => {
+  handleFeatureInputChange(event) {
     const { features } = this.props;
-    let target = e.target;
+
+    let target = event.target;
     let value = target.value;
 
     let algorithm = "";
+    let feature = "";
 
     for (let i = 0; i < features.length; i++) {
       if (features[i].name === value) {
         algorithm = features[i].algorithm;
+        feature = features[i].name;
       }
     }
 
     this.setState({
-      algorithm: algorithm
+      algorithm: algorithm,
+      feature: feature
     });
-    this.props.handleInputChange(e);
-  };
+  }
+
+  handleSubmit(event) {
+    event.preventDefault();
+
+    const {
+      name,
+      valueToCompare,
+      feature,
+      booleanOperator,
+      subField
+    } = this.state;
+
+    let text = "define final " + name + ":\n\twhere " + feature;
+
+    if (subField.trim() !== "") {
+      text += "." + subField;
+    }
+
+    text += " " + booleanOperator + " " + valueToCompare + ";\n\n";
+
+    this.props.updateNLPQL(text);
+    this.toggle();
+  }
 
   render() {
+    const {
+      collapse,
+      name,
+      feature,
+      subField,
+      booleanOperator,
+      valueToCompare,
+      algorithm
+    } = this.state;
+
     return (
-      <div className="modal-container">
-        <Button
-          color="primary"
-          onClick={this.toggle}
-          disabled={this.props.isDisabled}
-        >
-          {this.props.buttonLabel}
-        </Button>
-        <Modal
-          isOpen={this.state.modal}
-          toggle={this.toggle}
-          className={this.props.className}
-          id={this.props.id}
-        >
-          <ModalHeader toggle={this.toggle}>Define Result</ModalHeader>
-          <Form>
-            <ModalBody>
+      <div>
+        <CardHeader onClick={this.toggle}>
+          <img src={plus_icon} className="mr-2" /> Result
+        </CardHeader>
+        <Collapse isOpen={collapse}>
+          <CardBody>
+            <Form>
               <FormGroup>
-                <Label for="resultsName">Name</Label>
+                <Label for="name">Name</Label>
                 <Input
                   type="text"
-                  id="resultsName"
-                  name="resultsName"
-                  value={this.props.resultsName}
-                  onChange={this.props.handleInputChange}
+                  id="name"
+                  name="name"
+                  value={name}
+                  onChange={this.handleInputChange}
                 />
               </FormGroup>
 
@@ -92,10 +143,10 @@ class DefineResultModal extends React.Component {
                   <Col>
                     <Input
                       type="select"
-                      id="resultsFeature"
-                      name="resultsFeature"
-                      value={this.props.resultsFeature}
-                      onChange={this.handleInputChange}
+                      id="feature"
+                      name="feature"
+                      value={feature}
+                      onChange={this.handleFeatureInputChange}
                     >
                       <option value="" />
                       {this.props.features.map((value, index) => {
@@ -108,33 +159,32 @@ class DefineResultModal extends React.Component {
                     </Input>
                   </Col>
                   <Col>
-                    {this.state.algorithm !== "" ? (
+                    {algorithm !== "" ? (
                       <Input
                         type="select"
-                        id="resultsSubField"
-                        name="resultsSubField"
-                        value={this.props.resultsSubField}
-                        onChange={this.props.handleInputChange}
+                        id="subField"
+                        name="subField"
+                        value={subField}
+                        onChange={this.handleInputChange}
                       >
                         <option />
-                        {algorithmParameters[this.state.algorithm].map(
-                          (value, index) => {
-                            return (
-                              <option key={index} value={value}>
-                                {value}
-                              </option>
-                            );
-                          }
-                        )}
+                        {algorithmParameters[algorithm].map((value, index) => {
+                          return (
+                            <option key={index} value={value}>
+                              {value}
+                            </option>
+                          );
+                        })}
                       </Input>
                     ) : null}
                   </Col>
                   <Col>
                     <Input
                       type="select"
-                      id="resultsBooleanOperator"
-                      name="resultsBooleanOperator"
-                      onChange={this.props.handleInputChange}
+                      id="booleanOperator"
+                      name="booleanOperator"
+                      value={booleanOperator}
+                      onChange={this.handleInputChange}
                     >
                       <option />
                       <option value="or">OR</option>
@@ -150,26 +200,26 @@ class DefineResultModal extends React.Component {
                   <Col>
                     <Input
                       type="text"
-                      id="resultsLogic"
-                      name="resultsLogic"
-                      onChange={this.props.handleInputChange}
+                      id="valueToCompare"
+                      name="valueToCompare"
+                      value={valueToCompare}
+                      onChange={this.handleInputChange}
                     />
                   </Col>
                 </Row>
               </FormGroup>
-            </ModalBody>
-            <ModalFooter>
+
               <Button
-                color="primary"
+                color="success"
                 type="submit"
                 id="submit"
                 onClick={this.handleSubmit}
               >
                 Save changes
               </Button>
-            </ModalFooter>
-          </Form>
-        </Modal>
+            </Form>
+          </CardBody>
+        </Collapse>
       </div>
     );
   }

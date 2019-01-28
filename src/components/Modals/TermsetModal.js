@@ -1,7 +1,17 @@
 /* eslint react/no-multi-comp: 0, react/prop-types: 0 */
 
 import React from "react";
-import { Button, Collapse, Form, FormGroup, Label, Input } from "reactstrap";
+import {
+  Button,
+  Collapse,
+  Form,
+  FormGroup,
+  Label,
+  Input,
+  CardHeader,
+  CardBody
+} from "reactstrap";
+import plus_icon from "../../assets/img/icon--plus.png";
 
 class TermsetModal extends React.Component {
   constructor(props) {
@@ -128,82 +138,85 @@ class TermsetModal extends React.Component {
 
     return (
       <div>
-        <Button color="primary" onClick={this.toggle}>
-          Add Term Set
-        </Button>
+        <CardHeader onClick={this.toggle}>
+          <img src={plus_icon} className="mr-2" /> Term Set
+        </CardHeader>
         <Collapse isOpen={collapse}>
-          <Form>
-            <FormGroup>
-              <Label for="termsetName">Name</Label>
-              <Input
-                type="text"
-                id="termsetName"
-                name="termsetName"
-                value={termsetName}
-                onChange={this.handleInputChange}
-              />
-            </FormGroup>
-
-            <FormGroup>
-              <Label for="termsetTerms">Terms</Label>
-              <Input
-                type="text"
-                id="termsetTerms"
-                name="termsetTerms"
-                value={termsetTerms}
-                onChange={this.handleInputChange}
-                placeholder="Enter comma separated terms."
-              />
-            </FormGroup>
-
-            <FormGroup check>
-              <Label check>
+          <CardBody>
+            <Form>
+              <FormGroup>
+                <Label for="termsetName">Name</Label>
                 <Input
-                  type="checkbox"
-                  id="termsetSynonyms"
-                  name="termsetSynonyms"
-                  checked={termsetSynonyms}
+                  type="text"
+                  id="termsetName"
+                  name="termsetName"
+                  value={termsetName}
                   onChange={this.handleInputChange}
-                />{" "}
-                Synonyms
-              </Label>
-            </FormGroup>
+                />
+              </FormGroup>
 
-            <FormGroup check>
-              <Label check>
+              <FormGroup>
+                <Label for="termsetTerms">Terms</Label>
                 <Input
-                  type="checkbox"
-                  id="termsetPlurals"
-                  name="termsetPlurals"
-                  checked={termsetPlurals}
+                  type="text"
+                  id="termsetTerms"
+                  name="termsetTerms"
+                  value={termsetTerms}
                   onChange={this.handleInputChange}
-                />{" "}
-                Plurals
-              </Label>
-            </FormGroup>
+                  placeholder="Enter comma separated terms."
+                />
+              </FormGroup>
 
-            <FormGroup check>
-              <Label check>
-                <Input
-                  type="checkbox"
-                  id="termsetVerbInflections"
-                  name="termsetVerbInflections"
-                  checked={termsetVerbInflections}
-                  onChange={this.handleInputChange}
-                />{" "}
-                Verb Inflections
-              </Label>
-            </FormGroup>
+              <FormGroup check>
+                <Label check>
+                  <Input
+                    type="checkbox"
+                    id="termsetSynonyms"
+                    name="termsetSynonyms"
+                    checked={termsetSynonyms}
+                    onChange={this.handleInputChange}
+                  />{" "}
+                  Synonyms
+                </Label>
+              </FormGroup>
 
-            <Button
-              color="success"
-              type="submit"
-              id="submit"
-              onClick={this.handleSubmit}
-            >
-              Save changes
-            </Button>
-          </Form>
+              <FormGroup check>
+                <Label check>
+                  <Input
+                    type="checkbox"
+                    id="termsetPlurals"
+                    name="termsetPlurals"
+                    checked={termsetPlurals}
+                    onChange={this.handleInputChange}
+                  />{" "}
+                  Plurals
+                </Label>
+              </FormGroup>
+
+              <FormGroup check>
+                <Label check>
+                  <Input
+                    type="checkbox"
+                    id="termsetVerbInflections"
+                    name="termsetVerbInflections"
+                    checked={termsetVerbInflections}
+                    onChange={this.handleInputChange}
+                  />{" "}
+                  Verb Inflections
+                </Label>
+              </FormGroup>
+
+              <Button
+                color="success"
+                type="submit"
+                id="submit"
+                className="mt-2"
+                onClick={this.handleSubmit}
+              >
+                Save changes
+              </Button>
+            </Form>
+          </CardBody>
         </Collapse>
       </div>
     );

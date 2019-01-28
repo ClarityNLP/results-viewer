@@ -1,7 +1,17 @@
 /* eslint react/no-multi-comp: 0, react/prop-types: 0 */
 
 import React from "react";
-import { Button, Collapse, Form, FormGroup, Label, Input } from "reactstrap";
+import {
+  Button,
+  Collapse,
+  Form,
+  FormGroup,
+  Label,
+  Input,
+  CardHeader,
+  CardBody
+} from "reactstrap";
+import plus_icon from "../../assets/img/icon--plus.png";
 
 class LogicalContextModal extends React.Component {
   constructor(props) {
@@ -47,34 +57,36 @@ class LogicalContextModal extends React.Component {
 
     return (
       <div>
-        <Button color="primary" onClick={this.toggle}>
-          Set Logical Context
-        </Button>
+        <CardHeader onClick={this.toggle}>
+          <img src={plus_icon} className="mr-2" /> Logical Context
+        </CardHeader>
         <Collapse isOpen={collapse}>
-          <Form>
-            <FormGroup>
-              <Label for="logicalContext">Name</Label>
-              <Input
-                type="select"
-                id="logicalContext"
-                name="logicalContext"
-                value={logicalContext}
-                onChange={this.handleInputChange}
-              >
-                <option value="Patient">Patient</option>
-                <option value="Document">Document</option>
-              </Input>
-            </FormGroup>
+          <CardBody>
+            <Form>
+              <FormGroup>
+                <Label for="logicalContext">Name</Label>
+                <Input
+                  type="select"
+                  id="logicalContext"
+                  name="logicalContext"
+                  value={logicalContext}
+                  onChange={this.handleInputChange}
+                >
+                  <option value="Patient">Patient</option>
+                  <option value="Document">Document</option>
+                </Input>
+              </FormGroup>
 
-            <Button
-              color="success"
-              type="submit"
-              id="submit"
-              onClick={this.handleSubmit}
-            >
-              Save changes
-            </Button>
-          </Form>
+              <Button
+                color="success"
+                type="submit"
+                id="submit"
+                onClick={this.handleSubmit}
+              >
+                Save changes
+              </Button>
+            </Form>
+          </CardBody>
         </Collapse>
       </div>
     );
