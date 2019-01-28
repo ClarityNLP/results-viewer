@@ -1,78 +1,73 @@
 /* eslint react/no-multi-comp: 0, react/prop-types: 0 */
 
 import React from "react";
-import {
-  Button,
-  Modal,
-  ModalHeader,
-  ModalBody,
-  ModalFooter,
-  Form,
-  FormGroup,
-  Input
-} from "reactstrap";
+import { Button, Collapse, Form, FormGroup, Label, Input } from "reactstrap";
 
 class LimitModal extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {
-      modal: false
-    };
+
+    this.toggle = this.toggle.bind(this);
+    this.handleInputChange = this.handleInputChange.bind(this);
+    this.handleSubmit = this.handleSubmit.bind(this);
+
+    this.state = { limit: "", collapse: false };
   }
 
-  toggle = () => {
-    this.setState({
-      modal: !this.state.modal
-    });
-  };
+  toggle() {
+    this.setState({ collapse: !this.state.collapse });
+  }
 
-  handleSubmit = event => {
+  handleInputChange(event) {
+    const target = event.target;
+    let value = target.value;
+    const name = target.name;
+
+    this.setState({
+      [name]: value
+    });
+  }
+
+  handleSubmit(event) {
     event.preventDefault();
-    this.props.handleSubmit();
+
+    let { limit } = this.state;
+    let text = "limit " + limit + ";\n\n";
+
+    this.props.updateNLPQL(text);
     this.toggle();
-  };
+  }
 
   render() {
+    const { collapse, limit } = this.state;
+
     return (
-      <div className="modal-container">
-        <Button
-          color="primary"
-          onClick={this.toggle}
-          disabled={this.props.isDisabled}
-        >
-          {this.props.buttonLabel}
+      <div>
+        <Button color="primary" onClick={this.toggle}>
+          Set Query Limit
         </Button>
-        <Modal
-          isOpen={this.state.modal}
-          toggle={this.toggle}
-          className={this.props.className}
-          id={this.props.id}
-        >
-          <ModalHeader toggle={this.toggle}>Limit Results</ModalHeader>
+        <Collapse isOpen={collapse}>
           <Form>
-            <ModalBody>
-              <FormGroup>
-                <Input
-                  type="number"
-                  id="limit"
-                  name="limit"
-                  value={this.props.limit}
-                  onChange={this.props.handleInputChange}
-                />
-              </FormGroup>
-            </ModalBody>
-            <ModalFooter>
-              <Button
-                color="primary"
-                type="submit"
-                id="submit"
-                onClick={this.handleSubmit}
-              >
-                Save changes
-              </Button>
-            </ModalFooter>
+            <FormGroup>
+              <Label for="limit">Query Limit</Label>
+              <Input
+                type="number"
+                id="limit"
+                name="limit"
+                value={limit}
+                onChange={this.handleInputChange}
+              />
+            </FormGroup>
+            <Button
+              color="success"
+              type="submit"
+              id="submit"
+              onClick={this.handleSubmit}
+            >
+              Save changes
+            </Button>
           </Form>
-        </Modal>
+        </Collapse>
       </div>
     );
   }

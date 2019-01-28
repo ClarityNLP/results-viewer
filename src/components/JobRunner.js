@@ -1,9 +1,9 @@
 import React, { Component } from "react";
-import { Button } from "reactstrap";
 import axios from "axios";
 import _ from "lodash";
 import ReactJson from "react-json-view";
 import QueryBuilder from "./QueryBuilder";
+import { Button, Row, Col } from "reactstrap";
 
 const RunResponse = ({ data, ...props }) => {
   return (
@@ -43,8 +43,7 @@ class JobRunner extends Component {
     this.state = {
       dropdownOpen: false,
       nlpql: "",
-      test_response: {},
-      run_response: {}
+      response_view: <div />
     };
   }
 
@@ -54,15 +53,10 @@ class JobRunner extends Component {
     });
   }
 
-  updateNLPQL(evt) {
-    this.setState({
-      nlpql: evt.target.value
-    });
-  }
-
   clear() {
     this.setState({
-      nlpql: ""
+      nlpql: "",
+      response_view: <div />
     });
   }
 
@@ -75,51 +69,42 @@ class JobRunner extends Component {
     });
   }
 
+  updateNLPQL(query) {
+    this.setState({
+      nlpql: this.state.nlpql + query
+    });
+  }
+
   componentDidMount() {}
 
   handleButtonAction(action) {
-    let input = window.ace.edit("editor").getValue();
-
     let url = this.base_url + action;
+
     axios({
       method: "post",
       url: url,
-      data: input,
+      data: this.state.nlpql,
       headers: { "Content-Type": "text/plain" }
     }).then(response => {
-      console.log(response);
       if (action === "nlpql_expander") {
-        this.setState(
-          prevState => ({
-            nlpql: response.data
-          }),
-          () => {
-            window.ace.edit("editor").setValue(response.data);
-          }
-        );
-      } else if (action === "nlpql_tester") {
-        console.log(response.data);
         this.setState({
-          test_response: response.data,
-          run_response: {}
+          nlpql: response.data
+        });
+      } else if (action === "nlpql_tester") {
+        this.setState({
+          response_view: <RunResponse data={response.data} />
         });
       } else {
-        console.log(response.data);
         this.setState({
-          test_response: {},
-          run_response: response.data
+          response_view: <TestResponse data={response.data} />
         });
       }
     });
   }
 
   render() {
-    let response_view = <div />;
-    if (!_.isEmpty(this.state.test_response)) {
-      response_view = <TestResponse data={this.state.test_response} />;
-    } else if (!_.isEmpty(this.state.run_response)) {
-      response_view = <RunResponse data={this.state.run_response} />;
-    }
+    const { response_view, nlpql } = this.state;
+
     return (
       <div className="JobRunner container-fluid">
         <div className="row">
@@ -136,36 +121,38 @@ class JobRunner extends Component {
                 View Samples
               </a>
             </div>
-            <QueryBuilder />
-            <div>
-              <Button
-                color="info"
+            <QueryBuilder
+              query={nlpql}
+              updateNLPQL={this.updateNLPQL}
+              response_view={response_view}
+              clear={this.clear}
+            />
+            {/* <Button
+                color="link"
                 onClick={() => this.handleButtonAction("nlpql_expander")}
               >
                 Expand Terms
-              </Button>{" "}
-              <Button
-                color="warning"
-                onClick={() => this.handleButtonAction("nlpql_tester")}
-              >
-                Test NLPQL
-              </Button>{" "}
-              <span className="float-lg-right">
+              </Button>{" "} */}
+            <Row className="justify-content-end mt-4">
+              <Col md="2">
+                <Button
+                  color="warning"
+                  onClick={() => this.handleButtonAction("nlpql_tester")}
+                >
+                  Test NLPQL
+                </Button>
+              </Col>
+              <Col md="2">
                 <Button
                   color="success"
                   onClick={() => this.handleButtonAction("nlpql")}
                 >
                   Run NLPQL
                 </Button>
-              </span>
-            </div>
-          </div>
-          <div className="col-12">
-            <h5 className="SubHeader">Response</h5>
-            <div>{response_view}</div>
+              </Col>
+            </Row>
           </div>
         </div>
-        <div className="row">&nbsp;</div>
       </div>
     );
   }

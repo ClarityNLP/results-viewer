@@ -1,90 +1,95 @@
 /* eslint react/no-multi-comp: 0, react/prop-types: 0 */
 
 import React from "react";
-import {
-  Button,
-  Modal,
-  ModalHeader,
-  ModalBody,
-  ModalFooter,
-  Form,
-  FormGroup,
-  Label,
-  Input
-} from "reactstrap";
+import { Button, Collapse, Form, FormGroup, Label, Input } from "reactstrap";
 
 class PhenotypeModal extends React.Component {
   constructor(props) {
     super(props);
+
+    this.toggle = this.toggle.bind(this);
+    this.handleInputChange = this.handleInputChange.bind(this);
+    this.handleSubmit = this.handleSubmit.bind(this);
+
     this.state = {
-      modal: false
+      collapse: false,
+      phenotypeName: "",
+      phenotypeVersion: ""
     };
   }
 
   toggle = () => {
     this.setState({
-      modal: !this.state.modal
+      collapse: !this.state.collapse
     });
   };
 
+  handleInputChange(event) {
+    const target = event.target;
+    let value = target.value;
+    const name = target.name;
+
+    this.setState({
+      [name]: value
+    });
+  }
+
   handleSubmit = event => {
     event.preventDefault();
-    this.props.handleSubmit();
+
+    const { phenotypeName, phenotypeVersion } = this.state;
+    let text =
+      'phenotype "' +
+      phenotypeName +
+      '" version "' +
+      phenotypeVersion +
+      '";\n\n' +
+      'include ClarityCore version "1.0" called Clarity;\n\n';
+
+    this.props.updateNLPQL(text);
     this.toggle();
   };
 
   render() {
+    const { phenotypeName, phenotypeVersion, collapse } = this.state;
+
     return (
-      <div className="modal-container">
-        <Button
-          color="primary"
-          onClick={this.toggle}
-          disabled={this.props.isDisabled}
-        >
-          {this.props.buttonLabel}
+      <div>
+        <Button color="primary" onClick={this.toggle}>
+          Add Phenotype
         </Button>
-        <Modal
-          isOpen={this.state.modal}
-          toggle={this.toggle}
-          className={this.props.className}
-          id={this.props.id}
-        >
-          <ModalHeader toggle={this.toggle}>Phenotype</ModalHeader>
+        <Collapse isOpen={collapse}>
           <Form>
-            <ModalBody>
-              <FormGroup>
-                <Label for="phenotypeName">Phenotype Name</Label>
-                <Input
-                  type="text"
-                  id="phenotypeName"
-                  name="phenotypeName"
-                  value={this.props.phenotypeName}
-                  onChange={this.props.handleInputChange}
-                />
-              </FormGroup>
-              <FormGroup>
-                <Label for="phenotypeVersion">Phenotype Version</Label>
-                <Input
-                  type="text"
-                  id="phenotypeVersion"
-                  name="phenotypeVersion"
-                  value={this.props.phenotypeVersion}
-                  onChange={this.props.handleInputChange}
-                />
-              </FormGroup>
-            </ModalBody>
-            <ModalFooter>
-              <Button
-                color="primary"
-                type="submit"
-                id="submit"
-                onClick={this.handleSubmit}
-              >
-                Save changes
-              </Button>
-            </ModalFooter>
+            <FormGroup>
+              <Label for="phenotypeName">Phenotype Name</Label>
+              <Input
+                type="text"
+                id="phenotypeName"
+                name="phenotypeName"
+                value={phenotypeName}
+                onChange={this.handleInputChange}
+              />
+            </FormGroup>
+            <FormGroup>
+              <Label for="phenotypeVersion">Phenotype Version</Label>
+              <Input
+                type="text"
+                id="phenotypeVersion"
+                name="phenotypeVersion"
+                value={phenotypeVersion}
+                onChange={this.handleInputChange}
+              />
+            </FormGroup>
+            <Button
+              color="success"
+              type="submit"
+              id="submit"
+              onClick={this.handleSubmit}
+            >
+              Save changes
+            </Button>
           </Form>
-        </Modal>
+        </Collapse>
       </div>
     );
   }

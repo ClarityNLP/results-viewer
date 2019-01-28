@@ -1,83 +1,81 @@
 /* eslint react/no-multi-comp: 0, react/prop-types: 0 */
 
 import React from "react";
-import {
-  Button,
-  Modal,
-  ModalHeader,
-  ModalBody,
-  ModalFooter,
-  Form,
-  FormGroup,
-  Label,
-  Input
-} from "reactstrap";
+import { Button, Collapse, Form, FormGroup, Label, Input } from "reactstrap";
 
 class LogicalContextModal extends React.Component {
   constructor(props) {
     super(props);
+
+    this.toggle = this.toggle.bind(this);
+    this.handleInputChange = this.handleInputChange.bind(this);
+    this.handleSubmit = this.handleSubmit.bind(this);
+
     this.state = {
-      modal: false
+      collapse: false,
+      logicalContext: "Patient"
     };
   }
 
-  toggle = () => {
-    this.setState({
-      modal: !this.state.modal
-    });
-  };
+  toggle() {
+    this.setState({ collapse: !this.state.collapse });
+  }
 
-  handleSubmit = event => {
+  handleInputChange(event) {
+    const target = event.target;
+    let value = target.value;
+    const name = target.name;
+
+    this.setState({
+      [name]: value
+    });
+  }
+
+  handleSubmit(event) {
     event.preventDefault();
-    this.props.handleSubmit();
+
+    const { logicalContext } = this.state;
+
+    let text = "context " + logicalContext + ";\n\n";
+
+    this.props.updateNLPQL(text);
     this.toggle();
-  };
+  }
 
   render() {
+    const { collapse, logicalContext } = this.state;
+
     return (
-      <div className="modal-container">
-        <Button
-          color="primary"
-          onClick={this.toggle}
-          disabled={this.props.isDisabled}
-        >
-          {this.props.buttonLabel}
+      <div>
+        <Button color="primary" onClick={this.toggle}>
+          Set Logical Context
         </Button>
-        <Modal
-          isOpen={this.state.modal}
-          toggle={this.toggle}
-          className={this.props.className}
-          id={this.props.id}
-        >
-          <ModalHeader toggle={this.toggle}>Logical Context</ModalHeader>
+        <Collapse isOpen={collapse}>
           <Form>
-            <ModalBody>
-              <FormGroup>
-                <Label for="logicalContext">Name</Label>
-                <Input
-                  type="select"
-                  id="logicalContext"
-                  name="logicalContext"
-                  value={this.props.logicalContext}
-                  onChange={this.props.handleInputChange}
-                >
-                  <option value="Patient">Patient</option>
-                  <option value="Document">Document</option>
-                </Input>
-              </FormGroup>
-            </ModalBody>
-            <ModalFooter>
-              <Button
-                color="primary"
-                type="submit"
-                id="submit"
-                onClick={this.handleSubmit}
+            <FormGroup>
+              <Label for="logicalContext">Name</Label>
+              <Input
+                type="select"
+                id="logicalContext"
+                name="logicalContext"
+                value={logicalContext}
+                onChange={this.handleInputChange}
               >
-                Save changes
-              </Button>
-            </ModalFooter>
+                <option value="Patient">Patient</option>
+                <option value="Document">Document</option>
+              </Input>
+            </FormGroup>
+
+            <Button
+              color="success"
+              type="submit"
+              id="submit"
+              onClick={this.handleSubmit}
+            >
+              Save changes
+            </Button>
           </Form>
-        </Modal>
+        </Collapse>
       </div>
     );
   }

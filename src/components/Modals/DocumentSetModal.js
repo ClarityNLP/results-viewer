@@ -1,140 +1,250 @@
 /* eslint react/no-multi-comp: 0, react/prop-types: 0 */
 
 import React from "react";
-import {
-  Button,
-  Modal,
-  ModalHeader,
-  ModalBody,
-  ModalFooter,
-  Form,
-  FormGroup,
-  Label,
-  Input
-} from "reactstrap";
+import { Button, Collapse, Form, FormGroup, Label, Input } from "reactstrap";
 
 class DocumentSetModal extends React.Component {
   constructor(props) {
     super(props);
+
+    this.toggle = this.toggle.bind(this);
+    this.handleInputChange = this.handleInputChange.bind(this);
+    this.handleSubmit = this.handleSubmit.bind(this);
+
     this.state = {
-      modal: false
+      collapse: false,
+      name: "",
+      reportTypes: "",
+      reportTags: "",
+      sources: "",
+      filterQuery: "",
+      query: ""
     };
   }
 
   toggle = () => {
     this.setState({
-      modal: !this.state.modal
+      collapse: !this.state.collapse
+    });
+  };
+
+  buildArrayStringWithQuotes = s => {
+    let arr = s.split(",");
+
+    let tmp = "[";
+    for (let i = 0; i < arr.length; i++) {
+      tmp += '"' + arr[i].trim() + '"';
+      if (i < arr.length - 1) {
+        tmp += ", ";
+      }
+    }
+    tmp += "]";
+
+    return tmp;
+  };
+
+  handleInputChange = event => {
+    const target = event.target;
+    const options = event.target.options;
+    let value = target.type === "checkbox" ? target.checked : target.value;
+    const name = target.name;
+
+    if (options) {
+      value = [];
+      for (let i = 0, l = options.length; i < l; i++) {
+        if (options[i].selected) {
+          value.push(options[i].value);
+        }
+      }
+
+      value = value.toString();
+    }
+
+    this.setState({
+      [name]: value
     });
   };
 
   handleSubmit = event => {
     event.preventDefault();
-    this.props.handleSubmit();
-    this.toggle();
+
+    const {
+      name,
+      reportTypes,
+      reportTags,
+      sources,
+      filterQuery,
+      query
+    } = this.state;
+
+    let hasTypes = reportTypes.length > 0 && reportTypes[0].length > 0;
+    let hasTags = reportTags.length > 0 && reportTags[0].length > 0;
+    let hasSource = sources.length > 0 && sources[0].length > 0;
+    let hasFilterQuery = filterQuery.length > 0;
+    let hasQuery = query.length > 0;
+
+    let text = "documentset " + name + ":\n\t";
+
+    if (hasTypes && !hasTags && !hasSource && !hasFilterQuery && !hasQuery) {
+      text +=
+        "Clarity.createReportTypeList(" +
+        this.buildArrayStringWithQuotes(reportTypes) +
+        ");\n\n";
+    } else if (
+      hasTags &&
+      !hasTypes &&
+      !hasSource &&
+      !hasFilterQuery &&
+      !hasQuery
+    ) {
+      text +=
+        "Clarity.createReportTagList(" +
+        this.buildArrayStringWithQuotes(reportTags) +
+        ");\n\n";
+    } else {
+      let payloadKeys = [];
+
+      if (hasTypes) {
+        payloadKeys.push(
+          "report_types: " + this.buildArrayStringWithQuotes(reportTypes)
+        );
+      }
+
+      if (hasTags) {
+        payloadKeys.push(
+          "report_tags: " + this.buildArrayStringWithQuotes(reportTags)
+        );
+      }
+
+      if (hasSource) {
+        payloadKeys.push("source: " + this.buildArrayStringWithQuotes(sources));
+      }
+
+      if (hasFilterQuery) {
+        payloadKeys.push(
+          "filter_query: " + '"' + filterQuery.replace(/"/g, "'") + '"'
+        );
+      }
+
+      if (hasQuery) {
+        payloadKeys.push('query: "' + query.replace(/"/g, "'") + '"');
+      }
+
+      let payload = "{\n\t\t";
+      for (let i = 0; i < payloadKeys.length; i++) {
+        payload += payloadKeys[i];
+        if (i < payloadKeys.length - 1) {
+          payload += ",\n\t\t";
+        }
+      }
+      payload += "\n\t}";
+
+      text += "Clarity.createDocumentSet(" + payload + ");\n\n";
+    }
+
+    this.props.appendDocumentSet(name);
+    this.props.updateNLPQL(text);
   };
 
   render() {
-    return (
-      <div className="modal-container">
-        <Button
-          color="primary"
-          onClick={this.toggle}
-          disabled={this.props.isDisabled}
-        >
-          {this.props.buttonLabel}
-        </Button>
-        <Modal
-          isOpen={this.state.modal}
-          toggle={this.toggle}
-          className={this.props.className}
-          id={this.props.id}
-        >
-          <ModalHeader toggle={this.toggle}>Document Set</ModalHeader>
-          <Form>
-            <ModalBody>
-              <FormGroup>
-                <Label for="documentsetName">Name</Label>
-                <Input
-                  type="text"
-                  id="documentsetName"
-                  name="documentsetName"
-                  value={this.props.documentsetName}
-                  onChange={this.props.handleInputChange}
-                />
-              </FormGroup>
+    const {
+      collapse,
+      name,
+      sources,
+      query,
+      reportTypes,
+      reportTags,
+      filterQuery
+    } = this.state;
 
+    return (
+      <div>
+        <Button color="primary" onClick={this.toggle}>
+          Add Document Set
+        </Button>
+        <Collapse isOpen={collapse}>
+          <Form>
+            <FormGroup>
+              <Label for="name">Name</Label>
+              <Input
+                type="text"
+                id="name"
+                name="name"
+                value={name}
+                onChange={this.handleInputChange}
+              />
+            </FormGroup>
+
+            <FormGroup>
+              <Label for="sources">Data Source</Label>
+              <Input
+                type="text"
+                id="sources"
+                name="sources"
+                value={sources}
+                onChange={this.handleInputChange}
+                placeholder="Enter comma separated terms."
+              />
+            </FormGroup>
+
+            <FormGroup>
+              <Label for="query">Query</Label>
+              <Input
+                type="text"
+                id="query"
+                name="query"
+                value={query}
+                onChange={this.handleInputChange}
+              />
+            </FormGroup>
+
+            <div id="documentsetList">
               <FormGroup>
-                <Label for="documentsetSource">Data Source</Label>
+                <Label for="reportTypes">Report Types</Label>
                 <Input
                   type="text"
-                  id="documentsetSource"
-                  name="documentsetSource"
-                  value={this.props.documentsetSource}
-                  onChange={this.props.handleInputChange}
+                  id="reportTypes"
+                  name="reportTypes"
+                  value={reportTypes}
+                  onChange={this.handleInputChange}
                   placeholder="Enter comma separated terms."
                 />
               </FormGroup>
 
               <FormGroup>
-                <Label for="documentsetQuery">Query</Label>
+                <Label for="reportTags">Report Tags</Label>
                 <Input
                   type="text"
-                  id="documentsetQuery"
-                  name="documentsetQuery"
-                  value={this.props.documentsetQuery}
-                  onChange={this.props.handleInputChange}
+                  id="reportTags"
+                  name="reportTags"
+                  value={reportTags}
+                  onChange={this.handleInputChange}
+                  placeholder="Enter comma separated terms."
                 />
               </FormGroup>
 
-              <div id="documentsetList">
-                <FormGroup>
-                  <Label for="documentsetReportTypes">Report Types</Label>
-                  <Input
-                    type="text"
-                    id="documentsetReportTypes"
-                    name="documentsetReportTypes"
-                    value={this.props.documentsetReportTypes}
-                    onChange={this.props.handleInputChange}
-                    placeholder="Enter comma separated terms."
-                  />
-                </FormGroup>
+              <FormGroup>
+                <Label for="filterQuery">Filter Query</Label>
+                <Input
+                  type="text"
+                  id="filterQuery"
+                  name="filterQuery"
+                  value={filterQuery}
+                  onChange={this.handleInputChange}
+                />
+              </FormGroup>
+            </div>
 
-                <FormGroup>
-                  <Label for="documentsetReportTags">Report Tags</Label>
-                  <Input
-                    type="text"
-                    id="documentsetReportTags"
-                    name="documentsetReportTags"
-                    value={this.props.documentsetReportTags}
-                    onChange={this.props.handleInputChange}
-                    placeholder="Enter comma separated terms."
-                  />
-                </FormGroup>
-
-                <FormGroup>
-                  <Label for="documentsetFilterQuery">Filter Query</Label>
-                  <Input
-                    type="text"
-                    id="documentsetFilterQuery"
-                    name="documentsetFilterQuery"
-                    value={this.props.documentsetFilterQuery}
-                    onChange={this.props.handleInputChange}
-                  />
-                </FormGroup>
-              </div>
-            </ModalBody>
-            <ModalFooter>
-              <Button
-                color="primary"
-                type="submit"
-                id="submit"
-                onClick={this.handleSubmit}
-              >
-                Save changes
-              </Button>
-            </ModalFooter>
+            <Button
+              color="success"
+              type="submit"
+              id="submit"
+              onClick={this.handleSubmit}
+            >
+              Save changes
+            </Button>
           </Form>
-        </Modal>
+        </Collapse>
       </div>
     );
   }

@@ -1,91 +1,91 @@
 /* eslint react/no-multi-comp: 0, react/prop-types: 0 */
 
 import React from "react";
-import {
-  Button,
-  Modal,
-  ModalHeader,
-  ModalBody,
-  ModalFooter,
-  Form,
-  FormGroup,
-  Label,
-  Input
-} from "reactstrap";
+import { Button, Collapse, Form, FormGroup, Label, Input } from "reactstrap";
 
 class CohortModal extends React.Component {
   constructor(props) {
     super(props);
+
+    this.toggle = this.toggle.bind(this);
+    this.handleInputChange = this.handleInputChange.bind(this);
+    this.handleSubmit = this.handleSubmit.bind(this);
+
     this.state = {
-      modal: false
+      collapse: false,
+      name: "",
+      id: ""
     };
   }
 
-  toggle = () => {
-    this.setState({
-      modal: !this.state.modal
-    });
-  };
+  toggle() {
+    this.setState({ collapse: !this.state.collapse });
+  }
 
-  handleSubmit = event => {
+  handleInputChange(event) {
+    const target = event.target;
+    let value = target.value;
+    const name = target.name;
+
+    this.setState({
+      [name]: value
+    });
+  }
+
+  handleSubmit(event) {
     event.preventDefault();
-    this.props.handleSubmit();
+
+    const { name, id } = this.state;
+
+    let text = "cohort " + name + ": OHDSI.getCohort(" + id + ");\n\n";
+
+    this.props.appendCohort(name);
+    this.props.updateNLPQL(text);
     this.toggle();
-  };
+  }
 
   render() {
-    return (
-      <div className="modal-container">
-        <Button
-          color="primary"
-          onClick={this.toggle}
-          disabled={this.props.isDisabled}
-        >
-          {this.props.buttonLabel}
-        </Button>
-        <Modal
-          isOpen={this.state.modal}
-          toggle={this.toggle}
-          className={this.props.className}
-          id={this.props.id}
-        >
-          <ModalHeader toggle={this.toggle}>OHDSI Cohort</ModalHeader>
-          <Form>
-            <ModalBody>
-              <FormGroup>
-                <Label for="cohortName">Name</Label>
-                <Input
-                  type="text"
-                  id="cohortName"
-                  name="cohortName"
-                  value={this.props.cohortName}
-                  onChange={this.props.handleInputChange}
-                />
-              </FormGroup>
+    const { collapse, name, id } = this.state;
 
-              <FormGroup>
-                <Label for="cohortID">ID</Label>
-                <Input
-                  type="number"
-                  id="cohortID"
-                  name="cohortID"
-                  value={this.props.cohortID}
-                  onChange={this.props.handleInputChange}
-                />
-              </FormGroup>
-            </ModalBody>
-            <ModalFooter>
-              <Button
-                color="primary"
-                type="submit"
-                id="submit"
-                onClick={this.handleSubmit}
-              >
-                Save changes
-              </Button>
-            </ModalFooter>
+    return (
+      <div>
+        <Button color="primary" onClick={this.toggle}>
+          Add OHDSI Cohort
+        </Button>
+        <Collapse isOpen={collapse}>
+          <Form>
+            <FormGroup>
+              <Label for="name">Name</Label>
+              <Input
+                type="text"
+                id="name"
+                name="name"
+                value={name}
+                onChange={this.handleInputChange}
+              />
+            </FormGroup>
+
+            <FormGroup>
+              <Label for="id">ID</Label>
+              <Input
+                type="number"
+                id="id"
+                name="id"
+                value={id}
+                onChange={this.handleInputChange}
+              />
+            </FormGroup>
+
+            <Button
+              color="success"
+              type="submit"
+              id="submit"
+              onClick={this.handleSubmit}
+            >
+              Save changes
+            </Button>
           </Form>
-        </Modal>
+        </Collapse>
       </div>
     );
   }
