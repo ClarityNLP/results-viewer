@@ -9,15 +9,26 @@ import {
   Input,
   CardHeader,
   CardBody,
-  FormFeedback,
   Row,
-  Col
+  Col,
+  Badge
 } from "reactstrap";
 
 import SubmitButton from "../../UIkit/SubmitButton";
 
 import plus from "../../assets/icons/svg/plus.svg";
 import minus from "../../assets/icons/svg/minus.svg";
+
+const initialState = {
+  icon: plus,
+  collapse: false,
+  name: "",
+  reportTypes: "",
+  reportTags: "",
+  sources: "",
+  filterQuery: "",
+  query: ""
+};
 
 class DocumentSetModal extends React.Component {
   constructor(props) {
@@ -27,19 +38,7 @@ class DocumentSetModal extends React.Component {
     this.handleInputChange = this.handleInputChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
 
-    this.state = {
-      collapse: false,
-      name: "",
-      reportTypes: "",
-      reportTags: "",
-      sources: "",
-      filterQuery: "",
-      query: "",
-      validation: {
-        name: ""
-      },
-      icon: plus
-    };
+    this.state = initialState;
   }
 
   toggle = () => {
@@ -78,7 +77,6 @@ class DocumentSetModal extends React.Component {
     const options = event.target.options;
     let value = target.type === "checkbox" ? target.checked : target.value;
     const name = target.name;
-    let isValid = value.trim() !== "" ? "is-valid" : "is-invalid";
 
     if (options) {
       value = [];
@@ -92,34 +90,18 @@ class DocumentSetModal extends React.Component {
     }
 
     this.setState({
-      [name]: value,
-      validation: {
-        ...this.state.validation,
-        [name]: isValid
-      }
+      [name]: value
     });
   };
 
-  allInputsAreValid() {
-    const { validation } = this.state;
+  renderDocumentSetCount() {
+    let count = this.props.documentSets.length;
 
-    let allValidInputs = true;
-    let validCheck = {
-      name: ""
-    };
-
-    if (validation.name !== "is-valid") {
-      validCheck.name = "is-invalid";
-      allValidInputs = false;
-    } else {
-      validCheck.name = "is-valid";
+    if (count === 0) {
+      return null;
     }
 
-    this.setState({
-      validation: validCheck
-    });
-
-    return allValidInputs;
+    return <Badge color="dark">{count}</Badge>;
   }
 
   handleSubmit = event => {
@@ -133,11 +115,6 @@ class DocumentSetModal extends React.Component {
       filterQuery,
       query
     } = this.state;
-    let valid = this.allInputsAreValid();
-
-    if (!valid) {
-      return;
-    }
 
     let hasTypes = reportTypes.length > 0 && reportTypes[0].length > 0;
     let hasTags = reportTags.length > 0 && reportTags[0].length > 0;
@@ -207,6 +184,7 @@ class DocumentSetModal extends React.Component {
     this.props.appendDocumentSet(name);
     this.props.updateNLPQL(text);
     this.toggle();
+    this.setState(initialState);
   };
 
   render() {
@@ -218,7 +196,6 @@ class DocumentSetModal extends React.Component {
       reportTypes,
       reportTags,
       filterQuery,
-      validation,
       icon
     } = this.state;
 
@@ -226,7 +203,7 @@ class DocumentSetModal extends React.Component {
       <div>
         <CardHeader onClick={this.toggle}>
           <Row className="justify-content-between">
-            <Col>Document Set</Col>
+            <Col>Document Set {this.renderDocumentSetCount()}</Col>
             <Col className="text-right">
               <img height="16px" src={icon} alt />
             </Col>
@@ -242,10 +219,8 @@ class DocumentSetModal extends React.Component {
                   id="name"
                   name="name"
                   value={name}
-                  className={validation.name}
                   onChange={this.handleInputChange}
                 />
-                <FormFeedback>Please enter a name.</FormFeedback>
               </FormGroup>
 
               <FormGroup>
@@ -308,7 +283,10 @@ class DocumentSetModal extends React.Component {
                 </FormGroup>
               </div>
 
-              <SubmitButton handleSubmit={this.handleSubmit} />
+              <SubmitButton
+                handleSubmit={this.handleSubmit}
+                label="Add Document Set"
+              />
             </Form>
           </CardBody>
         </Collapse>

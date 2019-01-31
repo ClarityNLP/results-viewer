@@ -5,7 +5,8 @@ class SubmitButton extends React.Component {
   render() {
     return (
       <Row className="justify-content-end">
-        <Col md="4">
+        {this.props.children}
+        <Col md="5">
           <Button
             outline
             block
@@ -14,7 +15,7 @@ class SubmitButton extends React.Component {
             id="submit"
             onClick={this.props.handleSubmit}
           >
-            Save Changes
+            {this.props.label}
           </Button>
         </Col>
       </Row>

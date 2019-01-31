@@ -18,6 +18,13 @@ import SubmitButton from "../../UIkit/SubmitButton";
 import plus from "../../assets/icons/svg/plus.svg";
 import minus from "../../assets/icons/svg/minus.svg";
 
+const initialState = {
+  icon: plus,
+  collapse: false,
+  name: "",
+  id: ""
+};
+
 class CohortModal extends React.Component {
   constructor(props) {
     super(props);
@@ -26,12 +33,7 @@ class CohortModal extends React.Component {
     this.handleInputChange = this.handleInputChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
 
-    this.state = {
-      icon: plus,
-      collapse: false,
-      name: "",
-      id: ""
-    };
+    this.state = initialState;
   }
 
   toggle = () => {
@@ -70,6 +72,7 @@ class CohortModal extends React.Component {
     this.props.appendCohort(name);
     this.props.updateNLPQL(text);
     this.toggle();
+    this.setState(initialState);
   }
 
   render() {
@@ -79,7 +82,10 @@ class CohortModal extends React.Component {
       <div>
         <CardHeader onClick={this.toggle}>
           <Row className="justify-content-between">
-            <Col>OHDSI Cohort</Col>
+            <Col>
+              OHDSI Cohort
+              <span className="text-muted font-italic"> - Optional</span>
+            </Col>
             <Col className="text-right">
               <img height="16px" src={icon} alt />
             </Col>
@@ -110,7 +116,10 @@ class CohortModal extends React.Component {
                 />
               </FormGroup>
 
-              <SubmitButton handleSubmit={this.handleSubmit} />
+              <SubmitButton
+                handleSubmit={this.handleSubmit}
+                label="Add Cohort"
+              />
             </Form>
           </CardBody>
         </Collapse>

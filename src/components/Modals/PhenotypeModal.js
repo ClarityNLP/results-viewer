@@ -13,36 +13,26 @@ import {
 
 import SubmitButton from "../../UIkit/SubmitButton";
 
+const initialState = {
+  name: "",
+  version: "",
+  limit: "",
+  validation: {
+    name: "",
+    version: "",
+    limit: ""
+  }
+};
+
 class PhenotypeModal extends React.Component {
   constructor(props) {
     super(props);
 
-    this.toggle = this.toggle.bind(this);
     this.handleInputChange = this.handleInputChange.bind(this);
     this.allInputsAreValid = this.allInputsAreValid.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
 
-    this.state = {
-      modal: false,
-      name: "",
-      version: "",
-      limit: "",
-      validation: {
-        name: "",
-        version: "",
-        limit: ""
-      }
-    };
-  }
-
-  componentDidMount() {
-    this.toggle();
-  }
-
-  toggle() {
-    this.setState({
-      modal: !this.state.modal
-    });
+    this.state = initialState;
   }
 
   handleInputChange(event) {
@@ -114,32 +104,19 @@ class PhenotypeModal extends React.Component {
       'include ClarityCore version "1.0" called Clarity;\n\n';
 
     this.props.updateNLPQL(text);
-    this.toggle();
+    this.props.toggle();
+    this.setState(initialState);
   };
 
   render() {
-    const { name, version, modal, validation, limit } = this.state;
+    const { name, version, validation } = this.state;
 
     return (
       <div>
-        <Modal isOpen={modal} toggle={this.toggle}>
+        <Modal isOpen={this.props.modal} toggle={this.props.toggle}>
           <ModalBody className="p-3">
             <Form>
               <FormGroup>
-                <FormGroup>
-                  <Label for="limit">
-                    Query Limit{" "}
-                    <span className="text-muted font-italic">- Optional</span>
-                  </Label>
-                  <Input
-                    type="number"
-                    id="limit"
-                    name="limit"
-                    value={limit}
-                    onChange={this.handleInputChange}
-                  />
-                </FormGroup>
-
                 <Label for="name">Phenotype Name</Label>
                 <Input
                   type="text"
@@ -165,7 +142,10 @@ class PhenotypeModal extends React.Component {
                 <FormFeedback>Please enter a version.</FormFeedback>
               </FormGroup>
 
-              <SubmitButton handleSubmit={this.handleSubmit} />
+              <SubmitButton
+                handleSubmit={this.handleSubmit}
+                label="Build Query"
+              />
             </Form>
           </ModalBody>
         </Modal>

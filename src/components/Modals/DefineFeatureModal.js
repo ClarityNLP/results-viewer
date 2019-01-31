@@ -18,6 +18,37 @@ import SubmitButton from "../../UIkit/SubmitButton";
 import plus from "../../assets/icons/svg/plus.svg";
 import minus from "../../assets/icons/svg/minus.svg";
 
+const initialState = {
+  icon: plus,
+  collapse: false,
+  featureName: "",
+  featureAlgorithm: "None",
+  customTermset: "",
+  customTermset2: "",
+  customDocumentset: "",
+  customSections: "",
+  customEnumList: "",
+  customCohort: "",
+  customGroupby: "",
+  customNgramN: "",
+  customMinFreq: "",
+  customVocabulary: "",
+  customWordDist: "",
+  customMinVal: "",
+  customMaxVal: "",
+  customAnyOrder: false,
+  customFilterNums: false,
+  customFilterStops: false,
+  customFilterPunct: false,
+  customLemmas: false,
+  customLimitTermset: false,
+  customSynonyms: false,
+  customDescendants: false,
+  customAncestors: false,
+  customCaseSensitive: false,
+  isFinal: false
+};
+
 class DefineFeatureModal extends React.Component {
   constructor(props) {
     super(props);
@@ -26,35 +57,7 @@ class DefineFeatureModal extends React.Component {
     this.handleInputChange = this.handleInputChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
 
-    this.state = {
-      icon: plus,
-      collapse: false,
-      featureName: "",
-      featureAlgorithm: "None",
-      customTermset: "",
-      customTermset2: "",
-      customDocumentset: "",
-      customSections: "",
-      customEnumList: "",
-      customCohort: "",
-      customGroupby: "",
-      customNgramN: "",
-      customMinFreq: "",
-      customVocabulary: "",
-      customWordDist: "",
-      customMinVal: "",
-      customMaxVal: "",
-      customAnyOrder: false,
-      customFilterNums: false,
-      customFilterStops: false,
-      customFilterPunct: false,
-      customLemmas: false,
-      customLimitTermset: false,
-      customSynonyms: false,
-      customDescendants: false,
-      customAncestors: false,
-      customCaseSensitive: false
-    };
+    this.state = initialState;
   }
 
   toggle = () => {
@@ -153,7 +156,8 @@ class DefineFeatureModal extends React.Component {
       customSynonyms,
       customDescendants,
       customAncestors,
-      customCaseSensitive
+      customCaseSensitive,
+      isFinal
     } = this.state;
 
     let payload = [];
@@ -285,7 +289,11 @@ class DefineFeatureModal extends React.Component {
     }
 
     // Constructing custom task element
-    let text = "define " + featureName + ":\n\t";
+    let text = "define ";
+    if (isFinal) {
+      text += "final ";
+    }
+    text += featureName + ":\n\t";
     text += "Clarity." + featureAlgorithm + "({\n\t\t";
 
     for (let i = 0; i < payload.length; i++) {
@@ -303,6 +311,7 @@ class DefineFeatureModal extends React.Component {
 
     this.props.updateNLPQL(text);
     this.toggle();
+    this.setState(initialState);
   };
 
   renderInputsForAlgorithm = () => {
@@ -326,7 +335,8 @@ class DefineFeatureModal extends React.Component {
       customSynonyms,
       customDescendants,
       customAncestors,
-      customCaseSensitive
+      customCaseSensitive,
+      isFinal
     } = this.state;
     const { termSets, documentSets, cohorts } = this.props;
 
@@ -687,6 +697,21 @@ class DefineFeatureModal extends React.Component {
       </FormGroup>
     );
 
+    let isFinalDiv = (
+      <FormGroup check className="mt-3 mb-3">
+        <Label check size="lg">
+          <Input
+            type="checkbox"
+            id="isFinal"
+            name="isFinal"
+            checked={isFinal}
+            onChange={this.handleInputChange}
+          />
+          Include in final results
+        </Label>
+      </FormGroup>
+    );
+
     if (featureAlgorithm === "None") {
       return;
     }
@@ -733,6 +758,7 @@ class DefineFeatureModal extends React.Component {
         {featureAlgorithm === "ngram" ? customFilterPunctDiv : null}
         {featureAlgorithm === "ngram" ? customLemmasDiv : null}
         {featureAlgorithm === "ngram" ? customLimitTermsetDiv : null}
+        {featureAlgorithm !== "" ? isFinalDiv : null}
       </div>
     );
   };
@@ -797,7 +823,10 @@ class DefineFeatureModal extends React.Component {
 
               {this.renderInputsForAlgorithm()}
 
-              <SubmitButton handleSubmit={this.handleSubmit} />
+              <SubmitButton
+                handleSubmit={this.handleSubmit}
+                label="Add Feature"
+              />
             </Form>
           </CardBody>
         </Collapse>

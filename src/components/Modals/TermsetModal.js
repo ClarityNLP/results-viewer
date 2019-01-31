@@ -10,7 +10,8 @@ import {
   Label,
   Input,
   CardHeader,
-  CardBody
+  CardBody,
+  Badge
 } from "reactstrap";
 
 import SubmitButton from "../../UIkit/SubmitButton";
@@ -18,19 +19,21 @@ import SubmitButton from "../../UIkit/SubmitButton";
 import plus from "../../assets/icons/svg/plus.svg";
 import minus from "../../assets/icons/svg/minus.svg";
 
+const initialState = {
+  icon: plus,
+  termExpanderUrl: "http://18.220.133.76:5000/nlpql_expander",
+  collapse: false,
+  termsetName: "",
+  termsetTerms: "",
+  termsetSynonyms: false,
+  termsetPlurals: false,
+  termsetVerbInflections: false
+};
+
 class TermsetModal extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {
-      icon: plus,
-      termExpanderUrl: "http://18.220.133.76:5000/nlpql_expander",
-      collapse: false,
-      termsetName: "",
-      termsetTerms: "",
-      termsetSynonyms: false,
-      termsetPlurals: false,
-      termsetVerbInflections: false
-    };
+    this.state = initialState;
   }
 
   toggle = () => {
@@ -85,6 +88,16 @@ class TermsetModal extends React.Component {
       [name]: value
     });
   };
+
+  renderTermSetCount() {
+    let count = this.props.termSets.length;
+
+    if (count === 0) {
+      return null;
+    }
+
+    return <Badge color="dark">{count}</Badge>;
+  }
 
   handleSubmit = event => {
     event.preventDefault();
@@ -142,6 +155,7 @@ class TermsetModal extends React.Component {
 
     this.props.appendTermSet(termsetName);
     this.toggle();
+    this.setState(initialState);
   };
 
   render() {
@@ -159,7 +173,7 @@ class TermsetModal extends React.Component {
       <div>
         <CardHeader onClick={this.toggle}>
           <Row className="justify-content-between">
-            <Col>Term Set</Col>
+            <Col>Term Set {this.renderTermSetCount()}</Col>
             <Col className="text-right">
               <img height="16px" src={icon} alt />
             </Col>
@@ -230,7 +244,10 @@ class TermsetModal extends React.Component {
                 </Label>
               </FormGroup>
 
-              <SubmitButton handleSubmit={this.handleSubmit} />
+              <SubmitButton
+                handleSubmit={this.handleSubmit}
+                label="Add Term Set"
+              />
             </Form>
           </CardBody>
         </Collapse>

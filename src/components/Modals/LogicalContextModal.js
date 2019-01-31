@@ -18,6 +18,12 @@ import SubmitButton from "../../UIkit/SubmitButton";
 import plus from "../../assets/icons/svg/plus.svg";
 import minus from "../../assets/icons/svg/minus.svg";
 
+const initialState = {
+  icon: plus,
+  collapse: false,
+  logicalContext: "Patient"
+};
+
 class LogicalContextModal extends React.Component {
   constructor(props) {
     super(props);
@@ -26,11 +32,7 @@ class LogicalContextModal extends React.Component {
     this.handleInputChange = this.handleInputChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
 
-    this.state = {
-      icon: plus,
-      collapse: false,
-      logicalContext: "Patient"
-    };
+    this.state = initialState;
   }
 
   toggle = () => {
@@ -68,6 +70,7 @@ class LogicalContextModal extends React.Component {
 
     this.props.updateNLPQL(text);
     this.toggle();
+    this.setState(initialState);
   }
 
   render() {
@@ -87,7 +90,7 @@ class LogicalContextModal extends React.Component {
           <CardBody>
             <Form>
               <FormGroup>
-                <Label for="logicalContext">Name</Label>
+                <Label for="logicalContext">Logical Context</Label>
                 <Input
                   type="select"
                   id="logicalContext"
@@ -100,7 +103,10 @@ class LogicalContextModal extends React.Component {
                 </Input>
               </FormGroup>
 
-              <SubmitButton handleSubmit={this.handleSubmit} />
+              <SubmitButton
+                handleSubmit={this.handleSubmit}
+                label="Add Logical Context"
+              />
             </Form>
           </CardBody>
         </Collapse>

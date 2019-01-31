@@ -19,6 +19,18 @@ import algorithmParameters from "./algorithms";
 import plus from "../../assets/icons/svg/plus.svg";
 import minus from "../../assets/icons/svg/minus.svg";
 
+const initialState = {
+  icon: plus,
+  collapse: false,
+  algorithm: "",
+  name: "",
+  feature: "",
+  subField: "",
+  booleanOperator: "",
+  valueToCompare: "",
+  logicalContext: "Patient",
+  isFinal: false
+};
 class DefineResultModal extends React.Component {
   constructor(props) {
     super(props);
@@ -28,16 +40,7 @@ class DefineResultModal extends React.Component {
     this.handleFeatureInputChange = this.handleFeatureInputChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
 
-    this.state = {
-      icon: plus,
-      collapse: false,
-      algorithm: "",
-      name: "",
-      feature: "",
-      subField: "",
-      booleanOperator: "",
-      valueToCompare: ""
-    };
+    this.state = initialState;
   }
 
   toggle = () => {
@@ -135,19 +138,31 @@ class DefineResultModal extends React.Component {
       valueToCompare,
       feature,
       booleanOperator,
-      subField
+      subField,
+      isFinal
     } = this.state;
 
-    let text = "define final " + name + ":\n\twhere " + feature;
+    const { logicalContext } = this.state;
+
+    let text = "context " + logicalContext + ";\n\n define ";
+    if (isFinal) {
+      text += "final ";
+    }
+    text += name + ":\n\twhere " + feature;
 
     if (subField.trim() !== "") {
       text += "." + subField;
     }
 
-    text += " " + booleanOperator + " " + valueToCompare + ";\n\n";
+    if (booleanOperator.trim() !== "") {
+      text += " " + booleanOperator + " " + valueToCompare;
+    }
+
+    text += ";\n\n";
 
     this.props.updateNLPQL(text);
     this.toggle();
+    this.setState(initialState);
   }
 
   render() {
@@ -157,7 +172,9 @@ class DefineResultModal extends React.Component {
       name,
       feature,
       booleanOperator,
-      valueToCompare
+      valueToCompare,
+      logicalContext,
+      isFinal
     } = this.state;
 
     return (
@@ -173,6 +190,20 @@ class DefineResultModal extends React.Component {
         <Collapse isOpen={collapse}>
           <CardBody>
             <Form>
+              {/* <FormGroup>
+                <Label for="logicalContext">Logical Context</Label>
+                <Input
+                  type="select"
+                  id="logicalContext"
+                  name="logicalContext"
+                  value={logicalContext}
+                  onChange={this.handleInputChange}
+                >
+                  <option value="Patient">Patient</option>
+                  <option value="Document">Document</option>
+                </Input>
+              </FormGroup> */}
+
               <FormGroup>
                 <Label for="name">Name</Label>
                 <Input
@@ -237,7 +268,23 @@ class DefineResultModal extends React.Component {
                 </Row>
               </FormGroup>
 
-              <SubmitButton handleSubmit={this.handleSubmit} />
+              <FormGroup check className="mt-3 mb-3">
+                <Label check size="lg">
+                  <Input
+                    type="checkbox"
+                    id="isFinal"
+                    name="isFinal"
+                    checked={isFinal}
+                    onChange={this.handleInputChange}
+                  />
+                  Include in final results
+                </Label>
+              </FormGroup>
+
+              <SubmitButton
+                handleSubmit={this.handleSubmit}
+                label="Add Result"
+              />
             </Form>
           </CardBody>
         </Collapse>

@@ -2,16 +2,19 @@
 
 import React from "react";
 import {
-  Collapse,
+  Modal,
+  Button,
   Form,
   FormGroup,
   Label,
   Input,
-  CardHeader,
-  CardBody
+  ModalHeader,
+  ModalBody
 } from "reactstrap";
 
 import SubmitButton from "../../UIkit/SubmitButton";
+
+const initialState = { limit: "", modal: false };
 
 class LimitModal extends React.Component {
   constructor(props) {
@@ -20,13 +23,14 @@ class LimitModal extends React.Component {
     this.toggle = this.toggle.bind(this);
     this.handleInputChange = this.handleInputChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
+    this.noLimit = this.noLimit.bind(this);
 
-    this.state = { limit: "", collapse: false };
+    this.state = initialState;
   }
 
   toggle = () => {
     this.setState({
-      collapse: !this.state.collapse
+      modal: !this.state.modal
     });
   };
 
@@ -48,19 +52,28 @@ class LimitModal extends React.Component {
 
     this.props.updateNLPQL(text);
     this.toggle();
+    this.setState(initialState);
+    this.props.handleSubmit();
+  }
+
+  noLimit() {
+    this.toggle();
+    this.props.handleSubmit();
   }
 
   render() {
-    const { collapse, limit } = this.state;
+    const { modal, limit } = this.state;
 
     return (
       <div>
-        <CardHeader onClick={this.toggle}>Query Limit</CardHeader>
-        <Collapse isOpen={collapse} data-parent="#formAccordion">
-          <CardBody>
+        <Button block outline color="primary" size="lg" onClick={this.toggle}>
+          Run
+        </Button>
+        <Modal isOpen={modal} data-parent="#formAccordion">
+          <ModalBody>
             <Form>
               <FormGroup>
-                <Label for="limit">Limit</Label>
+                <Label for="limit">Limit Results</Label>
                 <Input
                   type="number"
                   id="limit"
@@ -70,10 +83,14 @@ class LimitModal extends React.Component {
                 />
               </FormGroup>
 
-              <SubmitButton handleSubmit={this.handleSubmit} />
+              <SubmitButton handleSubmit={this.handleSubmit} label="Run Query">
+                <Button outline color="link" onClick={this.noLimit}>
+                  No, thanks
+                </Button>
+              </SubmitButton>
             </Form>
-          </CardBody>
-        </Collapse>
+          </ModalBody>
+        </Modal>
       </div>
     );
   }

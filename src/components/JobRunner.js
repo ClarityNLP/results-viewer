@@ -4,6 +4,8 @@ import _ from "lodash";
 import ReactJson from "react-json-view";
 import QueryBuilder from "./QueryBuilder";
 import { Button, Row, Col, Container } from "reactstrap";
+import LimitModal from "./Modals/LimitModal";
+import PhenotypeModal from "./Modals/PhenotypeModal";
 
 const RunResponse = ({ data, ...props }) => {
   return (
@@ -35,17 +37,18 @@ class JobRunner extends Component {
     this.base_url = props.url;
 
     this.toggle = this.toggle.bind(this);
+    this.disablePhenotypeModal = this.disablePhenotypeModal.bind(this);
     this.getNLPQLSample = this.getNLPQLSample.bind(this);
     this.updateNLPQL = this.updateNLPQL.bind(this);
     this.overwriteNLPQL = this.overwriteNLPQL.bind(this);
     this.handleButtonAction = this.handleButtonAction.bind(this);
     this.clear = this.clear.bind(this);
-    this.startOver = this.startOver.bind(this);
 
     this.state = {
       dropdownOpen: false,
       nlpql: "",
-      response_view: <div />
+      response_view: <div />,
+      togglePhenotype: true
     };
   }
 
@@ -55,15 +58,18 @@ class JobRunner extends Component {
     });
   }
 
-  clear() {
+  disablePhenotypeModal() {
     this.setState({
-      nlpql: "",
-      response_view: <div />
+      togglePhenotype: false
     });
   }
 
-  startOver() {
-    this.clear();
+  clear() {
+    this.setState({
+      nlpql: "",
+      response_view: <div />,
+      togglePhenotype: true
+    });
   }
 
   getNLPQLSample(nlpql_filename) {
@@ -117,32 +123,25 @@ class JobRunner extends Component {
 
     return (
       <Container className="JobRunner">
-        <Row className="NLPQLAreaHeader justify-content-end mt-4">
-          {/* <Col md="3">
-            <h4>NLPQL Runner</h4>
-            <Row>
-              <Col md="6">
-                <Button
-                  color="link"
-                  href="https://github.com/ClarityNLP/ClarityNLP/tree/master/nlpql"
-                  target="_blank"
-                  className="d-block"
-                >
-                  View Samples
-                </Button>
-              </Col>
-              <Col md="6">
-                <Button
-                  color="link"
-                  onClick={() => this.handleButtonAction("nlpql_expander")}
-                >
-                  Expand Terms
-                </Button>
-              </Col>
-            </Row>
-          </Col> */}
+        <PhenotypeModal
+          updateNLPQL={this.updateNLPQL}
+          toggle={this.disablePhenotypeModal}
+          modal={this.state.togglePhenotype}
+        />
+        <Row className="NLPQLAreaHeader justify-content-between mt-4">
           <Col md="6">
             <Row>
+              <Col md="6">
+                <Button
+                  block
+                  outline
+                  color="secondary"
+                  size="lg"
+                  onClick={() => this.handleButtonAction("nlpql_expander")}
+                >
+                  Expand
+                </Button>
+              </Col>
               <Col md="6">
                 <Button
                   block
@@ -154,16 +153,15 @@ class JobRunner extends Component {
                   Test
                 </Button>
               </Col>
+            </Row>
+          </Col>
+          <Col md="6">
+            <Row className="justify-content-end">
               <Col md="6">
-                <Button
-                  block
-                  outline
-                  color="primary"
-                  size="lg"
-                  onClick={() => this.handleButtonAction("nlpql")}
-                >
-                  Run
-                </Button>
+                <LimitModal
+                  updateNLPQL={this.updateNLPQL}
+                  handleSubmit={() => this.handleButtonAction("nlpql")}
+                />
               </Col>
             </Row>
           </Col>
