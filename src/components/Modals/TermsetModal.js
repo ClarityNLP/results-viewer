@@ -2,7 +2,8 @@
 
 import React from "react";
 import {
-  Button,
+  Row,
+  Col,
   Collapse,
   Form,
   FormGroup,
@@ -11,12 +12,17 @@ import {
   CardHeader,
   CardBody
 } from "reactstrap";
-import plus_icon from "../../assets/img/icon--plus.png";
+
+import SubmitButton from "../../UIkit/SubmitButton";
+
+import plus from "../../assets/icons/svg/plus.svg";
+import minus from "../../assets/icons/svg/minus.svg";
 
 class TermsetModal extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      icon: plus,
       termExpanderUrl: "http://18.220.133.76:5000/nlpql_expander",
       collapse: false,
       termsetName: "",
@@ -28,7 +34,19 @@ class TermsetModal extends React.Component {
   }
 
   toggle = () => {
-    this.setState({ collapse: !this.state.collapse });
+    const { icon } = this.state;
+    let tmp = null;
+
+    if (icon === plus) {
+      tmp = minus;
+    } else {
+      tmp = plus;
+    }
+
+    this.setState({
+      collapse: !this.state.collapse,
+      icon: tmp
+    });
   };
 
   buildArrayStringWithQuotes = s => {
@@ -128,6 +146,7 @@ class TermsetModal extends React.Component {
 
   render() {
     const {
+      icon,
       collapse,
       termsetName,
       termsetTerms,
@@ -139,7 +158,12 @@ class TermsetModal extends React.Component {
     return (
       <div>
         <CardHeader onClick={this.toggle}>
-          <img src={plus_icon} className="mr-2" /> Term Set
+          <Row className="justify-content-between">
+            <Col>Term Set</Col>
+            <Col className="text-right">
+              <img height="16px" src={icon} alt />
+            </Col>
+          </Row>
         </CardHeader>
         <Collapse isOpen={collapse}>
           <CardBody>
@@ -206,15 +230,7 @@ class TermsetModal extends React.Component {
                 </Label>
               </FormGroup>
 
-              <Button
-                color="success"
-                type="submit"
-                id="submit"
-                className="mt-2"
-                onClick={this.handleSubmit}
-              >
-                Save changes
-              </Button>
+              <SubmitButton handleSubmit={this.handleSubmit} />
             </Form>
           </CardBody>
         </Collapse>

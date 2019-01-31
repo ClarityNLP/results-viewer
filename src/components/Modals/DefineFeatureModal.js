@@ -2,7 +2,8 @@
 
 import React from "react";
 import {
-  Button,
+  Row,
+  Col,
   Collapse,
   Form,
   FormGroup,
@@ -11,7 +12,11 @@ import {
   CardHeader,
   CardBody
 } from "reactstrap";
-import plus_icon from "../../assets/img/icon--plus.png";
+
+import SubmitButton from "../../UIkit/SubmitButton";
+
+import plus from "../../assets/icons/svg/plus.svg";
+import minus from "../../assets/icons/svg/minus.svg";
 
 class DefineFeatureModal extends React.Component {
   constructor(props) {
@@ -22,6 +27,7 @@ class DefineFeatureModal extends React.Component {
     this.handleSubmit = this.handleSubmit.bind(this);
 
     this.state = {
+      icon: plus,
       collapse: false,
       featureName: "",
       featureAlgorithm: "None",
@@ -51,9 +57,21 @@ class DefineFeatureModal extends React.Component {
     };
   }
 
-  toggle() {
-    this.setState({ collapse: !this.state.collapse });
-  }
+  toggle = () => {
+    const { icon } = this.state;
+    let tmp = null;
+
+    if (icon === plus) {
+      tmp = minus;
+    } else {
+      tmp = plus;
+    }
+
+    this.setState({
+      collapse: !this.state.collapse,
+      icon: tmp
+    });
+  };
 
   handleInputChange = event => {
     const target = event.target;
@@ -720,12 +738,17 @@ class DefineFeatureModal extends React.Component {
   };
 
   render() {
-    const { collapse, featureName, featureAlgorithm } = this.state;
+    const { icon, collapse, featureName, featureAlgorithm } = this.state;
 
     return (
       <div>
         <CardHeader onClick={this.toggle}>
-          <img src={plus_icon} className="mr-2" /> Feature
+          <Row className="justify-content-between">
+            <Col>Feature</Col>
+            <Col className="text-right">
+              <img height="16px" src={icon} alt />
+            </Col>
+          </Row>
         </CardHeader>
         <Collapse isOpen={collapse}>
           <CardBody>
@@ -774,14 +797,7 @@ class DefineFeatureModal extends React.Component {
 
               {this.renderInputsForAlgorithm()}
 
-              <Button
-                color="success"
-                type="submit"
-                id="submit"
-                onClick={this.handleSubmit}
-              >
-                Save changes
-              </Button>
+              <SubmitButton handleSubmit={this.handleSubmit} />
             </Form>
           </CardBody>
         </Collapse>

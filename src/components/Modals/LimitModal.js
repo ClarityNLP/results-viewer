@@ -2,18 +2,16 @@
 
 import React from "react";
 import {
-  Button,
   Collapse,
   Form,
   FormGroup,
   Label,
   Input,
   CardHeader,
-  CardBody,
-  Row,
-  Col
+  CardBody
 } from "reactstrap";
-import plus_icon from "../../assets/img/icon--plus.png";
+
+import SubmitButton from "../../UIkit/SubmitButton";
 
 class LimitModal extends React.Component {
   constructor(props) {
@@ -26,9 +24,11 @@ class LimitModal extends React.Component {
     this.state = { limit: "", collapse: false };
   }
 
-  toggle() {
-    this.setState({ collapse: !this.state.collapse });
-  }
+  toggle = () => {
+    this.setState({
+      collapse: !this.state.collapse
+    });
+  };
 
   handleInputChange(event) {
     const target = event.target;
@@ -55,9 +55,7 @@ class LimitModal extends React.Component {
 
     return (
       <div>
-        <CardHeader onClick={this.toggle}>
-          <img src={plus_icon} className="mr-2" /> Query Limit
-        </CardHeader>
+        <CardHeader onClick={this.toggle}>Query Limit</CardHeader>
         <Collapse isOpen={collapse} data-parent="#formAccordion">
           <CardBody>
             <Form>
@@ -72,19 +70,7 @@ class LimitModal extends React.Component {
                 />
               </FormGroup>
 
-              <Row className="justify-content-end">
-                <Col md="4">
-                  <Button
-                    color="success"
-                    type="submit"
-                    id="submit"
-                    size="lg"
-                    onClick={this.handleSubmit}
-                  >
-                    Save changes
-                  </Button>
-                </Col>
-              </Row>
+              <SubmitButton handleSubmit={this.handleSubmit} />
             </Form>
           </CardBody>
         </Collapse>

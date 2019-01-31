@@ -2,17 +2,16 @@
 
 import React from "react";
 import {
-  Button,
-  Collapse,
   Form,
   FormGroup,
   Label,
   Input,
   FormFeedback,
-  CardHeader,
-  CardBody
+  Modal,
+  ModalBody
 } from "reactstrap";
-import plus_icon from "../../assets/img/icon--plus.png";
+
+import SubmitButton from "../../UIkit/SubmitButton";
 
 class PhenotypeModal extends React.Component {
   constructor(props) {
@@ -24,21 +23,27 @@ class PhenotypeModal extends React.Component {
     this.handleSubmit = this.handleSubmit.bind(this);
 
     this.state = {
-      collapse: false,
+      modal: false,
       name: "",
       version: "",
+      limit: "",
       validation: {
         name: "",
-        version: ""
+        version: "",
+        limit: ""
       }
     };
   }
 
-  toggle = () => {
+  componentDidMount() {
+    this.toggle();
+  }
+
+  toggle() {
     this.setState({
-      collapse: !this.state.collapse
+      modal: !this.state.modal
     });
-  };
+  }
 
   handleInputChange(event) {
     const target = event.target;
@@ -88,14 +93,19 @@ class PhenotypeModal extends React.Component {
   handleSubmit = event => {
     event.preventDefault();
 
-    const { name, version } = this.state;
+    const { name, version, limit } = this.state;
     let valid = this.allInputsAreValid();
+    let text = "";
 
     if (!valid) {
       return;
     }
 
-    let text =
+    if (limit) {
+      text += "limit " + limit + ";\n\n";
+    }
+
+    text +=
       'phenotype "' +
       name +
       '" version "' +
@@ -108,18 +118,29 @@ class PhenotypeModal extends React.Component {
   };
 
   render() {
-    const { name, version, collapse, validation } = this.state;
+    const { name, version, modal, validation, limit } = this.state;
 
     return (
       <div>
-        <CardHeader onClick={this.toggle}>
-          <img src={plus_icon} className="mr-2" /> Phenotype
-        </CardHeader>
-        <Collapse isOpen={collapse} data-parent="#formAccordion">
-          <CardBody>
+        <Modal isOpen={modal} toggle={this.toggle}>
+          <ModalBody className="p-3">
             <Form>
               <FormGroup>
-                <Label for="name">Name</Label>
+                <FormGroup>
+                  <Label for="limit">
+                    Query Limit{" "}
+                    <span className="text-muted font-italic">- Optional</span>
+                  </Label>
+                  <Input
+                    type="number"
+                    id="limit"
+                    name="limit"
+                    value={limit}
+                    onChange={this.handleInputChange}
+                  />
+                </FormGroup>
+
+                <Label for="name">Phenotype Name</Label>
                 <Input
                   type="text"
                   id="name"
@@ -132,7 +153,7 @@ class PhenotypeModal extends React.Component {
               </FormGroup>
 
               <FormGroup>
-                <Label for="version">Version</Label>
+                <Label for="version">Phenotype Version</Label>
                 <Input
                   type="text"
                   id="version"
@@ -143,17 +164,11 @@ class PhenotypeModal extends React.Component {
                 />
                 <FormFeedback>Please enter a version.</FormFeedback>
               </FormGroup>
-              <Button
-                color="success"
-                type="submit"
-                id="submit"
-                onClick={this.handleSubmit}
-              >
-                Save changes
-              </Button>
+
+              <SubmitButton handleSubmit={this.handleSubmit} />
             </Form>
-          </CardBody>
-        </Collapse>
+          </ModalBody>
+        </Modal>
       </div>
     );
   }

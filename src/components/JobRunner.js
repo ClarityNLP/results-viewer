@@ -37,8 +37,10 @@ class JobRunner extends Component {
     this.toggle = this.toggle.bind(this);
     this.getNLPQLSample = this.getNLPQLSample.bind(this);
     this.updateNLPQL = this.updateNLPQL.bind(this);
+    this.overwriteNLPQL = this.overwriteNLPQL.bind(this);
     this.handleButtonAction = this.handleButtonAction.bind(this);
     this.clear = this.clear.bind(this);
+    this.startOver = this.startOver.bind(this);
 
     this.state = {
       dropdownOpen: false,
@@ -60,6 +62,10 @@ class JobRunner extends Component {
     });
   }
 
+  startOver() {
+    this.clear();
+  }
+
   getNLPQLSample(nlpql_filename) {
     let url = this.base_url + "nlpql_text/" + nlpql_filename;
     axios.get(url).then(response => {
@@ -75,7 +81,11 @@ class JobRunner extends Component {
     });
   }
 
-  componentDidMount() {}
+  overwriteNLPQL(query) {
+    this.setState({
+      nlpql: query
+    });
+  }
 
   handleButtonAction(action) {
     let url = this.base_url + action;
@@ -131,27 +141,37 @@ class JobRunner extends Component {
               </Col>
             </Row>
           </Col> */}
-
-          <Col md="3">
-            <Button
-              color="warning"
-              onClick={() => this.handleButtonAction("nlpql_tester")}
-            >
-              Test NLPQL
-            </Button>
-          </Col>
-          <Col md="3">
-            <Button
-              color="success"
-              onClick={() => this.handleButtonAction("nlpql")}
-            >
-              Run NLPQL
-            </Button>
+          <Col md="6">
+            <Row>
+              <Col md="6">
+                <Button
+                  block
+                  outline
+                  color="secondary"
+                  size="lg"
+                  onClick={() => this.handleButtonAction("nlpql_tester")}
+                >
+                  Test
+                </Button>
+              </Col>
+              <Col md="6">
+                <Button
+                  block
+                  outline
+                  color="primary"
+                  size="lg"
+                  onClick={() => this.handleButtonAction("nlpql")}
+                >
+                  Run
+                </Button>
+              </Col>
+            </Row>
           </Col>
         </Row>
         <QueryBuilder
           query={nlpql}
           updateNLPQL={this.updateNLPQL}
+          overwriteNLPQL={this.overwriteNLPQL}
           response_view={response_view}
           clear={this.clear}
         />

@@ -2,16 +2,22 @@
 
 import React from "react";
 import {
-  Button,
   Collapse,
   Form,
   FormGroup,
   Label,
   Input,
   CardHeader,
-  CardBody
+  CardBody,
+  FormFeedback,
+  Row,
+  Col
 } from "reactstrap";
-import plus_icon from "../../assets/img/icon--plus.png";
+
+import SubmitButton from "../../UIkit/SubmitButton";
+
+import plus from "../../assets/icons/svg/plus.svg";
+import minus from "../../assets/icons/svg/minus.svg";
 
 class DocumentSetModal extends React.Component {
   constructor(props) {
@@ -28,13 +34,27 @@ class DocumentSetModal extends React.Component {
       reportTags: "",
       sources: "",
       filterQuery: "",
-      query: ""
+      query: "",
+      validation: {
+        name: ""
+      },
+      icon: plus
     };
   }
 
   toggle = () => {
+    const { icon } = this.state;
+    let tmp = null;
+
+    if (icon === plus) {
+      tmp = minus;
+    } else {
+      tmp = plus;
+    }
+
     this.setState({
-      collapse: !this.state.collapse
+      collapse: !this.state.collapse,
+      icon: tmp
     });
   };
 
@@ -58,6 +78,7 @@ class DocumentSetModal extends React.Component {
     const options = event.target.options;
     let value = target.type === "checkbox" ? target.checked : target.value;
     const name = target.name;
+    let isValid = value.trim() !== "" ? "is-valid" : "is-invalid";
 
     if (options) {
       value = [];
@@ -71,9 +92,35 @@ class DocumentSetModal extends React.Component {
     }
 
     this.setState({
-      [name]: value
+      [name]: value,
+      validation: {
+        ...this.state.validation,
+        [name]: isValid
+      }
     });
   };
+
+  allInputsAreValid() {
+    const { validation } = this.state;
+
+    let allValidInputs = true;
+    let validCheck = {
+      name: ""
+    };
+
+    if (validation.name !== "is-valid") {
+      validCheck.name = "is-invalid";
+      allValidInputs = false;
+    } else {
+      validCheck.name = "is-valid";
+    }
+
+    this.setState({
+      validation: validCheck
+    });
+
+    return allValidInputs;
+  }
 
   handleSubmit = event => {
     event.preventDefault();
@@ -86,6 +133,11 @@ class DocumentSetModal extends React.Component {
       filterQuery,
       query
     } = this.state;
+    let valid = this.allInputsAreValid();
+
+    if (!valid) {
+      return;
+    }
 
     let hasTypes = reportTypes.length > 0 && reportTypes[0].length > 0;
     let hasTags = reportTags.length > 0 && reportTags[0].length > 0;
@@ -165,13 +217,20 @@ class DocumentSetModal extends React.Component {
       query,
       reportTypes,
       reportTags,
-      filterQuery
+      filterQuery,
+      validation,
+      icon
     } = this.state;
 
     return (
       <div>
         <CardHeader onClick={this.toggle}>
-          <img src={plus_icon} className="mr-2" /> Document Set
+          <Row className="justify-content-between">
+            <Col>Document Set</Col>
+            <Col className="text-right">
+              <img height="16px" src={icon} alt />
+            </Col>
+          </Row>
         </CardHeader>
         <Collapse isOpen={collapse}>
           <CardBody>
@@ -183,8 +242,10 @@ class DocumentSetModal extends React.Component {
                   id="name"
                   name="name"
                   value={name}
+                  className={validation.name}
                   onChange={this.handleInputChange}
                 />
+                <FormFeedback>Please enter a name.</FormFeedback>
               </FormGroup>
 
               <FormGroup>
@@ -247,14 +308,7 @@ class DocumentSetModal extends React.Component {
                 </FormGroup>
               </div>
 
-              <Button
-                color="success"
-                type="submit"
-                id="submit"
-                onClick={this.handleSubmit}
-              >
-                Save changes
-              </Button>
+              <SubmitButton handleSubmit={this.handleSubmit} />
             </Form>
           </CardBody>
         </Collapse>

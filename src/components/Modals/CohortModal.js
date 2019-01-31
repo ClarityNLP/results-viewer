@@ -2,7 +2,8 @@
 
 import React from "react";
 import {
-  Button,
+  Row,
+  Col,
   Collapse,
   Form,
   FormGroup,
@@ -11,7 +12,11 @@ import {
   CardHeader,
   CardBody
 } from "reactstrap";
-import plus_icon from "../../assets/img/icon--plus.png";
+
+import SubmitButton from "../../UIkit/SubmitButton";
+
+import plus from "../../assets/icons/svg/plus.svg";
+import minus from "../../assets/icons/svg/minus.svg";
 
 class CohortModal extends React.Component {
   constructor(props) {
@@ -22,15 +27,28 @@ class CohortModal extends React.Component {
     this.handleSubmit = this.handleSubmit.bind(this);
 
     this.state = {
+      icon: plus,
       collapse: false,
       name: "",
       id: ""
     };
   }
 
-  toggle() {
-    this.setState({ collapse: !this.state.collapse });
-  }
+  toggle = () => {
+    const { icon } = this.state;
+    let tmp = null;
+
+    if (icon === plus) {
+      tmp = minus;
+    } else {
+      tmp = plus;
+    }
+
+    this.setState({
+      collapse: !this.state.collapse,
+      icon: tmp
+    });
+  };
 
   handleInputChange(event) {
     const target = event.target;
@@ -55,12 +73,17 @@ class CohortModal extends React.Component {
   }
 
   render() {
-    const { collapse, name, id } = this.state;
+    const { icon, collapse, name, id } = this.state;
 
     return (
       <div>
         <CardHeader onClick={this.toggle}>
-          <img src={plus_icon} className="mr-2" /> OHDSI Cohort
+          <Row className="justify-content-between">
+            <Col>OHDSI Cohort</Col>
+            <Col className="text-right">
+              <img height="16px" src={icon} alt />
+            </Col>
+          </Row>
         </CardHeader>
         <Collapse isOpen={collapse}>
           <CardBody>
@@ -87,14 +110,7 @@ class CohortModal extends React.Component {
                 />
               </FormGroup>
 
-              <Button
-                color="success"
-                type="submit"
-                id="submit"
-                onClick={this.handleSubmit}
-              >
-                Save changes
-              </Button>
+              <SubmitButton handleSubmit={this.handleSubmit} />
             </Form>
           </CardBody>
         </Collapse>

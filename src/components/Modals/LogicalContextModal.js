@@ -2,7 +2,8 @@
 
 import React from "react";
 import {
-  Button,
+  Row,
+  Col,
   Collapse,
   Form,
   FormGroup,
@@ -11,7 +12,11 @@ import {
   CardHeader,
   CardBody
 } from "reactstrap";
-import plus_icon from "../../assets/img/icon--plus.png";
+
+import SubmitButton from "../../UIkit/SubmitButton";
+
+import plus from "../../assets/icons/svg/plus.svg";
+import minus from "../../assets/icons/svg/minus.svg";
 
 class LogicalContextModal extends React.Component {
   constructor(props) {
@@ -22,14 +27,27 @@ class LogicalContextModal extends React.Component {
     this.handleSubmit = this.handleSubmit.bind(this);
 
     this.state = {
+      icon: plus,
       collapse: false,
       logicalContext: "Patient"
     };
   }
 
-  toggle() {
-    this.setState({ collapse: !this.state.collapse });
-  }
+  toggle = () => {
+    const { icon } = this.state;
+    let tmp = null;
+
+    if (icon === plus) {
+      tmp = minus;
+    } else {
+      tmp = plus;
+    }
+
+    this.setState({
+      collapse: !this.state.collapse,
+      icon: tmp
+    });
+  };
 
   handleInputChange(event) {
     const target = event.target;
@@ -53,12 +71,17 @@ class LogicalContextModal extends React.Component {
   }
 
   render() {
-    const { collapse, logicalContext } = this.state;
+    const { icon, collapse, logicalContext } = this.state;
 
     return (
       <div>
         <CardHeader onClick={this.toggle}>
-          <img src={plus_icon} className="mr-2" /> Logical Context
+          <Row className="justify-content-between">
+            <Col>Logical Context</Col>
+            <Col className="text-right">
+              <img height="16px" src={icon} alt />
+            </Col>
+          </Row>
         </CardHeader>
         <Collapse isOpen={collapse}>
           <CardBody>
@@ -77,14 +100,7 @@ class LogicalContextModal extends React.Component {
                 </Input>
               </FormGroup>
 
-              <Button
-                color="success"
-                type="submit"
-                id="submit"
-                onClick={this.handleSubmit}
-              >
-                Save changes
-              </Button>
+              <SubmitButton handleSubmit={this.handleSubmit} />
             </Form>
           </CardBody>
         </Collapse>

@@ -226,6 +226,10 @@ pre,
   }
 }
 
+.card-header {
+  cursor: pointer;
+}
+
 .exportButton {
   margin-top: 5%;
   text-align: center;
@@ -241,18 +245,19 @@ pre,
   width: 100%;
 }
 
+#editor,
+#editor div {
+  height: 100%;
+}
+
 #editor pre {
-  padding: 50px;
+  height: 100%;
+  padding: 15px;
+  overflow: auto;
 }
 
-.modal-container {
-  margin-top: 5px;
-}
-
-button {
+#editor textarea {
   width: 100%;
-}
-
-.clear-btn-container {
-  margin-top: 30px;
+  height: 100%;
+  padding: 15px;
 }
