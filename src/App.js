@@ -1,8 +1,9 @@
 import React, { Component } from "react";
+
 import logo from "./gtri.png";
 import "./App.css";
-import JobList from "./components/JobList";
-import JobRunner from "./components/JobRunner";
+import { FaCog } from "react-icons/fa";
+
 import {
   Collapse,
   Navbar,
@@ -10,46 +11,23 @@ import {
   NavbarBrand,
   Nav,
   NavItem,
-  NavLink
-} from "reactstrap";
-import {
+  NavLink,
   UncontrolledDropdown,
   DropdownToggle,
   DropdownMenu,
   DropdownItem
 } from "reactstrap";
-import { FaCog } from "react-icons/fa";
 
-// https://html-online.com/articles/get-url-parameters-javascript/
-function getUrlVars() {
-  let vars = {};
-  window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(
-    m,
-    key,
-    value
-  ) {
-    vars[key] = value;
-  });
-  return vars;
-}
+import AppRouter from "./routes/AppRouter";
 
 class App extends Component {
   constructor(props) {
     super(props);
+
     this.toggle = this.toggle.bind(this);
-    this.setMode = this.setMode.bind(this);
-    this.params = getUrlVars();
-    let job_id = null;
-    if ("job" in this.params) {
-      job_id = this.params["job"];
-    }
-    if ("job_id" in this.params) {
-      job_id = this.params["job_id"];
-    }
+
     this.state = {
-      isOpen: false,
-      mode: "results",
-      job: job_id
+      isOpen: false
     };
   }
 
@@ -59,27 +37,7 @@ class App extends Component {
     });
   }
 
-  setMode(mode) {
-    this.setState({
-      mode: mode,
-      collapsed: true
-    });
-  }
-
   render() {
-    let main = <div />;
-    console.log(process.env);
-    if (this.state.mode === "results") {
-      main = (
-        <JobList
-          url={process.env.REACT_APP_CLARITY_NLP_URL}
-          luigi={process.env.REACT_APP_LUIGI_URL}
-          job={this.state.job}
-        />
-      );
-    } else if (this.state.mode === "runner") {
-      main = <JobRunner url={process.env.REACT_APP_CLARITY_NLP_URL} />;
-    }
     return (
       <div className="App">
         <Navbar expand="md" className="App-header" dark>
@@ -91,18 +49,12 @@ class App extends Component {
           <Collapse isOpen={this.state.isOpen} navbar>
             <Nav className="ml-auto" navbar>
               <NavItem>
-                <NavLink
-                  className="NavLink"
-                  onClick={() => this.setMode("runner")}
-                >
+                <NavLink className="NavLink" href="/runner">
                   NLPQL Runner
                 </NavLink>
               </NavItem>
               <NavItem>
-                <NavLink
-                  className="NavLink"
-                  onClick={() => this.setMode("results")}
-                >
+                <NavLink className="NavLink" href="/results">
                   Results Viewer
                 </NavLink>
               </NavItem>
@@ -129,7 +81,7 @@ class App extends Component {
           </Collapse>
         </Navbar>
 
-        <div className="App-intro container-fluid">{main}</div>
+        <AppRouter />
       </div>
     );
   }

@@ -3,11 +3,35 @@ import axios from "axios";
 import ResultViewer from "./ResultViewer";
 import TableJobs from "./TableJobs";
 
+const base_url = process.env.REACT_APP_CLARITY_NLP_URL;
+const luigi = process.env.REACT_APP_LUIGI_URL;
+
+// https://html-online.com/articles/get-url-parameters-javascript/
+function getUrlVars() {
+  let vars = {};
+  window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(
+    m,
+    key,
+    value
+  ) {
+    vars[key] = value;
+  });
+  return vars;
+}
+
+const params = getUrlVars();
+let job_id = null;
+if ("job" in params) {
+  job_id = params["job"];
+}
+if ("job_id" in params) {
+  job_id = params["job_id"];
+}
+
 class JobList extends Component {
   constructor(props) {
     super(props);
-    this.base_url = props.url;
-    this.luigi = props.luigi;
+
     this.selectJob = this.selectJob.bind(this);
     this.resetJobsList = this.resetJobsList.bind(this);
     this.getAllJobs = this.getAllJobs.bind(this);
@@ -16,9 +40,9 @@ class JobList extends Component {
     this.state = {
       jobs: [],
       filtered_jobs: [],
-      job: {},
+      job: job_id,
       show_list: true,
-      job_param: props.job,
+      job_param: job_id,
       filter: ""
     };
   }
@@ -47,7 +71,7 @@ class JobList extends Component {
       jobs: [],
       show_list: true
     }));
-    let url = this.base_url + "phenotype_jobs/ALL";
+    let url = base_url + "phenotype_jobs/ALL";
 
     axios.get(url).then(response => {
       let filtered_jobs = response.data.filter(f => {
@@ -64,7 +88,7 @@ class JobList extends Component {
   componentDidMount() {
     this.getAllJobs();
     if (this.state.job_param !== null) {
-      let url = this.base_url + "phenotype_job_by_id/" + this.state.job_param;
+      let url = base_url + "phenotype_job_by_id/" + this.state.job_param;
       console.log(this.state.job_param);
       axios.get(url).then(response => {
         this.setState(prevState => ({
@@ -99,8 +123,8 @@ class JobList extends Component {
           <TableJobs
             jobs={this.state.filtered_jobs}
             selectJob={this.selectJob}
-            url={this.props.url}
-            luigi={this.luigi}
+            url={base_url}
+            luigi={luigi}
             refreshJobs={this.getAllJobs}
             getFilter={this.getFilter}
             filter={this.state.filter}
@@ -109,7 +133,7 @@ class JobList extends Component {
           <ResultViewer
             resetJobsList={this.resetJobsList}
             job={this.state.job}
-            url={this.props.url}
+            url={base_url}
           />
         )}
       </div>

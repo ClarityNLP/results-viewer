@@ -7,19 +7,9 @@ import { Button, Row, Col, Container } from "reactstrap";
 import LimitForm from "./Forms/LimitForm";
 import PhenotypeForm from "./Forms/PhenotypeForm";
 
-const RunResponse = ({ data, ...props }) => {
-  return (
-    <div>
-      <ReactJson
-        src={data}
-        displayObjectSize={false}
-        displayDataTypes={false}
-      />
-    </div>
-  );
-};
+const base_url = process.env.REACT_APP_CLARITY_NLP_URL;
 
-const TestResponse = ({ data, ...props }) => {
+const ResponseView = data => {
   return (
     <div>
       <ReactJson
@@ -34,7 +24,6 @@ const TestResponse = ({ data, ...props }) => {
 class JobRunner extends Component {
   constructor(props) {
     super(props);
-    this.base_url = props.url;
 
     this.toggle = this.toggle.bind(this);
     this.disablePhenotypeModal = this.disablePhenotypeModal.bind(this);
@@ -73,7 +62,7 @@ class JobRunner extends Component {
   }
 
   getNLPQLSample(nlpql_filename) {
-    let url = this.base_url + "nlpql_text/" + nlpql_filename;
+    let url = base_url + "nlpql_text/" + nlpql_filename;
     axios.get(url).then(response => {
       this.setState(prevState => ({
         nlpql: prevState.nlpql + "\n" + response.data
@@ -94,7 +83,7 @@ class JobRunner extends Component {
   }
 
   handleButtonAction(action) {
-    let url = this.base_url + action;
+    let url = base_url + action;
 
     axios({
       method: "post",
@@ -108,11 +97,11 @@ class JobRunner extends Component {
         });
       } else if (action === "nlpql_tester") {
         this.setState({
-          response_view: <RunResponse data={response.data} />
+          response_view: <ResponseView data={response.data} />
         });
       } else {
         this.setState({
-          response_view: <TestResponse data={response.data} />
+          response_view: <ResponseView data={response.data} />
         });
       }
     });
