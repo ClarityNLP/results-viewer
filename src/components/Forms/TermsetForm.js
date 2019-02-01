@@ -30,7 +30,7 @@ const initialState = {
   termsetVerbInflections: false
 };
 
-class TermsetModal extends React.Component {
+class TermsetForm extends React.Component {
   constructor(props) {
     super(props);
     this.state = initialState;
@@ -147,8 +147,7 @@ class TermsetModal extends React.Component {
         });
     } else {
       let text = "termset " + termsetName + ":\n";
-      text =
-        text + "\t" + this.buildArrayStringWithQuotes(termsetTerms) + "\n\n";
+      text += "\t" + this.buildArrayStringWithQuotes(termsetTerms) + "\n\n";
 
       this.props.updateNLPQL(text);
     }
@@ -175,7 +174,7 @@ class TermsetModal extends React.Component {
           <Row className="justify-content-between">
             <Col>Term Set {this.renderTermSetCount()}</Col>
             <Col className="text-right">
-              <img height="16px" src={icon} alt />
+              <img height="16px" src={icon} alt="" />
             </Col>
           </Row>
         </CardHeader>
@@ -201,7 +200,7 @@ class TermsetModal extends React.Component {
                   name="termsetTerms"
                   value={termsetTerms}
                   onChange={this.handleInputChange}
-                  placeholder="Enter comma separated terms."
+                  placeholder="Separate entries with a comma."
                 />
               </FormGroup>
 
@@ -256,4 +255,4 @@ class TermsetModal extends React.Component {
   }
 }
 
-export default TermsetModal;
+export default TermsetForm;

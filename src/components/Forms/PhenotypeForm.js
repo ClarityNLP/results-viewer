@@ -24,7 +24,7 @@ const initialState = {
   }
 };
 
-class PhenotypeModal extends React.Component {
+class PhenotypeForm extends React.Component {
   constructor(props) {
     super(props);
 
@@ -154,4 +154,4 @@ class PhenotypeModal extends React.Component {
   }
 }
 
-export default PhenotypeModal;
+export default PhenotypeForm;

@@ -12,6 +12,7 @@ import {
   CardHeader,
   CardBody
 } from "reactstrap";
+import Select from "react-select";
 
 import SubmitButton from "../../UIkit/SubmitButton";
 
@@ -22,7 +23,7 @@ const initialState = {
   icon: plus,
   collapse: false,
   featureName: "",
-  featureAlgorithm: "None",
+  featureAlgorithm: { value: "", label: "" },
   customTermset: "",
   customTermset2: "",
   customDocumentset: "",
@@ -38,9 +39,9 @@ const initialState = {
   customMaxVal: "",
   customAnyOrder: false,
   customFilterNums: false,
-  customFilterStops: false,
-  customFilterPunct: false,
-  customLemmas: false,
+  customFilterStops: true,
+  customFilterPunct: true,
+  customLemmas: true,
   customLimitTermset: false,
   customSynonyms: false,
   customDescendants: false,
@@ -49,18 +50,23 @@ const initialState = {
   isFinal: false
 };
 
-class DefineFeatureModal extends React.Component {
+class DefineFeatureForm extends React.Component {
   constructor(props) {
     super(props);
 
     this.toggle = this.toggle.bind(this);
     this.handleInputChange = this.handleInputChange.bind(this);
+    this.handleAlgorithmChange = this.handleAlgorithmChange.bind(this);
+    this.handleTermSetSelect = this.handleTermSetSelect.bind(this);
+    this.handleTermSet2Select = this.handleTermSet2Select.bind(this);
+    this.handleDocumentSetSelect = this.handleDocumentSetSelect.bind(this);
+    this.handleCohortSelect = this.handleCohortSelect.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
 
     this.state = initialState;
   }
 
-  toggle = () => {
+  toggle() {
     const { icon } = this.state;
     let tmp = null;
 
@@ -74,29 +80,49 @@ class DefineFeatureModal extends React.Component {
       collapse: !this.state.collapse,
       icon: tmp
     });
-  };
+  }
 
-  handleInputChange = event => {
+  handleInputChange(event) {
     const target = event.target;
-    const options = event.target.options;
     let value = target.type === "checkbox" ? target.checked : target.value;
     const name = target.name;
-
-    if (options) {
-      value = [];
-      for (let i = 0, l = options.length; i < l; i++) {
-        if (options[i].selected) {
-          value.push(options[i].value);
-        }
-      }
-
-      value = value.toString();
-    }
 
     this.setState({
       [name]: value
     });
-  };
+  }
+
+  handleAlgorithmChange(value) {
+    this.setState({
+      featureAlgorithm: value
+    });
+  }
+
+  handleTermSetSelect(value) {
+    this.setState({
+      customTermset: value
+    });
+  }
+
+  handleTermSet2Select(value) {
+    this.setState({
+      customTermset2: value
+    });
+  }
+
+  handleDocumentSetSelect(value) {
+    this.setState({
+      customDocumentset: value
+    });
+  }
+
+  handleCohortSelect(value) {
+    this.setState({
+      customCohort: value
+    });
+  }
+
+  updateOptions(arr) {}
 
   buildArrayStringWithQuotes = s => {
     let arr = s.split(",");
@@ -113,9 +139,7 @@ class DefineFeatureModal extends React.Component {
     return tmp;
   };
 
-  buildArrayStringWithoutQuotes = s => {
-    let arr = s.split(",");
-
+  buildArrayStringWithoutQuotes = arr => {
     let tmp = "[";
     for (let i = 0; i < arr.length; i++) {
       tmp += arr[i].trim();
@@ -162,40 +186,58 @@ class DefineFeatureModal extends React.Component {
 
     let payload = [];
 
-    if (featureAlgorithm === "None") {
+    let algorithm = featureAlgorithm.value;
+
+    if (algorithm === "") {
       return;
     }
 
     //termset
-    if (customTermset.length > 0 && customTermset[0].length > 0) {
-      if (featureAlgorithm === "TermProximityTask") {
+    if (customTermset.length > 0) {
+      const termSets = customTermset.map(value => {
+        return value.value;
+      });
+
+      if (algorithm === "TermProximityTask") {
         payload.push(
-          "termset1: " + this.buildArrayStringWithoutQuotes(customTermset)
+          "termset1: " + this.buildArrayStringWithoutQuotes(termSets)
         );
       } else {
         payload.push(
-          "termset: " + this.buildArrayStringWithoutQuotes(customTermset)
+          "termset: " + this.buildArrayStringWithoutQuotes(termSets)
         );
       }
     }
 
     //termset2
-    if (customTermset2.length > 0 && customTermset2[0].length > 0) {
+    if (customTermset2.length > 0) {
+      const termSets2 = customTermset2.map(value => {
+        return value.value;
+      });
+
       payload.push(
-        "termset2: " + this.buildArrayStringWithoutQuotes(customTermset2)
+        "termset2: " + this.buildArrayStringWithoutQuotes(termSets2)
       );
     }
 
     //documentset
-    if (customDocumentset.length > 0 && customDocumentset[0].length > 0) {
+    if (customDocumentset.length > 0) {
+      const documentSets = customDocumentset.map(value => {
+        return value.value;
+      });
+
       payload.push(
-        "documentset: " + this.buildArrayStringWithoutQuotes(customDocumentset)
+        "documentset: " + this.buildArrayStringWithoutQuotes(documentSets)
       );
     }
 
     // cohort
-    if (customCohort != null && customCohort.length > 0) {
-      payload.push('cohort: "' + customCohort.trim() + '"');
+    if (customCohort.length > 0) {
+      const cohorts = customCohort.map(value => {
+        return value.value;
+      });
+
+      payload.push('cohort: "' + cohorts + '"');
     }
 
     // groupBy
@@ -210,7 +252,7 @@ class DefineFeatureModal extends React.Component {
       );
     }
 
-    if (featureAlgorithm === "ngram") {
+    if (algorithm === "ngram") {
       //ngram-n
       if (customNgramN != null && customNgramN.length > 0) {
         payload.push('n: "' + customNgramN.trim() + '"');
@@ -237,10 +279,7 @@ class DefineFeatureModal extends React.Component {
       payload.push("limit_to_termset: " + customLimitTermset);
     }
 
-    if (
-      featureAlgorithm === "ProviderAssertion" ||
-      featureAlgorithm === "TermFinder"
-    ) {
+    if (algorithm === "ProviderAssertion" || algorithm === "TermFinder") {
       //Synonyms
       payload.push("include_synonyms: " + customSynonyms);
 
@@ -256,7 +295,7 @@ class DefineFeatureModal extends React.Component {
       }
     }
 
-    if (featureAlgorithm === "TermProximityTask") {
+    if (algorithm === "TermProximityTask") {
       // word distance
       if (customWordDist != null && customWordDist.length > 0) {
         payload.push("word_distance: " + customWordDist.trim());
@@ -266,7 +305,7 @@ class DefineFeatureModal extends React.Component {
       payload.push("any_order: " + customAnyOrder);
     }
 
-    if (featureAlgorithm === "ValueExtraction") {
+    if (algorithm === "ValueExtraction") {
       //enum list
       if (customEnumList.length > 0 && customEnumList[0].length > 0) {
         payload.push(
@@ -294,7 +333,7 @@ class DefineFeatureModal extends React.Component {
       text += "final ";
     }
     text += featureName + ":\n\t";
-    text += "Clarity." + featureAlgorithm + "({\n\t\t";
+    text += "Clarity." + algorithm + "({\n\t\t";
 
     for (let i = 0; i < payload.length; i++) {
       text += payload[i];
@@ -306,7 +345,7 @@ class DefineFeatureModal extends React.Component {
 
     this.props.appendFeature({
       name: featureName,
-      algorithm: featureAlgorithm
+      algorithm: algorithm
     });
 
     this.props.updateNLPQL(text);
@@ -316,6 +355,10 @@ class DefineFeatureModal extends React.Component {
 
   renderInputsForAlgorithm = () => {
     const {
+      customTermset,
+      customTermset2,
+      customDocumentSet,
+      customCohort,
       featureAlgorithm,
       customSections,
       customEnumList,
@@ -342,67 +385,52 @@ class DefineFeatureModal extends React.Component {
 
     let customTermsetDiv = (
       <FormGroup>
-        <Label for="customTermset">Term Set</Label>
-        <Input
-          type="select"
-          id="customTermset"
-          name="customTermset"
-          onChange={this.handleInputChange}
-          multiple
-        >
-          <option />
-          {termSets.map((value, index) => {
-            return (
-              <option key={index} value={value}>
-                {value}
-              </option>
-            );
+        <Label>Term Set</Label>
+        <Select
+          isMulti={true}
+          value={customTermset}
+          onChange={this.handleTermSetSelect}
+          options={termSets.map(value => {
+            return {
+              value: value,
+              label: value
+            };
           })}
-        </Input>
+        />
       </FormGroup>
     );
 
     let customTermset2Div = (
       <FormGroup>
-        <Label for="customTermset2">Term Set 2</Label>
-        <Input
-          type="select"
-          id="customTermset2"
-          name="customTermset2"
-          onChange={this.handleInputChange}
-          multiple
-        >
-          <option />
-          {termSets.map((value, index) => {
-            return (
-              <option key={index} value={value}>
-                {value}
-              </option>
-            );
+        <Label>Term Set 2</Label>
+        <Select
+          isMulti={true}
+          value={customTermset2}
+          onChange={this.handleTermSet2Select}
+          options={termSets.map(value => {
+            return {
+              value: value,
+              label: value
+            };
           })}
-        </Input>
+        />
       </FormGroup>
     );
 
     let customDocumentsetDiv = (
       <FormGroup>
-        <Label for="customDocumentset">Document Set</Label>
-        <Input
-          type="select"
-          id="customDocumentset"
-          name="customDocumentset"
-          onChange={this.handleInputChange}
-          multiple
-        >
-          <option />
-          {documentSets.map((value, index) => {
-            return (
-              <option key={index} value={value}>
-                {value}
-              </option>
-            );
+        <Label>Document Set</Label>
+        <Select
+          isMulti={true}
+          value={customDocumentSet}
+          onChange={this.handleDocumentSetSelect}
+          options={documentSets.map(value => {
+            return {
+              value: value,
+              label: value
+            };
           })}
-        </Input>
+        />
       </FormGroup>
     );
 
@@ -415,7 +443,7 @@ class DefineFeatureModal extends React.Component {
           name="customSections"
           value={customSections}
           onChange={this.handleInputChange}
-          placeholder="Enter comma separated terms."
+          placeholder="Separate entries with a comma."
         />
       </FormGroup>
     );
@@ -429,30 +457,25 @@ class DefineFeatureModal extends React.Component {
           name="customEnumList"
           value={customEnumList}
           onChange={this.handleInputChange}
-          placeholder="Enter comma separated terms."
+          placeholder="Separate entries with a comma."
         />
       </FormGroup>
     );
 
     let customCohortDiv = (
       <FormGroup>
-        <Label for="customCohort">Cohort</Label>
-        <Input
-          type="select"
-          id="customCohort"
-          name="customCohort"
-          onChange={this.handleInputChange}
-          multiple
-        >
-          <option />
-          {cohorts.map((value, index) => {
-            return (
-              <option key={index} value={value}>
-                {value}
-              </option>
-            );
+        <Label>Cohort</Label>
+        <Select
+          isMulti={true}
+          value={customCohort}
+          onChange={this.handleCohortSelect}
+          options={cohorts.map(value => {
+            return {
+              value: value,
+              label: value
+            };
           })}
-        </Input>
+        />
       </FormGroup>
     );
 
@@ -712,53 +735,51 @@ class DefineFeatureModal extends React.Component {
       </FormGroup>
     );
 
-    if (featureAlgorithm === "None") {
+    let algorithm = featureAlgorithm.value;
+
+    if (algorithm === "") {
       return;
     }
 
     return (
       <div>
         {customTermsetDiv}
-        {featureAlgorithm === "TermProximityTask" ? customTermset2Div : null}
+        {algorithm === "TermProximityTask" ? customTermset2Div : null}
         {customDocumentsetDiv}
         {customCohortDiv}
-        {featureAlgorithm === "ValueExtraction" ? customEnumListDiv : null}
-        {featureAlgorithm === "ProviderAssertion" ||
-        featureAlgorithm === "TermFinder" ||
-        featureAlgorithm === "MeasurementFinder" ||
-        featureAlgorithm === "NamedEntityRecognition"
+        {algorithm === "ValueExtraction" ? customEnumListDiv : null}
+        {algorithm === "ProviderAssertion" ||
+        algorithm === "TermFinder" ||
+        algorithm === "MeasurementFinder" ||
+        algorithm === "NamedEntityRecognition"
           ? customSectionsDiv
           : null}
-        {featureAlgorithm === "ProviderAssertion" ||
-        featureAlgorithm === "TermFinder"
+        {algorithm === "ProviderAssertion" || algorithm === "TermFinder"
           ? customVocabularyDiv
           : null}
-        {featureAlgorithm === "ProviderAssertion" ||
-        featureAlgorithm === "TermFinder"
+        {algorithm === "ProviderAssertion" || algorithm === "TermFinder"
           ? customSynonymsDiv
           : null}
-        {featureAlgorithm === "ProviderAssertion" ||
-        featureAlgorithm === "TermFinder"
+        {algorithm === "ProviderAssertion" || algorithm === "TermFinder"
           ? customDescendantsDiv
           : null}
-        {featureAlgorithm === "ProviderAssertion" ||
-        featureAlgorithm === "TermFinder"
+        {algorithm === "ProviderAssertion" || algorithm === "TermFinder"
           ? customAncestorsDiv
           : null}
-        {featureAlgorithm === "TermProximityTask" ? customWordDistDiv : null}
-        {featureAlgorithm === "TermProximityTask" ? customAnyOrderDiv : null}
-        {featureAlgorithm === "ValueExtraction" ? customMinValDiv : null}
-        {featureAlgorithm === "ValueExtraction" ? customMaxValDiv : null}
-        {featureAlgorithm === "ValueExtraction" ? customCaseSensitiveDiv : null}
-        {featureAlgorithm === "TextStats" ? customGroupbyDiv : null}
-        {featureAlgorithm === "ngram" ? customNgramNDiv : null}
-        {featureAlgorithm === "ngram" ? customMinFreqDiv : null}
-        {featureAlgorithm === "ngram" ? customFilterNumsDiv : null}
-        {featureAlgorithm === "ngram" ? customFilterStopsDiv : null}
-        {featureAlgorithm === "ngram" ? customFilterPunctDiv : null}
-        {featureAlgorithm === "ngram" ? customLemmasDiv : null}
-        {featureAlgorithm === "ngram" ? customLimitTermsetDiv : null}
-        {featureAlgorithm !== "" ? isFinalDiv : null}
+        {algorithm === "TermProximityTask" ? customWordDistDiv : null}
+        {algorithm === "TermProximityTask" ? customAnyOrderDiv : null}
+        {algorithm === "ValueExtraction" ? customMinValDiv : null}
+        {algorithm === "ValueExtraction" ? customMaxValDiv : null}
+        {algorithm === "ValueExtraction" ? customCaseSensitiveDiv : null}
+        {algorithm === "TextStats" ? customGroupbyDiv : null}
+        {algorithm === "ngram" ? customNgramNDiv : null}
+        {algorithm === "ngram" ? customMinFreqDiv : null}
+        {algorithm === "ngram" ? customFilterNumsDiv : null}
+        {algorithm === "ngram" ? customFilterStopsDiv : null}
+        {algorithm === "ngram" ? customFilterPunctDiv : null}
+        {algorithm === "ngram" ? customLemmasDiv : null}
+        {algorithm === "ngram" ? customLimitTermsetDiv : null}
+        {algorithm !== "" ? isFinalDiv : null}
       </div>
     );
   };
@@ -772,7 +793,7 @@ class DefineFeatureModal extends React.Component {
           <Row className="justify-content-between">
             <Col>Feature</Col>
             <Col className="text-right">
-              <img height="16px" src={icon} alt />
+              <img height="16px" src={icon} alt="" />
             </Col>
           </Row>
         </CardHeader>
@@ -792,33 +813,72 @@ class DefineFeatureModal extends React.Component {
 
               <FormGroup>
                 <Label for="featureAlgorithm">Select Algorithm</Label>
-                <Input
-                  type="select"
-                  id="featureAlgorithm"
-                  name="featureAlgorithm"
+                <Select
                   value={featureAlgorithm}
-                  onChange={this.handleInputChange}
-                >
-                  <option value="None" />
-                  <option value="MeasurementFinder">Measurement Finder</option>
-                  <option value="NamedEntityRecognition">
-                    Named Entity Recognition
-                  </option>
-                  <option value="ngram">Ngram</option>
-                  <option value="POSTagger">POS Tagger</option>
-                  <option value="ProviderAssertion">Provider Assertion</option>
-                  <option value="TermProximityTask">Term Proximity Task</option>
-                  <option value="TermFinder">Term Finder</option>
-                  <option value="ValueExtraction">Value Extraction</option>
-                  <option value="GleasonScoreTask">Gleason Score Task</option>
-                  <option value="RaceFinderTask">Race Finder Task</option>
-                  <option value="PFTFinder">PFT Finder</option>
-                  <option value="TextStats">Text Stats</option>
-                  <option value="TNMStager">TNM Stager</option>
-                  <option value="TransfusionNursingNotesParser">
-                    Transfusion Nursing Notes Parser
-                  </option>
-                </Input>
+                  onChange={this.handleAlgorithmChange}
+                  options={[
+                    {
+                      value: "",
+                      label: ""
+                    },
+                    {
+                      value: "MeasurementFinder",
+                      label: "Measurement Finder"
+                    },
+                    {
+                      value: "NamedEntityRecognition",
+                      label: "Named Entity Recognition"
+                    },
+                    {
+                      value: "ngram",
+                      label: "Ngram"
+                    },
+                    {
+                      value: "POSTagger",
+                      label: "POS Tagger"
+                    },
+                    {
+                      value: "ProviderAssertion",
+                      label: "Provider Assertion"
+                    },
+                    {
+                      value: "TermProximityTask",
+                      label: "Term Proximity Task"
+                    },
+                    {
+                      value: "TermFinder",
+                      label: "Term Finder"
+                    },
+                    {
+                      value: "ValueExtraction",
+                      label: "Value Extraction"
+                    },
+                    {
+                      value: "GleasonScoreTask",
+                      label: "Gleason Score Task"
+                    },
+                    {
+                      value: "RaceFinderTask",
+                      label: "Race Finder Task"
+                    },
+                    {
+                      value: "PFTFinder",
+                      label: "PFT Finder"
+                    },
+                    {
+                      value: "TextStats",
+                      label: "Text Stats"
+                    },
+                    {
+                      value: "TNMStager",
+                      label: "TNM Stager"
+                    },
+                    {
+                      value: "TransfusionNursingNotesParser",
+                      label: "Transfusion Nursing Notes Parser"
+                    }
+                  ]}
+                />
               </FormGroup>
 
               {this.renderInputsForAlgorithm()}
@@ -835,4 +895,4 @@ class DefineFeatureModal extends React.Component {
   }
 }
 
-export default DefineFeatureModal;
+export default DefineFeatureForm;

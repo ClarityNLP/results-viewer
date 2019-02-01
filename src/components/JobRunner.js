@@ -4,8 +4,8 @@ import _ from "lodash";
 import ReactJson from "react-json-view";
 import QueryBuilder from "./QueryBuilder";
 import { Button, Row, Col, Container } from "reactstrap";
-import LimitModal from "./Modals/LimitModal";
-import PhenotypeModal from "./Modals/PhenotypeModal";
+import LimitForm from "./Forms/LimitForm";
+import PhenotypeForm from "./Forms/PhenotypeForm";
 
 const RunResponse = ({ data, ...props }) => {
   return (
@@ -123,7 +123,7 @@ class JobRunner extends Component {
 
     return (
       <Container className="JobRunner">
-        <PhenotypeModal
+        <PhenotypeForm
           updateNLPQL={this.updateNLPQL}
           toggle={this.disablePhenotypeModal}
           modal={this.state.togglePhenotype}
@@ -158,7 +158,7 @@ class JobRunner extends Component {
           <Col md="6">
             <Row className="justify-content-end">
               <Col md="6">
-                <LimitModal
+                <LimitForm
                   updateNLPQL={this.updateNLPQL}
                   handleSubmit={() => this.handleButtonAction("nlpql")}
                 />

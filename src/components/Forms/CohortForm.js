@@ -10,7 +10,8 @@ import {
   Label,
   Input,
   CardHeader,
-  CardBody
+  CardBody,
+  Badge
 } from "reactstrap";
 
 import SubmitButton from "../../UIkit/SubmitButton";
@@ -25,13 +26,14 @@ const initialState = {
   id: ""
 };
 
-class CohortModal extends React.Component {
+class CohortForm extends React.Component {
   constructor(props) {
     super(props);
 
     this.toggle = this.toggle.bind(this);
     this.handleInputChange = this.handleInputChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
+    this.renderCohortCount = this.renderCohortCount.bind(this);
 
     this.state = initialState;
   }
@@ -75,6 +77,16 @@ class CohortModal extends React.Component {
     this.setState(initialState);
   }
 
+  renderCohortCount() {
+    let count = this.props.cohorts.length;
+
+    if (count === 0) {
+      return <span className="text-muted font-italic"> - Optional</span>;
+    }
+
+    return <Badge color="dark">{count}</Badge>;
+  }
+
   render() {
     const { icon, collapse, name, id } = this.state;
 
@@ -82,12 +94,9 @@ class CohortModal extends React.Component {
       <div>
         <CardHeader onClick={this.toggle}>
           <Row className="justify-content-between">
-            <Col>
-              OHDSI Cohort
-              <span className="text-muted font-italic"> - Optional</span>
-            </Col>
+            <Col>OHDSI Cohort {this.renderCohortCount()}</Col>
             <Col className="text-right">
-              <img height="16px" src={icon} alt />
+              <img height="16px" src={icon} alt="" />
             </Col>
           </Row>
         </CardHeader>
@@ -128,4 +137,4 @@ class CohortModal extends React.Component {
   }
 }
 
-export default CohortModal;
+export default CohortForm;

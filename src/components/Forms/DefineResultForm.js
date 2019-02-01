@@ -24,6 +24,7 @@ const initialState = {
   collapse: false,
   algorithm: "",
   name: "",
+  logic: "",
   feature: "",
   subField: "",
   booleanOperator: "",
@@ -31,7 +32,7 @@ const initialState = {
   logicalContext: "Patient",
   isFinal: false
 };
-class DefineResultModal extends React.Component {
+class DefineResultForm extends React.Component {
   constructor(props) {
     super(props);
 
@@ -133,14 +134,7 @@ class DefineResultModal extends React.Component {
   handleSubmit(event) {
     event.preventDefault();
 
-    const {
-      name,
-      valueToCompare,
-      feature,
-      booleanOperator,
-      subField,
-      isFinal
-    } = this.state;
+    const { name, logic, isFinal } = this.state;
 
     const { logicalContext } = this.state;
 
@@ -148,15 +142,16 @@ class DefineResultModal extends React.Component {
     if (isFinal) {
       text += "final ";
     }
-    text += name + ":\n\twhere " + feature;
+    // text += name + ":\n\twhere " + feature;
+    text += name + ":\n\twhere " + logic;
 
-    if (subField.trim() !== "") {
-      text += "." + subField;
-    }
+    // if (subField.trim() !== "") {
+    //   text += "." + subField;
+    // }
 
-    if (booleanOperator.trim() !== "") {
-      text += " " + booleanOperator + " " + valueToCompare;
-    }
+    // if (booleanOperator.trim() !== "") {
+    //   text += " " + booleanOperator + " " + valueToCompare;
+    // }
 
     text += ";\n\n";
 
@@ -166,16 +161,7 @@ class DefineResultModal extends React.Component {
   }
 
   render() {
-    const {
-      icon,
-      collapse,
-      name,
-      feature,
-      booleanOperator,
-      valueToCompare,
-      logicalContext,
-      isFinal
-    } = this.state;
+    const { icon, collapse, name, logic, isFinal } = this.state;
 
     return (
       <div>
@@ -183,7 +169,7 @@ class DefineResultModal extends React.Component {
           <Row className="justify-content-between">
             <Col>Result</Col>
             <Col className="text-right">
-              <img height="16px" src={icon} alt />
+              <img height="16px" src={icon} alt="" />
             </Col>
           </Row>
         </CardHeader>
@@ -216,6 +202,17 @@ class DefineResultModal extends React.Component {
               </FormGroup>
 
               <FormGroup>
+                <Label for="logic">Logic</Label>
+                <Input
+                  type="text"
+                  id="logic"
+                  name="logic"
+                  value={logic}
+                  onChange={this.handleInputChange}
+                />
+              </FormGroup>
+
+              {/* <FormGroup>
                 <Label>Logic</Label>
                 <Row>
                   <Col>
@@ -266,7 +263,7 @@ class DefineResultModal extends React.Component {
                     />
                   </Col>
                 </Row>
-              </FormGroup>
+              </FormGroup> */}
 
               <FormGroup check className="mt-3 mb-3">
                 <Label check size="lg">
@@ -293,4 +290,4 @@ class DefineResultModal extends React.Component {
   }
 }
 
-export default DefineResultModal;
+export default DefineResultForm;

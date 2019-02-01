@@ -30,7 +30,7 @@ const initialState = {
   query: ""
 };
 
-class DocumentSetModal extends React.Component {
+class DocumentSetForm extends React.Component {
   constructor(props) {
     super(props);
 
@@ -161,7 +161,7 @@ class DocumentSetModal extends React.Component {
 
       if (hasFilterQuery) {
         payloadKeys.push(
-          "filter_query: " + '"' + filterQuery.replace(/"/g, "'") + '"'
+          'filter_query: "' + filterQuery.replace(/"/g, "'") + '"'
         );
       }
 
@@ -205,7 +205,7 @@ class DocumentSetModal extends React.Component {
           <Row className="justify-content-between">
             <Col>Document Set {this.renderDocumentSetCount()}</Col>
             <Col className="text-right">
-              <img height="16px" src={icon} alt />
+              <img height="16px" src={icon} alt="" />
             </Col>
           </Row>
         </CardHeader>
@@ -231,7 +231,7 @@ class DocumentSetModal extends React.Component {
                   name="sources"
                   value={sources}
                   onChange={this.handleInputChange}
-                  placeholder="Enter comma separated terms."
+                  placeholder="Separate entries with a comma."
                 />
               </FormGroup>
 
@@ -255,7 +255,7 @@ class DocumentSetModal extends React.Component {
                     name="reportTypes"
                     value={reportTypes}
                     onChange={this.handleInputChange}
-                    placeholder="Enter comma separated terms."
+                    placeholder="Separate entries with a comma."
                   />
                 </FormGroup>
 
@@ -267,7 +267,7 @@ class DocumentSetModal extends React.Component {
                     name="reportTags"
                     value={reportTags}
                     onChange={this.handleInputChange}
-                    placeholder="Enter comma separated terms."
+                    placeholder="Separate entries with a comma."
                   />
                 </FormGroup>
 
@@ -295,4 +295,4 @@ class DocumentSetModal extends React.Component {
   }
 }
 
-export default DocumentSetModal;
+export default DocumentSetForm;

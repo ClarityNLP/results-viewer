@@ -8,7 +8,6 @@ import {
   FormGroup,
   Label,
   Input,
-  ModalHeader,
   ModalBody
 } from "reactstrap";
 
@@ -16,7 +15,7 @@ import SubmitButton from "../../UIkit/SubmitButton";
 
 const initialState = { limit: "", modal: false };
 
-class LimitModal extends React.Component {
+class LimitForm extends React.Component {
   constructor(props) {
     super(props);
 
@@ -96,4 +95,4 @@ class LimitModal extends React.Component {
   }
 }
 
-export default LimitModal;
+export default LimitForm;

@@ -1,13 +1,12 @@
 import React, { Component } from "react";
 import { Row, Col, Card, Button } from "reactstrap";
 
-import PhenotypeModal from "./Modals/PhenotypeModal";
-import DocumentSetModal from "./Modals/DocumentSetModal";
-import TermsetModal from "./Modals/TermsetModal";
-import CohortModal from "./Modals/CohortModal";
-import LogicalContextModal from "./Modals/LogicalContextModal";
-import DefineFeatureModal from "./Modals/DefineFeatureModal";
-import DefineResultModal from "./Modals/DefineResultModal";
+import DocumentSetForm from "./Forms/DocumentSetForm";
+import TermsetForm from "./Forms/TermsetForm";
+import CohortForm from "./Forms/CohortForm";
+import LogicalContextForm from "./Forms/LogicalContextForm";
+import DefineFeatureForm from "./Forms/DefineFeatureForm";
+import DefineResultForm from "./Forms/DefineResultForm";
 
 const initialState = {
   editing: false,
@@ -121,29 +120,30 @@ export default class QueryEditor extends Component {
         <Row className="NLPQLQueryBuilder mt-5">
           <Col md="6">
             <Card>
-              <DocumentSetModal
+              <DocumentSetForm
                 documentSets={documentSets}
                 appendDocumentSet={this.appendDocumentSet}
                 updateNLPQL={this.props.updateNLPQL}
               />
-              <TermsetModal
+              <TermsetForm
                 termSets={termSets}
                 appendTermSet={this.appendTermSet}
                 updateNLPQL={this.props.updateNLPQL}
               />
-              <CohortModal
+              <CohortForm
+                cohorts={cohorts}
                 appendCohort={this.appendCohort}
                 updateNLPQL={this.props.updateNLPQL}
               />
-              <DefineFeatureModal
+              <DefineFeatureForm
                 termSets={termSets}
                 documentSets={documentSets}
                 cohorts={cohorts}
                 appendFeature={this.appendFeature}
                 updateNLPQL={this.props.updateNLPQL}
               />
-              <LogicalContextModal updateNLPQL={this.props.updateNLPQL} />
-              <DefineResultModal
+              <LogicalContextForm updateNLPQL={this.props.updateNLPQL} />
+              <DefineResultForm
                 features={features}
                 updateNLPQL={this.props.updateNLPQL}
               />

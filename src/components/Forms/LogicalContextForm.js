@@ -8,10 +8,10 @@ import {
   Form,
   FormGroup,
   Label,
-  Input,
   CardHeader,
   CardBody
 } from "reactstrap";
+import Select from "react-select";
 
 import SubmitButton from "../../UIkit/SubmitButton";
 
@@ -21,10 +21,10 @@ import minus from "../../assets/icons/svg/minus.svg";
 const initialState = {
   icon: plus,
   collapse: false,
-  logicalContext: "Patient"
+  logicalContext: { value: "Patient", label: "Patient" }
 };
 
-class LogicalContextModal extends React.Component {
+class LogicalContextForm extends React.Component {
   constructor(props) {
     super(props);
 
@@ -51,13 +51,9 @@ class LogicalContextModal extends React.Component {
     });
   };
 
-  handleInputChange(event) {
-    const target = event.target;
-    let value = target.value;
-    const name = target.name;
-
+  handleInputChange(value) {
     this.setState({
-      [name]: value
+      logicalContext: value
     });
   }
 
@@ -66,7 +62,7 @@ class LogicalContextModal extends React.Component {
 
     const { logicalContext } = this.state;
 
-    let text = "context " + logicalContext + ";\n\n";
+    let text = "context " + logicalContext.value + ";\n\n";
 
     this.props.updateNLPQL(text);
     this.toggle();
@@ -82,7 +78,7 @@ class LogicalContextModal extends React.Component {
           <Row className="justify-content-between">
             <Col>Logical Context</Col>
             <Col className="text-right">
-              <img height="16px" src={icon} alt />
+              <img height="16px" src={icon} alt="" />
             </Col>
           </Row>
         </CardHeader>
@@ -91,16 +87,20 @@ class LogicalContextModal extends React.Component {
             <Form>
               <FormGroup>
                 <Label for="logicalContext">Logical Context</Label>
-                <Input
-                  type="select"
-                  id="logicalContext"
-                  name="logicalContext"
+                <Select
                   value={logicalContext}
                   onChange={this.handleInputChange}
-                >
-                  <option value="Patient">Patient</option>
-                  <option value="Document">Document</option>
-                </Input>
+                  options={[
+                    {
+                      value: "Patient",
+                      label: "Patient"
+                    },
+                    {
+                      value: "Document",
+                      label: "Document"
+                    }
+                  ]}
+                />
               </FormGroup>
 
               <SubmitButton
@@ -115,4 +115,4 @@ class LogicalContextModal extends React.Component {
   }
 }
 
-export default LogicalContextModal;
+export default LogicalContextForm;
