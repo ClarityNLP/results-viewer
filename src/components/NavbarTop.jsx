@@ -1,50 +1,43 @@
-import React, { Component } from 'react';
-import { Route, Link } from 'react-router-dom';
-import { withAlert } from 'react-alert';
+import React, { Component } from "react";
+import { Link } from "react-router-dom";
+import { withAlert } from "react-alert";
 import userManager from "../utils/userManager";
-import { push } from 'connected-react-router';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import Slideout from 'slideout';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 class NavbarTop extends Component {
-
-  constructor(props) {
-    super(props);
-  }
-
   handleLogout = () => {
     return userManager.signoutRedirect();
-  }
+  };
 
   render() {
     return (
-      <nav className="navbar-sso navbar" role="navigation" aria-label="main navigation">
+      <nav
+        className="navbar-sso navbar"
+        role="navigation"
+        aria-label="main navigation"
+      >
         <div className="navbar-brand">
-          <a role="button"  onClick={(e) => this.props.toggle(e)} className="hamburger navbar-item">
-            <FontAwesomeIcon
-              icon="bars"
-              className="sso-bars"
-            />
+          <a
+            role="button"
+            onClick={() => window.slideout.toggle()}
+            className="hamburger navbar-item"
+          >
+            <FontAwesomeIcon icon="bars" className="sso-bars" />
           </a>
-          <a role="button" href="/" className="brandname navbar-item">ClarityNLP</a>
+          <Link className="brandname navbar-item" to="/">
+            ClarityNLP
+          </Link>
         </div>
 
         <div id="navbarBasicExample" className="navbar-menu">
-
           <div className="navbar-end">
-            <a
-              className="navbar-item"
-              onClick={() => this.props.setMode('runner')}
-            >
+            <Link className="navbar-item" to="/runner">
               NLPQL Runner
-            </a>
-            <a
-              className="navbar-item"
-              onClick={() => this.props.setMode('results')}
-            >
+            </Link>
+            <Link to="results" className="navbar-item">
               Results Viewer
-            </a>
-            { this.props.oidc.user &&
+            </Link>
+            {this.props.oidc.user && (
               <div className="navbar-item has-dropdown is-hoverable">
                 <a className="navbar-link">
                   <span>{`${this.props.oidc.user.profile.name}`}</span>
@@ -73,12 +66,12 @@ class NavbarTop extends Component {
                   </a>
                 </div>
               </div>
-            }
+            )}
           </div>
         </div>
       </nav>
-    )
+    );
   }
 }
 
-export default withAlert(NavbarTop)
+export default withAlert(NavbarTop);

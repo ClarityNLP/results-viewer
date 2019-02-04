@@ -1,18 +1,6 @@
 /* eslint react/no-multi-comp: 0, react/prop-types: 0 */
 
 import React from "react";
-import {
-  Row,
-  Col,
-  Collapse,
-  Form,
-  FormGroup,
-  Label,
-  Input,
-  CardHeader,
-  CardBody,
-  Badge
-} from "reactstrap";
 
 import SubmitButton from "../../UIkit/SubmitButton";
 
@@ -20,239 +8,245 @@ import plus from "../../assets/icons/svg/plus.svg";
 import minus from "../../assets/icons/svg/minus.svg";
 
 const initialState = {
-  icon: plus,
-  termExpanderUrl: "http://18.220.133.76:5000/nlpql_expander",
-  collapse: false,
-  termsetName: "",
-  termsetTerms: "",
-  termsetSynonyms: false,
-  termsetPlurals: false,
-  termsetVerbInflections: false
+    icon: plus,
+    termExpanderUrl: "http://18.220.133.76:5000/nlpql_expander",
+    collapse: true,
+    termsetName: "",
+    termsetTerms: "",
+    termsetSynonyms: false,
+    termsetPlurals: false,
+    termsetVerbInflections: false
 };
 
 class TermsetForm extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = initialState;
-  }
-
-  toggle = () => {
-    const { icon } = this.state;
-    let tmp = null;
-
-    if (icon === plus) {
-      tmp = minus;
-    } else {
-      tmp = plus;
+    constructor(props) {
+        super(props);
+        this.state = initialState;
     }
 
-    this.setState({
-      collapse: !this.state.collapse,
-      icon: tmp
-    });
-  };
+    toggle = () => {
+        const { icon } = this.state;
+        let tmp = null;
 
-  buildArrayStringWithQuotes = s => {
-    let arr = s.split(",");
-
-    let tmp = "[";
-    for (let i = 0; i < arr.length; i++) {
-      tmp += '"' + arr[i].trim() + '"';
-      if (i < arr.length - 1) {
-        tmp += ", ";
-      }
-    }
-    tmp += "]";
-
-    return tmp;
-  };
-
-  handleInputChange = event => {
-    const target = event.target;
-    const options = event.target.options;
-    let value = target.type === "checkbox" ? target.checked : target.value;
-    const name = target.name;
-
-    if (options) {
-      value = [];
-      for (let i = 0, l = options.length; i < l; i++) {
-        if (options[i].selected) {
-          value.push(options[i].value);
+        if (icon === plus) {
+            tmp = minus;
+        } else {
+            tmp = plus;
         }
-      }
 
-      value = value.toString();
+        this.setState({
+            collapse: !this.state.collapse,
+            icon: tmp
+        });
+    };
+
+    buildArrayStringWithQuotes = s => {
+        let arr = s.split(",");
+
+        let tmp = "[";
+        for (let i = 0; i < arr.length; i++) {
+            tmp += '"' + arr[i].trim() + '"';
+            if (i < arr.length - 1) {
+                tmp += ", ";
+            }
+        }
+        tmp += "]";
+
+        return tmp;
+    };
+
+    handleInputChange = event => {
+        const target = event.target;
+        const options = event.target.options;
+        let value = target.type === "checkbox" ? target.checked : target.value;
+        const name = target.name;
+
+        if (options) {
+            value = [];
+            for (let i = 0, l = options.length; i < l; i++) {
+                if (options[i].selected) {
+                    value.push(options[i].value);
+                }
+            }
+
+            value = value.toString();
+        }
+
+        this.setState({
+            [name]: value
+        });
+    };
+
+    renderTermSetCount() {
+        let count = this.props.termSets.length;
+
+        if (count === 0) {
+            return null;
+        }
+
+        return <span class="tag">{count}</span>;
     }
 
-    this.setState({
-      [name]: value
-    });
-  };
+    handleSubmit = event => {
+        event.preventDefault();
 
-  renderTermSetCount() {
-    let count = this.props.termSets.length;
+        const {
+            termExpanderUrl,
+            termsetName,
+            termsetTerms,
+            termsetSynonyms,
+            termsetPlurals,
+            termsetVerbInflections
+        } = this.state;
 
-    if (count === 0) {
-      return null;
-    }
+        if (termsetSynonyms || termsetPlurals || termsetVerbInflections) {
+            let payload = "termset " + termsetName + ": [";
 
-    return <Badge color="dark">{count}</Badge>;
-  }
+            if (termsetSynonyms) {
+                payload += 'Clarity.Synonyms("' + termsetTerms + '"),';
+            }
+            if (termsetPlurals) {
+                payload += 'Clarity.Plurals("' + termsetTerms + '"),';
+            }
+            if (termsetVerbInflections) {
+                payload += 'Clarity.VerbInflections("' + termsetTerms + '"),';
+            }
 
-  handleSubmit = event => {
-    event.preventDefault();
+            payload = payload.slice(0, payload.length - 1); //removing the last extra ',' character
+            payload += "];";
 
-    const {
-      termExpanderUrl,
-      termsetName,
-      termsetTerms,
-      termsetSynonyms,
-      termsetPlurals,
-      termsetVerbInflections
-    } = this.state;
+            fetch(termExpanderUrl, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "text/plain"
+                },
+                body: payload
+            })
+                .then(response => {
+                    return response.text().then(data => {
+                        data = data.replace(":", ":\n\t");
+                        let text = data + "\n\n";
 
-    if (termsetSynonyms || termsetPlurals || termsetVerbInflections) {
-      let payload = "termset " + termsetName + ": [";
-
-      if (termsetSynonyms) {
-        payload += 'Clarity.Synonyms("' + termsetTerms + '"),';
-      }
-      if (termsetPlurals) {
-        payload += 'Clarity.Plurals("' + termsetTerms + '"),';
-      }
-      if (termsetVerbInflections) {
-        payload += 'Clarity.VerbInflections("' + termsetTerms + '"),';
-      }
-
-      payload = payload.slice(0, payload.length - 1); //removing the last extra ',' character
-      payload += "];";
-
-      fetch(termExpanderUrl, {
-        method: "POST",
-        headers: {
-          "Content-Type": "text/plain"
-        },
-        body: payload
-      })
-        .then(response => {
-          return response.text().then(data => {
-            data = data.replace(":", ":\n\t");
-            let text = data + "\n\n";
+                        this.props.updateNLPQL(text);
+                    });
+                })
+                .catch(err => {
+                    alert("Term Expander Unavailable. Reason: " + err.message);
+                });
+        } else {
+            let text = "termset " + termsetName + ":\n";
+            text +=
+                "\t" + this.buildArrayStringWithQuotes(termsetTerms) + "\n\n";
 
             this.props.updateNLPQL(text);
-          });
-        })
-        .catch(err => {
-          alert("Term Expander Unavailable. Reason: " + err.message);
-        });
-    } else {
-      let text = "termset " + termsetName + ":\n";
-      text += "\t" + this.buildArrayStringWithQuotes(termsetTerms) + "\n\n";
+        }
 
-      this.props.updateNLPQL(text);
+        this.props.appendTermSet(termsetName);
+        this.toggle();
+        this.setState(initialState);
+    };
+
+    render() {
+        const {
+            icon,
+            collapse,
+            termsetName,
+            termsetTerms,
+            termsetSynonyms,
+            termsetPlurals,
+            termsetVerbInflections
+        } = this.state;
+
+        return (
+            <React.Fragment>
+                <header className="card-header" onClick={this.toggle}>
+                    <p className="card-header-title">
+                        Term Set {this.renderTermSetCount()}
+                    </p>
+                    <a
+                        href="#"
+                        className="card-header-icon"
+                        aria-label="more options"
+                    >
+                        <span className="icon">
+                            <img height="16px" src={icon} alt="" />
+                        </span>
+                    </a>
+                </header>
+                <div
+                    className={
+                        collapse ? "card-content hidden" : "card-content"
+                    }
+                >
+                    <form>
+                        <div className="field">
+                            <label className="label">Name</label>
+                            <input
+                                className="input"
+                                type="text"
+                                name="termsetName"
+                                value={termsetName}
+                                onChange={this.handleInputChange}
+                            />
+                        </div>
+
+                        <div className="field">
+                            <label className="label">Terms</label>
+                            <input
+                                className="input"
+                                type="text"
+                                name="termsetTerms"
+                                value={termsetTerms}
+                                onChange={this.handleInputChange}
+                                placeholder="Separate entries with a comma."
+                            />
+                        </div>
+
+                        <div className="field">
+                            <label class="checkbox">
+                                <input
+                                    type="checkbox"
+                                    name="termsetSynonyms"
+                                    checked={termsetSynonyms}
+                                    onChange={this.handleInputChange}
+                                />{" "}
+                                Synonyms
+                            </label>
+                        </div>
+
+                        <div className="field">
+                            <label class="checkbox">
+                                <input
+                                    type="checkbox"
+                                    name="termsetPlurals"
+                                    checked={termsetPlurals}
+                                    onChange={this.handleInputChange}
+                                />{" "}
+                                Plurals
+                            </label>
+                        </div>
+
+                        <div className="field">
+                            <label class="checkbox">
+                                <input
+                                    type="checkbox"
+                                    name="termsetVerbInflections"
+                                    checked={termsetVerbInflections}
+                                    onChange={this.handleInputChange}
+                                />{" "}
+                                Verb Inflections
+                            </label>
+                        </div>
+
+                        <SubmitButton
+                            handleSubmit={this.handleSubmit}
+                            label="Add Term Set"
+                        />
+                    </form>
+                </div>
+            </React.Fragment>
+        );
     }
-
-    this.props.appendTermSet(termsetName);
-    this.toggle();
-    this.setState(initialState);
-  };
-
-  render() {
-    const {
-      icon,
-      collapse,
-      termsetName,
-      termsetTerms,
-      termsetSynonyms,
-      termsetPlurals,
-      termsetVerbInflections
-    } = this.state;
-
-    return (
-      <div>
-        <CardHeader onClick={this.toggle}>
-          <Row className="justify-content-between">
-            <Col>Term Set {this.renderTermSetCount()}</Col>
-            <Col className="text-right">
-              <img height="16px" src={icon} alt="" />
-            </Col>
-          </Row>
-        </CardHeader>
-        <Collapse isOpen={collapse}>
-          <CardBody>
-            <Form>
-              <FormGroup>
-                <Label for="termsetName">Name</Label>
-                <Input
-                  type="text"
-                  id="termsetName"
-                  name="termsetName"
-                  value={termsetName}
-                  onChange={this.handleInputChange}
-                />
-              </FormGroup>
-
-              <FormGroup>
-                <Label for="termsetTerms">Terms</Label>
-                <Input
-                  type="text"
-                  id="termsetTerms"
-                  name="termsetTerms"
-                  value={termsetTerms}
-                  onChange={this.handleInputChange}
-                  placeholder="Separate entries with a comma."
-                />
-              </FormGroup>
-
-              <FormGroup check>
-                <Label check>
-                  <Input
-                    type="checkbox"
-                    id="termsetSynonyms"
-                    name="termsetSynonyms"
-                    checked={termsetSynonyms}
-                    onChange={this.handleInputChange}
-                  />{" "}
-                  Synonyms
-                </Label>
-              </FormGroup>
-
-              <FormGroup check>
-                <Label check>
-                  <Input
-                    type="checkbox"
-                    id="termsetPlurals"
-                    name="termsetPlurals"
-                    checked={termsetPlurals}
-                    onChange={this.handleInputChange}
-                  />{" "}
-                  Plurals
-                </Label>
-              </FormGroup>
-
-              <FormGroup check>
-                <Label check>
-                  <Input
-                    type="checkbox"
-                    id="termsetVerbInflections"
-                    name="termsetVerbInflections"
-                    checked={termsetVerbInflections}
-                    onChange={this.handleInputChange}
-                  />{" "}
-                  Verb Inflections
-                </Label>
-              </FormGroup>
-
-              <SubmitButton
-                handleSubmit={this.handleSubmit}
-                label="Add Term Set"
-              />
-            </Form>
-          </CardBody>
-        </Collapse>
-      </div>
-    );
-  }
 }
 
 export default TermsetForm;

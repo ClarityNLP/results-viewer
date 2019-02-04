@@ -1,17 +1,6 @@
 /* eslint react/no-multi-comp: 0, react/prop-types: 0 */
 
 import React from "react";
-import {
-  Row,
-  Col,
-  Collapse,
-  Form,
-  FormGroup,
-  Label,
-  Input,
-  CardHeader,
-  CardBody
-} from "reactstrap";
 import Select from "react-select";
 
 import SubmitButton from "../../UIkit/SubmitButton";
@@ -20,879 +9,889 @@ import plus from "../../assets/icons/svg/plus.svg";
 import minus from "../../assets/icons/svg/minus.svg";
 
 const initialState = {
-  icon: plus,
-  collapse: false,
-  featureName: "",
-  featureAlgorithm: { value: "", label: "" },
-  customTermset: "",
-  customTermset2: "",
-  customDocumentset: "",
-  customSections: "",
-  customEnumList: "",
-  customCohort: "",
-  customGroupby: "",
-  customNgramN: "",
-  customMinFreq: "",
-  customVocabulary: "",
-  customWordDist: "",
-  customMinVal: "",
-  customMaxVal: "",
-  customAnyOrder: false,
-  customFilterNums: false,
-  customFilterStops: true,
-  customFilterPunct: true,
-  customLemmas: true,
-  customLimitTermset: false,
-  customSynonyms: false,
-  customDescendants: false,
-  customAncestors: false,
-  customCaseSensitive: false,
-  isFinal: false
+    icon: plus,
+    collapse: true,
+    featureName: "",
+    featureAlgorithm: { value: "", label: "" },
+    customTermset: "",
+    customTermset2: "",
+    customDocumentset: "",
+    customSections: "",
+    customEnumList: "",
+    customCohort: "",
+    customGroupby: "",
+    customNgramN: "",
+    customMinFreq: "",
+    customVocabulary: "",
+    customWordDist: "",
+    customMinVal: "",
+    customMaxVal: "",
+    customAnyOrder: false,
+    customFilterNums: false,
+    customFilterStops: true,
+    customFilterPunct: true,
+    customLemmas: true,
+    customLimitTermset: false,
+    customSynonyms: false,
+    customDescendants: false,
+    customAncestors: false,
+    customCaseSensitive: false,
+    isFinal: false
 };
 
 class DefineFeatureForm extends React.Component {
-  constructor(props) {
-    super(props);
+    constructor(props) {
+        super(props);
 
-    this.toggle = this.toggle.bind(this);
-    this.handleInputChange = this.handleInputChange.bind(this);
-    this.handleAlgorithmChange = this.handleAlgorithmChange.bind(this);
-    this.handleTermSetSelect = this.handleTermSetSelect.bind(this);
-    this.handleTermSet2Select = this.handleTermSet2Select.bind(this);
-    this.handleDocumentSetSelect = this.handleDocumentSetSelect.bind(this);
-    this.handleCohortSelect = this.handleCohortSelect.bind(this);
-    this.handleSubmit = this.handleSubmit.bind(this);
+        this.toggle = this.toggle.bind(this);
+        this.handleInputChange = this.handleInputChange.bind(this);
+        this.handleAlgorithmChange = this.handleAlgorithmChange.bind(this);
+        this.handleTermSetSelect = this.handleTermSetSelect.bind(this);
+        this.handleTermSet2Select = this.handleTermSet2Select.bind(this);
+        this.handleDocumentSetSelect = this.handleDocumentSetSelect.bind(this);
+        this.handleCohortSelect = this.handleCohortSelect.bind(this);
+        this.handleSubmit = this.handleSubmit.bind(this);
 
-    this.state = initialState;
-  }
-
-  toggle() {
-    const { icon } = this.state;
-    let tmp = null;
-
-    if (icon === plus) {
-      tmp = minus;
-    } else {
-      tmp = plus;
+        this.state = initialState;
     }
 
-    this.setState({
-      collapse: !this.state.collapse,
-      icon: tmp
-    });
-  }
+    toggle() {
+        const { icon } = this.state;
+        let tmp = null;
 
-  handleInputChange(event) {
-    const target = event.target;
-    let value = target.type === "checkbox" ? target.checked : target.value;
-    const name = target.name;
+        if (icon === plus) {
+            tmp = minus;
+        } else {
+            tmp = plus;
+        }
 
-    this.setState({
-      [name]: value
-    });
-  }
-
-  handleAlgorithmChange(value) {
-    this.setState({
-      featureAlgorithm: value
-    });
-  }
-
-  handleTermSetSelect(value) {
-    this.setState({
-      customTermset: value
-    });
-  }
-
-  handleTermSet2Select(value) {
-    this.setState({
-      customTermset2: value
-    });
-  }
-
-  handleDocumentSetSelect(value) {
-    this.setState({
-      customDocumentset: value
-    });
-  }
-
-  handleCohortSelect(value) {
-    this.setState({
-      customCohort: value
-    });
-  }
-
-  updateOptions(arr) {}
-
-  buildArrayStringWithQuotes = s => {
-    let arr = s.split(",");
-
-    let tmp = "[";
-    for (let i = 0; i < arr.length; i++) {
-      tmp += '"' + arr[i].trim() + '"';
-      if (i < arr.length - 1) {
-        tmp += ", ";
-      }
-    }
-    tmp += "]";
-
-    return tmp;
-  };
-
-  buildArrayStringWithoutQuotes = arr => {
-    let tmp = "[";
-    for (let i = 0; i < arr.length; i++) {
-      tmp += arr[i].trim();
-      if (i < arr.length - 1) {
-        tmp += ", ";
-      }
-    }
-    tmp += "]";
-
-    return tmp;
-  };
-
-  handleSubmit = event => {
-    event.preventDefault();
-
-    const {
-      featureName,
-      featureAlgorithm,
-      customTermset,
-      customTermset2,
-      customDocumentset,
-      customSections,
-      customEnumList,
-      customCohort,
-      customGroupby,
-      customNgramN,
-      customMinFreq,
-      customVocabulary,
-      customWordDist,
-      customMinVal,
-      customMaxVal,
-      customAnyOrder,
-      customFilterNums,
-      customFilterStops,
-      customFilterPunct,
-      customLemmas,
-      customLimitTermset,
-      customSynonyms,
-      customDescendants,
-      customAncestors,
-      customCaseSensitive,
-      isFinal
-    } = this.state;
-
-    let payload = [];
-
-    let algorithm = featureAlgorithm.value;
-
-    if (algorithm === "") {
-      return;
+        this.setState({
+            collapse: !this.state.collapse,
+            icon: tmp
+        });
     }
 
-    //termset
-    if (customTermset.length > 0) {
-      const termSets = customTermset.map(value => {
-        return value.value;
-      });
+    handleInputChange(event) {
+        const target = event.target;
+        let value = target.type === "checkbox" ? target.checked : target.value;
+        const name = target.name;
 
-      if (algorithm === "TermProximityTask") {
-        payload.push(
-          "termset1: " + this.buildArrayStringWithoutQuotes(termSets)
-        );
-      } else {
-        payload.push(
-          "termset: " + this.buildArrayStringWithoutQuotes(termSets)
-        );
-      }
+        this.setState({
+            [name]: value
+        });
     }
 
-    //termset2
-    if (customTermset2.length > 0) {
-      const termSets2 = customTermset2.map(value => {
-        return value.value;
-      });
-
-      payload.push(
-        "termset2: " + this.buildArrayStringWithoutQuotes(termSets2)
-      );
+    handleAlgorithmChange(value) {
+        this.setState({
+            featureAlgorithm: value
+        });
     }
 
-    //documentset
-    if (customDocumentset.length > 0) {
-      const documentSets = customDocumentset.map(value => {
-        return value.value;
-      });
-
-      payload.push(
-        "documentset: " + this.buildArrayStringWithoutQuotes(documentSets)
-      );
+    handleTermSetSelect(value) {
+        this.setState({
+            customTermset: value
+        });
     }
 
-    // cohort
-    if (customCohort.length > 0) {
-      const cohorts = customCohort.map(value => {
-        return value.value;
-      });
-
-      payload.push('cohort: "' + cohorts + '"');
+    handleTermSet2Select(value) {
+        this.setState({
+            customTermset2: value
+        });
     }
 
-    // groupBy
-    if (customGroupby != null && customGroupby.length > 0) {
-      payload.push('group_by: "' + customGroupby.trim() + '"');
+    handleDocumentSetSelect(value) {
+        this.setState({
+            customDocumentset: value
+        });
     }
 
-    //sections
-    if (customSections.length > 0 && customSections[0].length > 0) {
-      payload.push(
-        "sections: " + this.buildArrayStringWithQuotes(customSections)
-      );
+    handleCohortSelect(value) {
+        this.setState({
+            customCohort: value
+        });
     }
 
-    if (algorithm === "Ngram") {
-      //Ngram-n
-      if (customNgramN != null && customNgramN.length > 0) {
-        payload.push('n: "' + customNgramN.trim() + '"');
-      }
+    updateOptions(arr) {}
 
-      //min-Frequency
-      if (customMinFreq != null && customMinFreq.length > 0) {
-        payload.push("min_freq: " + customMinFreq.trim());
-      }
+    buildArrayStringWithQuotes = s => {
+        let arr = s.split(",");
 
-      //filter-nums
-      payload.push("filter_nums: " + customFilterNums);
+        let tmp = "[";
+        for (let i = 0; i < arr.length; i++) {
+            tmp += '"' + arr[i].trim() + '"';
+            if (i < arr.length - 1) {
+                tmp += ", ";
+            }
+        }
+        tmp += "]";
 
-      //filter-stops
-      payload.push("filter_stops: " + customFilterStops);
+        return tmp;
+    };
 
-      //filter-punct
-      payload.push("filter_punct: " + customFilterPunct);
+    buildArrayStringWithoutQuotes = arr => {
+        let tmp = "[";
+        for (let i = 0; i < arr.length; i++) {
+            tmp += arr[i].trim();
+            if (i < arr.length - 1) {
+                tmp += ", ";
+            }
+        }
+        tmp += "]";
 
-      //lemmas
-      payload.push("lemmas: " + customLemmas);
+        return tmp;
+    };
 
-      // limit termset
-      payload.push("limit_to_termset: " + customLimitTermset);
-    }
+    handleSubmit = event => {
+        event.preventDefault();
 
-    if (algorithm === "ProviderAssertion" || algorithm === "TermFinder") {
-      //Synonyms
-      payload.push("include_synonyms: " + customSynonyms);
+        const {
+            featureName,
+            featureAlgorithm,
+            customTermset,
+            customTermset2,
+            customDocumentset,
+            customSections,
+            customEnumList,
+            customCohort,
+            customGroupby,
+            customNgramN,
+            customMinFreq,
+            customVocabulary,
+            customWordDist,
+            customMinVal,
+            customMaxVal,
+            customAnyOrder,
+            customFilterNums,
+            customFilterStops,
+            customFilterPunct,
+            customLemmas,
+            customLimitTermset,
+            customSynonyms,
+            customDescendants,
+            customAncestors,
+            customCaseSensitive,
+            isFinal
+        } = this.state;
 
-      // descendants
-      payload.push("include_descendants: " + customDescendants);
+        let payload = [];
 
-      // include_ancestors
-      payload.push("include_ancestors: " + customAncestors);
+        let algorithm = featureAlgorithm.value;
 
-      // vocabulary
-      if (customVocabulary != null && customVocabulary.length > 0) {
-        payload.push('vocabulary: "' + customVocabulary.trim() + '"');
-      }
-    }
+        if (algorithm === "") {
+            return;
+        }
 
-    if (algorithm === "TermProximityTask") {
-      // word distance
-      if (customWordDist != null && customWordDist.length > 0) {
-        payload.push("word_distance: " + customWordDist.trim());
-      }
+        //termset
+        if (customTermset.length > 0) {
+            const termSets = customTermset.map(value => {
+                return value.value;
+            });
 
-      //anyorder
-      payload.push("any_order: " + customAnyOrder);
-    }
+            if (algorithm === "TermProximityTask") {
+                payload.push(
+                    "termset1: " + this.buildArrayStringWithoutQuotes(termSets)
+                );
+            } else {
+                payload.push(
+                    "termset: " + this.buildArrayStringWithoutQuotes(termSets)
+                );
+            }
+        }
 
-    if (algorithm === "ValueExtraction") {
-      //enum list
-      if (customEnumList.length > 0 && customEnumList[0].length > 0) {
-        payload.push(
-          "enum_list: " + this.buildArrayStringWithQuotes(customEnumList)
-        );
-      }
+        //termset2
+        if (customTermset2.length > 0) {
+            const termSets2 = customTermset2.map(value => {
+                return value.value;
+            });
 
-      // min val
-      if (customMinVal != null && customMinVal.length > 0) {
-        payload.push("minimum_value: " + customMinVal.trim());
-      }
+            payload.push(
+                "termset2: " + this.buildArrayStringWithoutQuotes(termSets2)
+            );
+        }
 
-      // max val
-      if (customMaxVal != null && customMaxVal.length > 0) {
-        payload.push("maximum_value: " + customMaxVal.trim());
-      }
+        //documentset
+        if (customDocumentset.length > 0) {
+            const documentSets = customDocumentset.map(value => {
+                return value.value;
+            });
 
-      // case Sensitive
-      payload.push("case_sensitive: " + customCaseSensitive);
-    }
+            payload.push(
+                "documentset: " +
+                    this.buildArrayStringWithoutQuotes(documentSets)
+            );
+        }
 
-    // Constructing custom task element
-    let text = "define ";
-    if (isFinal) {
-      text += "final ";
-    }
-    text += featureName + ":\n\t";
-    text += "Clarity." + algorithm + "({\n\t\t";
+        // cohort
+        if (customCohort.length > 0) {
+            const cohorts = customCohort.map(value => {
+                return value.value;
+            });
 
-    for (let i = 0; i < payload.length; i++) {
-      text += payload[i];
-      if (i < payload.length - 1) {
-        text += ",\n\t\t";
-      }
-    }
-    text += "\n\t});\n\n";
+            payload.push('cohort: "' + cohorts + '"');
+        }
 
-    this.props.appendFeature({
-      name: featureName,
-      algorithm: algorithm
-    });
+        // groupBy
+        if (customGroupby != null && customGroupby.length > 0) {
+            payload.push('group_by: "' + customGroupby.trim() + '"');
+        }
 
-    this.props.updateNLPQL(text);
-    this.toggle();
-    this.setState(initialState);
-  };
+        //sections
+        if (customSections.length > 0 && customSections[0].length > 0) {
+            payload.push(
+                "sections: " + this.buildArrayStringWithQuotes(customSections)
+            );
+        }
 
-  renderInputsForAlgorithm = () => {
-    const {
-      customTermset,
-      customTermset2,
-      customDocumentSet,
-      customCohort,
-      featureAlgorithm,
-      customSections,
-      customEnumList,
-      customGroupby,
-      customNgramN,
-      customMinFreq,
-      customVocabulary,
-      customWordDist,
-      customMinVal,
-      customMaxVal,
-      customAnyOrder,
-      customFilterNums,
-      customFilterStops,
-      customFilterPunct,
-      customLemmas,
-      customLimitTermset,
-      customSynonyms,
-      customDescendants,
-      customAncestors,
-      customCaseSensitive,
-      isFinal
-    } = this.state;
-    const { termSets, documentSets, cohorts } = this.props;
+        if (algorithm === "Ngram") {
+            //Ngram-n
+            if (customNgramN != null && customNgramN.length > 0) {
+                payload.push('n: "' + customNgramN.trim() + '"');
+            }
 
-    let customTermsetDiv = (
-      <FormGroup>
-        <Label>Term Set</Label>
-        <Select
-          isMulti={true}
-          value={customTermset}
-          onChange={this.handleTermSetSelect}
-          options={termSets.map(value => {
-            return {
-              value: value,
-              label: value
-            };
-          })}
-        />
-      </FormGroup>
-    );
+            //min-Frequency
+            if (customMinFreq != null && customMinFreq.length > 0) {
+                payload.push("min_freq: " + customMinFreq.trim());
+            }
 
-    let customTermset2Div = (
-      <FormGroup>
-        <Label>Term Set 2</Label>
-        <Select
-          isMulti={true}
-          value={customTermset2}
-          onChange={this.handleTermSet2Select}
-          options={termSets.map(value => {
-            return {
-              value: value,
-              label: value
-            };
-          })}
-        />
-      </FormGroup>
-    );
+            //filter-nums
+            payload.push("filter_nums: " + customFilterNums);
 
-    let customDocumentsetDiv = (
-      <FormGroup>
-        <Label>Document Set</Label>
-        <Select
-          isMulti={true}
-          value={customDocumentSet}
-          onChange={this.handleDocumentSetSelect}
-          options={documentSets.map(value => {
-            return {
-              value: value,
-              label: value
-            };
-          })}
-        />
-      </FormGroup>
-    );
+            //filter-stops
+            payload.push("filter_stops: " + customFilterStops);
 
-    let customSectionsDiv = (
-      <FormGroup>
-        <Label for="customSections">Sections</Label>
-        <Input
-          type="text"
-          id="customSections"
-          name="customSections"
-          value={customSections}
-          onChange={this.handleInputChange}
-          placeholder="Separate entries with a comma."
-        />
-      </FormGroup>
-    );
+            //filter-punct
+            payload.push("filter_punct: " + customFilterPunct);
 
-    let customEnumListDiv = (
-      <FormGroup>
-        <Label for="customEnumList">Enum List</Label>
-        <Input
-          type="text"
-          id="customEnumList"
-          name="customEnumList"
-          value={customEnumList}
-          onChange={this.handleInputChange}
-          placeholder="Separate entries with a comma."
-        />
-      </FormGroup>
-    );
+            //lemmas
+            payload.push("lemmas: " + customLemmas);
 
-    let customCohortDiv = (
-      <FormGroup>
-        <Label>Cohort</Label>
-        <Select
-          isMulti={true}
-          value={customCohort}
-          onChange={this.handleCohortSelect}
-          options={cohorts.map(value => {
-            return {
-              value: value,
-              label: value
-            };
-          })}
-        />
-      </FormGroup>
-    );
+            // limit termset
+            payload.push("limit_to_termset: " + customLimitTermset);
+        }
 
-    let customGroupbyDiv = (
-      <FormGroup>
-        <Label for="customGroupby">Group By</Label>
-        <Input
-          type="text"
-          id="customGroupby"
-          name="customGroupby"
-          value={customGroupby}
-          onChange={this.handleInputChange}
-        />
-      </FormGroup>
-    );
+        if (algorithm === "ProviderAssertion" || algorithm === "TermFinder") {
+            //Synonyms
+            payload.push("include_synonyms: " + customSynonyms);
 
-    let customNgramNDiv = (
-      <FormGroup>
-        <Label for="customNgramN">n</Label>
-        <Input
-          type="text"
-          id="customNgramN"
-          name="customNgramN"
-          value={customNgramN}
-          onChange={this.handleInputChange}
-        />
-      </FormGroup>
-    );
+            // descendants
+            payload.push("include_descendants: " + customDescendants);
 
-    let customMinFreqDiv = (
-      <FormGroup>
-        <Label for="customMinFreq">Minimum Frequency</Label>
-        <Input
-          type="text"
-          id="customMinFreq"
-          name="customMinFreq"
-          value={customMinFreq}
-          onChange={this.handleInputChange}
-        />
-      </FormGroup>
-    );
+            // include_ancestors
+            payload.push("include_ancestors: " + customAncestors);
 
-    let customVocabularyDiv = (
-      <FormGroup>
-        <Label for="customVocabulary">Vocabulary</Label>
-        <Input
-          type="text"
-          id="customVocabulary"
-          name="customVocabulary"
-          value={customVocabulary}
-          onChange={this.handleInputChange}
-        />
-      </FormGroup>
-    );
+            // vocabulary
+            if (customVocabulary != null && customVocabulary.length > 0) {
+                payload.push('vocabulary: "' + customVocabulary.trim() + '"');
+            }
+        }
 
-    let customWordDistDiv = (
-      <FormGroup>
-        <Label for="customWordDist">Word Distance</Label>
-        <Input
-          type="text"
-          id="customWordDist"
-          name="customWordDist"
-          value={customWordDist}
-          onChange={this.handleInputChange}
-        />
-      </FormGroup>
-    );
+        if (algorithm === "TermProximityTask") {
+            // word distance
+            if (customWordDist != null && customWordDist.length > 0) {
+                payload.push("word_distance: " + customWordDist.trim());
+            }
 
-    let customMinValDiv = (
-      <FormGroup>
-        <Label for="customMinVal">Minimum Value</Label>
-        <Input
-          type="text"
-          id="customMinVal"
-          name="customMinVal"
-          value={customMinVal}
-          onChange={this.handleInputChange}
-        />
-      </FormGroup>
-    );
+            //anyorder
+            payload.push("any_order: " + customAnyOrder);
+        }
 
-    let customMaxValDiv = (
-      <FormGroup>
-        <Label for="customMaxVal">Maximum Value</Label>
-        <Input
-          type="text"
-          id="customMaxVal"
-          name="customMaxVal"
-          value={customMaxVal}
-          onChange={this.handleInputChange}
-        />
-      </FormGroup>
-    );
+        if (algorithm === "ValueExtraction") {
+            //enum list
+            if (customEnumList.length > 0 && customEnumList[0].length > 0) {
+                payload.push(
+                    "enum_list: " +
+                        this.buildArrayStringWithQuotes(customEnumList)
+                );
+            }
 
-    let customAnyOrderDiv = (
-      <FormGroup check>
-        <Label check>
-          <Input
-            type="checkbox"
-            id="customAnyOrder"
-            name="customAnyOrder"
-            checked={customAnyOrder}
-            onChange={this.handleInputChange}
-          />{" "}
-          Any Order
-        </Label>
-      </FormGroup>
-    );
+            // min val
+            if (customMinVal != null && customMinVal.length > 0) {
+                payload.push("minimum_value: " + customMinVal.trim());
+            }
 
-    let customFilterNumsDiv = (
-      <FormGroup check>
-        <Label check>
-          <Input
-            type="checkbox"
-            id="customFilterNums"
-            name="customFilterNums"
-            checked={customFilterNums}
-            onChange={this.handleInputChange}
-          />{" "}
-          Filter Numbers
-        </Label>
-      </FormGroup>
-    );
+            // max val
+            if (customMaxVal != null && customMaxVal.length > 0) {
+                payload.push("maximum_value: " + customMaxVal.trim());
+            }
 
-    let customFilterStopsDiv = (
-      <FormGroup check>
-        <Label check>
-          <Input
-            type="checkbox"
-            id="customFilterStops"
-            name="customFilterStops"
-            checked={customFilterStops}
-            onChange={this.handleInputChange}
-          />{" "}
-          Filter Stops
-        </Label>
-      </FormGroup>
-    );
+            // case Sensitive
+            payload.push("case_sensitive: " + customCaseSensitive);
+        }
 
-    let customFilterPunctDiv = (
-      <FormGroup check>
-        <Label check>
-          <Input
-            type="checkbox"
-            id="customFilterPunct"
-            name="customFilterPunct"
-            checked={customFilterPunct}
-            onChange={this.handleInputChange}
-          />{" "}
-          Filter Punctuations
-        </Label>
-      </FormGroup>
-    );
+        // Constructing custom task element
+        let text = "define ";
+        if (isFinal) {
+            text += "final ";
+        }
+        text += featureName + ":\n\t";
+        text += "Clarity." + algorithm + "({\n\t\t";
 
-    let customLemmasDiv = (
-      <FormGroup check>
-        <Label check>
-          <Input
-            type="checkbox"
-            id="customLemmas"
-            name="customLemmas"
-            checked={customLemmas}
-            onChange={this.handleInputChange}
-          />{" "}
-          Lemmas
-        </Label>
-      </FormGroup>
-    );
+        for (let i = 0; i < payload.length; i++) {
+            text += payload[i];
+            if (i < payload.length - 1) {
+                text += ",\n\t\t";
+            }
+        }
+        text += "\n\t});\n\n";
 
-    let customLimitTermsetDiv = (
-      <FormGroup check>
-        <Label check>
-          <Input
-            type="checkbox"
-            id="customLimitTermset"
-            name="customLimitTermset"
-            checked={customLimitTermset}
-            onChange={this.handleInputChange}
-          />{" "}
-          Limit to Termset
-        </Label>
-      </FormGroup>
-    );
+        this.props.appendFeature({
+            name: featureName,
+            algorithm: algorithm
+        });
 
-    let customSynonymsDiv = (
-      <FormGroup check>
-        <Label check>
-          <Input
-            type="checkbox"
-            id="customSynonyms"
-            name="customSynonyms"
-            checked={customSynonyms}
-            onChange={this.handleInputChange}
-          />{" "}
-          Include Synonyms
-        </Label>
-      </FormGroup>
-    );
+        this.props.updateNLPQL(text);
+        this.toggle();
+        this.setState(initialState);
+    };
 
-    let customDescendantsDiv = (
-      <FormGroup check>
-        <Label check>
-          <Input
-            type="checkbox"
-            id="customDescendants"
-            name="customDescendants"
-            checked={customDescendants}
-            onChange={this.handleInputChange}
-          />{" "}
-          Include Descendants
-        </Label>
-      </FormGroup>
-    );
+    renderInputsForAlgorithm = () => {
+        const {
+            customTermset,
+            customTermset2,
+            customDocumentSet,
+            customCohort,
+            featureAlgorithm,
+            customSections,
+            customEnumList,
+            customGroupby,
+            customNgramN,
+            customMinFreq,
+            customVocabulary,
+            customWordDist,
+            customMinVal,
+            customMaxVal,
+            customAnyOrder,
+            customFilterNums,
+            customFilterStops,
+            customFilterPunct,
+            customLemmas,
+            customLimitTermset,
+            customSynonyms,
+            customDescendants,
+            customAncestors,
+            customCaseSensitive,
+            isFinal
+        } = this.state;
+        const { termSets, documentSets, cohorts } = this.props;
 
-    let customAncestorsDiv = (
-      <FormGroup check>
-        <Label check>
-          <Input
-            type="checkbox"
-            id="customAncestors"
-            name="customAncestors"
-            checked={customAncestors}
-            onChange={this.handleInputChange}
-          />{" "}
-          Include Ancestors
-        </Label>
-      </FormGroup>
-    );
-
-    let customCaseSensitiveDiv = (
-      <FormGroup check>
-        <Label check>
-          <Input
-            type="checkbox"
-            id="customCaseSensitive"
-            name="customCaseSensitive"
-            checked={customCaseSensitive}
-            onChange={this.handleInputChange}
-          />{" "}
-          Case Sensitive
-        </Label>
-      </FormGroup>
-    );
-
-    let isFinalDiv = (
-      <FormGroup check className="mt-3 mb-3">
-        <Label check size="lg">
-          <Input
-            type="checkbox"
-            id="isFinal"
-            name="isFinal"
-            checked={isFinal}
-            onChange={this.handleInputChange}
-          />
-          Include in final results
-        </Label>
-      </FormGroup>
-    );
-
-    let algorithm = featureAlgorithm.value;
-
-    if (algorithm === "") {
-      return;
-    }
-
-    return (
-      <div>
-        {customTermsetDiv}
-        {algorithm === "TermProximityTask" ? customTermset2Div : null}
-        {customDocumentsetDiv}
-        {customCohortDiv}
-        {algorithm === "ValueExtraction" ? customEnumListDiv : null}
-        {algorithm === "ProviderAssertion" ||
-        algorithm === "TermFinder" ||
-        algorithm === "MeasurementFinder" ||
-        algorithm === "NamedEntityRecognition"
-          ? customSectionsDiv
-          : null}
-        {algorithm === "ProviderAssertion" || algorithm === "TermFinder"
-          ? customVocabularyDiv
-          : null}
-        {algorithm === "ProviderAssertion" || algorithm === "TermFinder"
-          ? customSynonymsDiv
-          : null}
-        {algorithm === "ProviderAssertion" || algorithm === "TermFinder"
-          ? customDescendantsDiv
-          : null}
-        {algorithm === "ProviderAssertion" || algorithm === "TermFinder"
-          ? customAncestorsDiv
-          : null}
-        {algorithm === "TermProximityTask" ? customWordDistDiv : null}
-        {algorithm === "TermProximityTask" ? customAnyOrderDiv : null}
-        {algorithm === "ValueExtraction" ? customMinValDiv : null}
-        {algorithm === "ValueExtraction" ? customMaxValDiv : null}
-        {algorithm === "ValueExtraction" ? customCaseSensitiveDiv : null}
-        {algorithm === "TextStats" ? customGroupbyDiv : null}
-        {algorithm === "Ngram" ? customNgramNDiv : null}
-        {algorithm === "Ngram" ? customMinFreqDiv : null}
-        {algorithm === "Ngram" ? customFilterNumsDiv : null}
-        {algorithm === "Ngram" ? customFilterStopsDiv : null}
-        {algorithm === "Ngram" ? customFilterPunctDiv : null}
-        {algorithm === "Ngram" ? customLemmasDiv : null}
-        {algorithm === "Ngram" ? customLimitTermsetDiv : null}
-        {algorithm !== "" ? isFinalDiv : null}
-      </div>
-    );
-  };
-
-  render() {
-    const { icon, collapse, featureName, featureAlgorithm } = this.state;
-
-    return (
-      <div>
-        <CardHeader onClick={this.toggle}>
-          <Row className="justify-content-between">
-            <Col>Feature</Col>
-            <Col className="text-right">
-              <img height="16px" src={icon} alt="" />
-            </Col>
-          </Row>
-        </CardHeader>
-        <Collapse isOpen={collapse}>
-          <CardBody>
-            <Form>
-              <FormGroup>
-                <Label for="featureName">Feature Name</Label>
-                <Input
-                  type="text"
-                  id="featureName"
-                  name="featureName"
-                  value={featureName}
-                  onChange={this.handleInputChange}
-                />
-              </FormGroup>
-
-              <FormGroup>
-                <Label for="featureAlgorithm">Select Algorithm</Label>
+        let customTermsetDiv = (
+            <div className="field">
+                <label className="label">Term Set</label>
                 <Select
-                  value={featureAlgorithm}
-                  onChange={this.handleAlgorithmChange}
-                  options={[
-                    {
-                      value: "",
-                      label: ""
-                    },
-                    {
-                      value: "MeasurementFinder",
-                      label: "Measurement Finder"
-                    },
-                    {
-                      value: "NamedEntityRecognition",
-                      label: "Named Entity Recognition"
-                    },
-                    {
-                      value: "Ngram",
-                      label: "Ngram"
-                    },
-                    {
-                      value: "POSTagger",
-                      label: "POS Tagger"
-                    },
-                    {
-                      value: "ProviderAssertion",
-                      label: "Provider Assertion"
-                    },
-                    {
-                      value: "TermProximityTask",
-                      label: "Term Proximity Task"
-                    },
-                    {
-                      value: "TermFinder",
-                      label: "Term Finder"
-                    },
-                    {
-                      value: "ValueExtraction",
-                      label: "Value Extraction"
-                    },
-                    {
-                      value: "GleasonScoreTask",
-                      label: "Gleason Score Task"
-                    },
-                    {
-                      value: "RaceFinderTask",
-                      label: "Race Finder Task"
-                    },
-                    {
-                      value: "PFTFinder",
-                      label: "PFT Finder"
-                    },
-                    {
-                      value: "TextStats",
-                      label: "Text Stats"
-                    },
-                    {
-                      value: "TNMStager",
-                      label: "TNM Stager"
-                    },
-                    {
-                      value: "TransfusionNursingNotesParser",
-                      label: "Transfusion Nursing Notes Parser"
-                    }
-                  ]}
+                    isMulti={true}
+                    value={customTermset}
+                    onChange={this.handleTermSetSelect}
+                    options={termSets.map(value => {
+                        return {
+                            value: value,
+                            label: value
+                        };
+                    })}
                 />
-              </FormGroup>
+            </div>
+        );
 
-              {this.renderInputsForAlgorithm()}
+        let customTermset2Div = (
+            <div className="field">
+                <label className="label">Term Set 2</label>
+                <Select
+                    isMulti={true}
+                    value={customTermset2}
+                    onChange={this.handleTermSet2Select}
+                    options={termSets.map(value => {
+                        return {
+                            value: value,
+                            label: value
+                        };
+                    })}
+                />
+            </div>
+        );
 
-              <SubmitButton
-                handleSubmit={this.handleSubmit}
-                label="Add Feature"
-              />
-            </Form>
-          </CardBody>
-        </Collapse>
-      </div>
-    );
-  }
+        let customDocumentsetDiv = (
+            <div className="field">
+                <label className="label">Document Set</label>
+                <Select
+                    isMulti={true}
+                    value={customDocumentSet}
+                    onChange={this.handleDocumentSetSelect}
+                    options={documentSets.map(value => {
+                        return {
+                            value: value,
+                            label: value
+                        };
+                    })}
+                />
+            </div>
+        );
+
+        let customSectionsDiv = (
+            <div className="field">
+                <label className="label" for="customSections">
+                    Sections
+                </label>
+                <input
+                    className="input"
+                    type="text"
+                    name="customSections"
+                    value={customSections}
+                    onChange={this.handleInputChange}
+                    placeholder="Separate entries with a comma."
+                />
+            </div>
+        );
+
+        let customEnumListDiv = (
+            <div className="field">
+                <label className="label" for="customEnumList">
+                    Enum List
+                </label>
+                <input
+                    className="input"
+                    type="text"
+                    name="customEnumList"
+                    value={customEnumList}
+                    onChange={this.handleInputChange}
+                    placeholder="Separate entries with a comma."
+                />
+            </div>
+        );
+
+        let customCohortDiv = (
+            <div className="field">
+                <label className="label">Cohort</label>
+                <Select
+                    isMulti={true}
+                    value={customCohort}
+                    onChange={this.handleCohortSelect}
+                    options={cohorts.map(value => {
+                        return {
+                            value: value,
+                            label: value
+                        };
+                    })}
+                />
+            </div>
+        );
+
+        let customGroupbyDiv = (
+            <div className="field">
+                <label className="label" for="customGroupby">
+                    Group By
+                </label>
+                <input
+                    className="input"
+                    type="text"
+                    name="customGroupby"
+                    value={customGroupby}
+                    onChange={this.handleInputChange}
+                />
+            </div>
+        );
+
+        let customNgramNDiv = (
+            <div className="field">
+                <label className="label">n</label>
+                <input
+                    className="input"
+                    type="text"
+                    name="customNgramN"
+                    value={customNgramN}
+                    onChange={this.handleInputChange}
+                />
+            </div>
+        );
+
+        let customMinFreqDiv = (
+            <div className="field">
+                <label className="label">Minimum Frequency</label>
+                <input
+                    className="input"
+                    type="text"
+                    name="customMinFreq"
+                    value={customMinFreq}
+                    onChange={this.handleInputChange}
+                />
+            </div>
+        );
+
+        let customVocabularyDiv = (
+            <div className="field">
+                <label className="label">Vocabulary</label>
+                <input
+                    className="input"
+                    type="text"
+                    name="customVocabulary"
+                    value={customVocabulary}
+                    onChange={this.handleInputChange}
+                />
+            </div>
+        );
+
+        let customWordDistDiv = (
+            <div className="field">
+                <label className="label">Word Distance</label>
+                <input
+                    className="input"
+                    type="text"
+                    name="customWordDist"
+                    value={customWordDist}
+                    onChange={this.handleInputChange}
+                />
+            </div>
+        );
+
+        let customMinValDiv = (
+            <div className="field">
+                <label className="label">Minimum Value</label>
+                <input
+                    className="input"
+                    type="text"
+                    name="customMinVal"
+                    value={customMinVal}
+                    onChange={this.handleInputChange}
+                />
+            </div>
+        );
+
+        let customMaxValDiv = (
+            <div className="field">
+                <label className="label">Maximum Value</label>
+                <input
+                    className="input"
+                    type="text"
+                    name="customMaxVal"
+                    value={customMaxVal}
+                    onChange={this.handleInputChange}
+                />
+            </div>
+        );
+
+        let customAnyOrderDiv = (
+            <div className="field">
+                <label className="checkbox">
+                    <input
+                        type="checkbox"
+                        name="customAnyOrder"
+                        checked={customAnyOrder}
+                        onChange={this.handleInputChange}
+                    />{" "}
+                    Any Order
+                </label>
+            </div>
+        );
+
+        let customFilterNumsDiv = (
+            <div className="field">
+                <label className="checkbox">
+                    <input
+                        type="checkbox"
+                        name="customFilterNums"
+                        checked={customFilterNums}
+                        onChange={this.handleInputChange}
+                    />{" "}
+                    Filter Numbers
+                </label>
+            </div>
+        );
+
+        let customFilterStopsDiv = (
+            <div className="field">
+                <label className="checkbox">
+                    <input
+                        type="checkbox"
+                        name="customFilterStops"
+                        checked={customFilterStops}
+                        onChange={this.handleInputChange}
+                    />{" "}
+                    Filter Stops
+                </label>
+            </div>
+        );
+
+        let customFilterPunctDiv = (
+            <div className="field">
+                <label className="checkbox">
+                    <input
+                        type="checkbox"
+                        name="customFilterPunct"
+                        checked={customFilterPunct}
+                        onChange={this.handleInputChange}
+                    />{" "}
+                    Filter Punctuations
+                </label>
+            </div>
+        );
+
+        let customLemmasDiv = (
+            <div className="field">
+                <label className="checkbox">
+                    <input
+                        type="checkbox"
+                        name="customLemmas"
+                        checked={customLemmas}
+                        onChange={this.handleInputChange}
+                    />{" "}
+                    Lemmas
+                </label>
+            </div>
+        );
+
+        let customLimitTermsetDiv = (
+            <div className="field">
+                <label className="checkbox">
+                    <input
+                        type="checkbox"
+                        name="customLimitTermset"
+                        checked={customLimitTermset}
+                        onChange={this.handleInputChange}
+                    />{" "}
+                    Limit to Termset
+                </label>
+            </div>
+        );
+
+        let customSynonymsDiv = (
+            <div className="field">
+                <label className="checkbox">
+                    <input
+                        type="checkbox"
+                        name="customSynonyms"
+                        checked={customSynonyms}
+                        onChange={this.handleInputChange}
+                    />{" "}
+                    Include Synonyms
+                </label>
+            </div>
+        );
+
+        let customDescendantsDiv = (
+            <div className="field">
+                <label className="checkbox" check>
+                    <input
+                        type="checkbox"
+                        name="customDescendants"
+                        checked={customDescendants}
+                        onChange={this.handleInputChange}
+                    />{" "}
+                    Include Descendants
+                </label>
+            </div>
+        );
+
+        let customAncestorsDiv = (
+            <div className="field">
+                <label className="checkbox">
+                    <input
+                        type="checkbox"
+                        name="customAncestors"
+                        checked={customAncestors}
+                        onChange={this.handleInputChange}
+                    />{" "}
+                    Include Ancestors
+                </label>
+            </div>
+        );
+
+        let customCaseSensitiveDiv = (
+            <div className="field">
+                <label className="checkbox">
+                    <input
+                        type="checkbox"
+                        name="customCaseSensitive"
+                        checked={customCaseSensitive}
+                        onChange={this.handleInputChange}
+                    />{" "}
+                    Case Sensitive
+                </label>
+            </div>
+        );
+
+        let isFinalDiv = (
+            <div className="field">
+                <label className="checkbox is-large">
+                    <input
+                        type="checkbox"
+                        name="isFinal"
+                        checked={isFinal}
+                        onChange={this.handleInputChange}
+                    />{" "}
+                    Include in final results
+                </label>
+            </div>
+        );
+
+        let algorithm = featureAlgorithm.value;
+
+        if (algorithm === "") {
+            return;
+        }
+
+        return (
+            <div>
+                {customTermsetDiv}
+                {algorithm === "TermProximityTask" ? customTermset2Div : null}
+                {customDocumentsetDiv}
+                {customCohortDiv}
+                {algorithm === "ValueExtraction" ? customEnumListDiv : null}
+                {algorithm === "ProviderAssertion" ||
+                algorithm === "TermFinder" ||
+                algorithm === "MeasurementFinder" ||
+                algorithm === "NamedEntityRecognition"
+                    ? customSectionsDiv
+                    : null}
+                {algorithm === "ProviderAssertion" || algorithm === "TermFinder"
+                    ? customVocabularyDiv
+                    : null}
+                {algorithm === "ProviderAssertion" || algorithm === "TermFinder"
+                    ? customSynonymsDiv
+                    : null}
+                {algorithm === "ProviderAssertion" || algorithm === "TermFinder"
+                    ? customDescendantsDiv
+                    : null}
+                {algorithm === "ProviderAssertion" || algorithm === "TermFinder"
+                    ? customAncestorsDiv
+                    : null}
+                {algorithm === "TermProximityTask" ? customWordDistDiv : null}
+                {algorithm === "TermProximityTask" ? customAnyOrderDiv : null}
+                {algorithm === "ValueExtraction" ? customMinValDiv : null}
+                {algorithm === "ValueExtraction" ? customMaxValDiv : null}
+                {algorithm === "ValueExtraction"
+                    ? customCaseSensitiveDiv
+                    : null}
+                {algorithm === "TextStats" ? customGroupbyDiv : null}
+                {algorithm === "Ngram" ? customNgramNDiv : null}
+                {algorithm === "Ngram" ? customMinFreqDiv : null}
+                {algorithm === "Ngram" ? customFilterNumsDiv : null}
+                {algorithm === "Ngram" ? customFilterStopsDiv : null}
+                {algorithm === "Ngram" ? customFilterPunctDiv : null}
+                {algorithm === "Ngram" ? customLemmasDiv : null}
+                {algorithm === "Ngram" ? customLimitTermsetDiv : null}
+                {algorithm !== "" ? isFinalDiv : null}
+            </div>
+        );
+    };
+
+    render() {
+        const { icon, collapse, featureName, featureAlgorithm } = this.state;
+
+        return (
+            <div>
+                <header className="card-header" onClick={this.toggle}>
+                    <p className="card-header-title">Feature</p>
+                    <a
+                        href="#"
+                        className="card-header-icon"
+                        aria-label="more options"
+                    >
+                        <span className="icon">
+                            <img height="16px" src={icon} alt="" />
+                        </span>
+                    </a>
+                </header>
+                <div
+                    className={
+                        collapse ? "card-content hidden" : "card-content"
+                    }
+                >
+                    <form>
+                        <div className="field">
+                            <label className="label" for="featureName">
+                                Feature Name
+                            </label>
+                            <input
+                                className="input"
+                                type="text"
+                                name="featureName"
+                                value={featureName}
+                                onChange={this.handleInputChange}
+                            />
+                        </div>
+
+                        <div className="field">
+                            <label className="label" for="featureAlgorithm">
+                                Select Algorithm
+                            </label>
+                            <Select
+                                value={featureAlgorithm}
+                                onChange={this.handleAlgorithmChange}
+                                options={[
+                                    {
+                                        value: "",
+                                        label: ""
+                                    },
+                                    {
+                                        value: "MeasurementFinder",
+                                        label: "Measurement Finder"
+                                    },
+                                    {
+                                        value: "NamedEntityRecognition",
+                                        label: "Named Entity Recognition"
+                                    },
+                                    {
+                                        value: "Ngram",
+                                        label: "Ngram"
+                                    },
+                                    {
+                                        value: "POSTagger",
+                                        label: "POS Tagger"
+                                    },
+                                    {
+                                        value: "ProviderAssertion",
+                                        label: "Provider Assertion"
+                                    },
+                                    {
+                                        value: "TermProximityTask",
+                                        label: "Term Proximity Task"
+                                    },
+                                    {
+                                        value: "TermFinder",
+                                        label: "Term Finder"
+                                    },
+                                    {
+                                        value: "ValueExtraction",
+                                        label: "Value Extraction"
+                                    },
+                                    {
+                                        value: "GleasonScoreTask",
+                                        label: "Gleason Score Task"
+                                    },
+                                    {
+                                        value: "RaceFinderTask",
+                                        label: "Race Finder Task"
+                                    },
+                                    {
+                                        value: "PFTFinder",
+                                        label: "PFT Finder"
+                                    },
+                                    {
+                                        value: "TextStats",
+                                        label: "Text Stats"
+                                    },
+                                    {
+                                        value: "TNMStager",
+                                        label: "TNM Stager"
+                                    },
+                                    {
+                                        value: "TransfusionNursingNotesParser",
+                                        label:
+                                            "Transfusion Nursing Notes Parser"
+                                    }
+                                ]}
+                            />
+                        </div>
+
+                        {this.renderInputsForAlgorithm()}
+
+                        <SubmitButton
+                            handleSubmit={this.handleSubmit}
+                            label="Add Feature"
+                        />
+                    </form>
+                </div>
+            </div>
+        );
+    }
 }
 
 export default DefineFeatureForm;
