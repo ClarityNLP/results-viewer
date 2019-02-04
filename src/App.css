@@ -9,7 +9,7 @@
 }
 
 .App-header {
-  background-color: #2980b9;
+  background-color: #2980B9 !important;
   height: 100%;
   padding-left: 10px;
   color: white;

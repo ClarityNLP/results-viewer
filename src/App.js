@@ -1,90 +1,27 @@
-import React, { Component } from "react";
+import React from 'react';
+import ReactDOM from 'react-dom';
+import Root from './components/Root';
+import "./style/style.scss";
+import axios from 'axios';
+import { loadUser } from "redux-oidc";
+import userManager from "./utils/userManager";
+import configureStore from './store/store';
+import { createBrowserHistory } from 'history'
 
-import logo from "./gtri.png";
-import "./App.css";
-import { FaCog } from "react-icons/fa";
+const history = createBrowserHistory()
 
-import {
-  Collapse,
-  Navbar,
-  NavbarToggler,
-  NavbarBrand,
-  Nav,
-  NavItem,
-  NavLink,
-  UncontrolledDropdown,
-  DropdownToggle,
-  DropdownMenu,
-  DropdownItem
-} from "reactstrap";
+const initialState = {}
 
-import AppRouter from "./routes/AppRouter";
+const apiClient = axios.create({
+  baseURL:'http://localhost:5003',
+  responseType: 'json',
+  withCredentials: true
+});
 
-class App extends Component {
-  constructor(props) {
-    super(props);
+const store = configureStore(initialState, apiClient, history);
+loadUser(store, userManager);
 
-    this.toggle = this.toggle.bind(this);
-
-    this.state = {
-      isOpen: false
-    };
-  }
-
-  toggle() {
-    this.setState({
-      isOpen: !this.state.isOpen
-    });
-  }
-
-  render() {
-    return (
-      <div className="App">
-        <Navbar expand="md" className="App-header" dark>
-          <NavbarBrand href="/" className="mr-auto">
-            <img src={logo} className="App-logo" alt="logo" />{" "}
-            <div className="App-name">ClarityNLP</div>
-          </NavbarBrand>
-          <NavbarToggler onClick={this.toggle} />
-          <Collapse isOpen={this.state.isOpen} navbar>
-            <Nav className="ml-auto" navbar>
-              <NavItem>
-                <NavLink className="NavLink" href="/runner">
-                  NLPQL Runner
-                </NavLink>
-              </NavItem>
-              <NavItem>
-                <NavLink className="NavLink" href="/results">
-                  Results Viewer
-                </NavLink>
-              </NavItem>
-              <UncontrolledDropdown nav inNavbar>
-                <DropdownToggle nav caret>
-                  <FaCog />
-                </DropdownToggle>
-                <DropdownMenu right>
-                  <DropdownItem
-                    href="https://claritynlp.readthedocs.io/en/latest/"
-                    target="_blank"
-                  >
-                    Documentation
-                  </DropdownItem>
-                  <DropdownItem
-                    href="https://github.com/ClarityNLP/ClarityNLP"
-                    target="_blank"
-                  >
-                    GitHub
-                  </DropdownItem>
-                </DropdownMenu>
-              </UncontrolledDropdown>
-            </Nav>
-          </Collapse>
-        </Navbar>
-
-        <AppRouter />
-      </div>
-    );
-  }
-}
-
-export default App;
+ReactDOM.render(
+  <Root store={store} history={history} />,
+  document.getElementById('root')
+);
