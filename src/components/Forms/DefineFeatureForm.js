@@ -252,8 +252,8 @@ class DefineFeatureForm extends React.Component {
       );
     }
 
-    if (algorithm === "ngram") {
-      //ngram-n
+    if (algorithm === "Ngram") {
+      //Ngram-n
       if (customNgramN != null && customNgramN.length > 0) {
         payload.push('n: "' + customNgramN.trim() + '"');
       }
@@ -772,13 +772,13 @@ class DefineFeatureForm extends React.Component {
         {algorithm === "ValueExtraction" ? customMaxValDiv : null}
         {algorithm === "ValueExtraction" ? customCaseSensitiveDiv : null}
         {algorithm === "TextStats" ? customGroupbyDiv : null}
-        {algorithm === "ngram" ? customNgramNDiv : null}
-        {algorithm === "ngram" ? customMinFreqDiv : null}
-        {algorithm === "ngram" ? customFilterNumsDiv : null}
-        {algorithm === "ngram" ? customFilterStopsDiv : null}
-        {algorithm === "ngram" ? customFilterPunctDiv : null}
-        {algorithm === "ngram" ? customLemmasDiv : null}
-        {algorithm === "ngram" ? customLimitTermsetDiv : null}
+        {algorithm === "Ngram" ? customNgramNDiv : null}
+        {algorithm === "Ngram" ? customMinFreqDiv : null}
+        {algorithm === "Ngram" ? customFilterNumsDiv : null}
+        {algorithm === "Ngram" ? customFilterStopsDiv : null}
+        {algorithm === "Ngram" ? customFilterPunctDiv : null}
+        {algorithm === "Ngram" ? customLemmasDiv : null}
+        {algorithm === "Ngram" ? customLimitTermsetDiv : null}
         {algorithm !== "" ? isFinalDiv : null}
       </div>
     );
@@ -830,7 +830,7 @@ class DefineFeatureForm extends React.Component {
                       label: "Named Entity Recognition"
                     },
                     {
-                      value: "ngram",
+                      value: "Ngram",
                       label: "Ngram"
                     },
                     {

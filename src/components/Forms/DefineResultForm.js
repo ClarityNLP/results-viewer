@@ -10,7 +10,8 @@ import {
   Row,
   Col,
   CardHeader,
-  CardBody
+  CardBody,
+  Button
 } from "reactstrap";
 
 import SubmitButton from "../../UIkit/SubmitButton";
@@ -24,13 +25,10 @@ const initialState = {
   collapse: false,
   algorithm: "",
   name: "",
-  logic: "",
   feature: "",
   subField: "",
-  booleanOperator: "",
-  valueToCompare: "",
-  logicalContext: "Patient",
-  isFinal: false
+  isFinal: false,
+  logic: ""
 };
 class DefineResultForm extends React.Component {
   constructor(props) {
@@ -39,6 +37,7 @@ class DefineResultForm extends React.Component {
     this.toggle = this.toggle.bind(this);
     this.handleInputChange = this.handleInputChange.bind(this);
     this.handleFeatureInputChange = this.handleFeatureInputChange.bind(this);
+    this.addFeatureToLogic = this.addFeatureToLogic.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
 
     this.state = initialState;
@@ -59,6 +58,19 @@ class DefineResultForm extends React.Component {
       icon: tmp
     });
   };
+
+  addFeatureToLogic() {
+    const { feature, subField } = this.state;
+    let text = feature;
+
+    if (subField.trim() !== "") {
+      text += "." + subField;
+    }
+
+    this.setState({
+      logic: this.state.logic + text
+    });
+  }
 
   handleInputChange = event => {
     const target = event.target;
@@ -107,6 +119,8 @@ class DefineResultForm extends React.Component {
   renderSubFieldSelect() {
     const { algorithm, subField } = this.state;
 
+    console.log(algorithm);
+
     if (algorithm !== "") {
       return (
         <Input
@@ -139,19 +153,12 @@ class DefineResultForm extends React.Component {
     const { logicalContext } = this.state;
 
     let text = "context " + logicalContext + ";\n\n define ";
+
     if (isFinal) {
       text += "final ";
     }
-    // text += name + ":\n\twhere " + feature;
+
     text += name + ":\n\twhere " + logic;
-
-    // if (subField.trim() !== "") {
-    //   text += "." + subField;
-    // }
-
-    // if (booleanOperator.trim() !== "") {
-    //   text += " " + booleanOperator + " " + valueToCompare;
-    // }
 
     text += ";\n\n";
 
@@ -161,7 +168,7 @@ class DefineResultForm extends React.Component {
   }
 
   render() {
-    const { icon, collapse, name, logic, isFinal } = this.state;
+    const { icon, collapse, name, feature, logic, isFinal } = this.state;
 
     return (
       <div>
@@ -176,20 +183,6 @@ class DefineResultForm extends React.Component {
         <Collapse isOpen={collapse}>
           <CardBody>
             <Form>
-              {/* <FormGroup>
-                <Label for="logicalContext">Logical Context</Label>
-                <Input
-                  type="select"
-                  id="logicalContext"
-                  name="logicalContext"
-                  value={logicalContext}
-                  onChange={this.handleInputChange}
-                >
-                  <option value="Patient">Patient</option>
-                  <option value="Document">Document</option>
-                </Input>
-              </FormGroup> */}
-
               <FormGroup>
                 <Label for="name">Name</Label>
                 <Input
@@ -202,20 +195,9 @@ class DefineResultForm extends React.Component {
               </FormGroup>
 
               <FormGroup>
-                <Label for="logic">Logic</Label>
-                <Input
-                  type="text"
-                  id="logic"
-                  name="logic"
-                  value={logic}
-                  onChange={this.handleInputChange}
-                />
-              </FormGroup>
-
-              {/* <FormGroup>
-                <Label>Logic</Label>
+                <Label>Feature</Label>
                 <Row>
-                  <Col>
+                  <Col sm="5">
                     <Input
                       type="select"
                       id="feature"
@@ -233,37 +215,28 @@ class DefineResultForm extends React.Component {
                       })}
                     </Input>
                   </Col>
-                  <Col>{this.renderSubFieldSelect()}</Col>
-                  <Col>
-                    <Input
-                      type="select"
-                      id="booleanOperator"
-                      name="booleanOperator"
-                      value={booleanOperator}
-                      onChange={this.handleInputChange}
+                  <Col sm="5">{this.renderSubFieldSelect()}</Col>
+                  <Col sm="2">
+                    <Button
+                      outline
+                      color="primary"
+                      onClick={this.addFeatureToLogic}
                     >
-                      <option />
-                      <option value="or">OR</option>
-                      <option value="and">AND</option>
-                      <option value="xor">XOR</option>
-                      <option value=">">&gt;</option>
-                      <option value="<">&lt;</option>
-                      <option value="=">=</option>
-                      <option value=">=">&ge;</option>
-                      <option value="<=">&le;</option>
-                    </Input>
+                      +
+                    </Button>
                   </Col>
-                  <Col>
+                  <Col xs="12" className="mt-3">
+                    <Label>Logic</Label>
                     <Input
                       type="text"
-                      id="valueToCompare"
-                      name="valueToCompare"
-                      value={valueToCompare}
+                      id="logic"
+                      name="logic"
+                      value={logic}
                       onChange={this.handleInputChange}
                     />
                   </Col>
                 </Row>
-              </FormGroup> */}
+              </FormGroup>
 
               <FormGroup check className="mt-3 mb-3">
                 <Label check size="lg">
