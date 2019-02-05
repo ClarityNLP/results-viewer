@@ -1,121 +1,195 @@
 import React, { Component } from "react";
-import axios from "axios";
 import _ from "lodash";
-import ReactJson from "react-json-view";
-import QueryBuilder from "./QueryBuilder";
-import { Button, Row, Col, Container } from "reactstrap";
+
+import RunResponse from "./RunResponse";
+import TestResponse from "./TestResponse";
+
 import LimitForm from "./Forms/LimitForm";
 import PhenotypeForm from "./Forms/PhenotypeForm";
+import DocumentSetForm from "./Forms/DocumentSetForm";
+import TermsetForm from "./Forms/TermsetForm";
+import CohortForm from "./Forms/CohortForm";
+import DefineFeatureForm from "./Forms/DefineFeatureForm";
+import LogicalContextForm from "./Forms/LogicalContextForm";
+import DefineResultForm from "./Forms/DefineResultForm";
 
-const base_url = process.env.REACT_APP_CLARITY_NLP_URL;
-
-const ResponseView = data => {
-    return (
-        <div>
-            <ReactJson
-                src={data}
-                displayObjectSize={false}
-                displayDataTypes={false}
-            />
-        </div>
-    );
+const initialState = {
+    editing: false,
+    editText: "Edit",
+    termSets: [],
+    documentSets: [],
+    cohorts: [],
+    features: [],
+    response_view: null,
+    togglePhenotype: "",
+    limitModal: null
 };
 
 class JobRunner extends Component {
     constructor(props) {
         super(props);
 
-        this.toggle = this.toggle.bind(this);
-        this.disablePhenotypeModal = this.disablePhenotypeModal.bind(this);
-        this.getNLPQLSample = this.getNLPQLSample.bind(this);
-        this.updateNLPQL = this.updateNLPQL.bind(this);
-        this.overwriteNLPQL = this.overwriteNLPQL.bind(this);
-        this.handleButtonAction = this.handleButtonAction.bind(this);
-        this.clear = this.clear.bind(this);
-
-        this.state = {
-            dropdownOpen: false,
-            nlpql: "",
-            response_view: <div />,
-            togglePhenotype: true
-        };
+        this.state = initialState;
     }
 
-    toggle() {
+    toggleEdit = () => {
+        const { editing } = this.state;
+        let text = null;
+
+        if (editing) {
+            text = "Edit";
+        } else {
+            text = "Save";
+        }
+
         this.setState({
-            dropdownOpen: !this.state.dropdownOpen
+            editing: !editing,
+            editText: text
         });
-    }
+    };
 
-    disablePhenotypeModal() {
+    appendDocumentSet = documentSet => {
         this.setState({
-            togglePhenotype: false
+            documentSets: [...this.state.documentSets, documentSet]
         });
-    }
+    };
 
-    clear() {
+    appendTermSet = termSet => {
         this.setState({
-            nlpql: "",
-            response_view: <div />,
-            togglePhenotype: true
+            termSets: [...this.state.termSets, termSet]
         });
-    }
+    };
 
-    getNLPQLSample(nlpql_filename) {
-        let url = base_url + "nlpql_text/" + nlpql_filename;
-        axios.get(url).then(response => {
-            this.setState(prevState => ({
-                nlpql: prevState.nlpql + "\n" + response.data
-            }));
-        });
-    }
-
-    updateNLPQL(query) {
+    appendCohort = cohort => {
         this.setState({
-            nlpql: this.state.nlpql + query
+            cohorts: [...this.state.cohorts, cohort]
         });
-    }
+    };
 
-    overwriteNLPQL(query) {
+    appendFeature = feature => {
         this.setState({
-            nlpql: query
+            features: [...this.state.features, feature]
         });
-    }
+    };
 
-    handleButtonAction(action) {
-        let url = base_url + action;
+    handleInputChange = event => {
+        const target = event.target;
+        let value = target.value;
 
-        axios({
-            method: "post",
-            url: url,
-            data: this.state.nlpql,
-            headers: { "Content-Type": "text/plain" }
-        }).then(response => {
-            if (action === "nlpql_expander") {
-                this.setState({
-                    nlpql: response.data
-                });
-            } else if (action === "nlpql_tester") {
-                this.setState({
-                    response_view: <ResponseView data={response.data} />
-                });
-            } else {
-                this.setState({
-                    response_view: <ResponseView data={response.data} />
-                });
-            }
+        this.props.setNLPQL(value);
+    };
+
+    renderEditor = () => {
+        const { editing } = this.state;
+        const { nlpql } = this.props.runner;
+
+        if (editing) {
+            return <textarea value={nlpql} onChange={this.handleInputChange} />;
+        }
+
+        return <pre>{nlpql}</pre>;
+    };
+
+    clear = () => {
+        this.props.setNLPQL("");
+        this.setState(initialState);
+    };
+
+    updateNLPQL = value => {
+        const { nlpql } = this.props.runner;
+
+        this.props.setNLPQL(nlpql + value);
+    };
+
+    toggleResponse = () => {
+        this.setState({
+            response_view: null
         });
-    }
+    };
+
+    toggleLimitModal = () => {
+        this.setState({
+            response_view: (
+                <LimitForm
+                    toggle={this.toggleLimitModal}
+                    updateNLPQL={this.updateNLPQL}
+                    handleSubmit={this.handleRunClick}
+                />
+            )
+        });
+    };
+
+    disablePhenotypeModal = () => {
+        let htmlClasses = document.getElementsByTagName("html")[0].classList;
+
+        if (htmlClasses.contains("is-clipped")) {
+            htmlClasses.remove("is-clipped");
+        } else {
+            htmlClasses.add("is-clipped");
+        }
+
+        let openClass = this.state.togglePhenotype !== "" ? "" : "is-active";
+
+        this.setState({
+            togglePhenotype: openClass
+        });
+    };
+
+    handleTestClick = () => {
+        const { nlpql } = this.props.runner;
+
+        this.props.postToClarityAPI("nlpql_tester", nlpql).then(json => {
+            this.setState({
+                response_view: (
+                    <TestResponse
+                        data={json}
+                        toggle={this.toggleResponse}
+                        toggleLimitModal={this.toggleLimitModal}
+                    />
+                )
+            });
+        });
+    };
+
+    handleExpandClick = () => {
+        const { nlpql } = this.props.runner;
+
+        this.props.postToClarityAPI("nlpql_expander", nlpql);
+    };
+
+    handleRunClick = () => {
+        const { nlpql } = this.props.runner;
+
+        this.props.postToClarityAPI("nlpql", nlpql).then(json => {
+            this.setState({
+                response_view: (
+                    <RunResponse
+                        valid={json.success !== false}
+                        data={json}
+                        clear={this.clear}
+                        toggle={this.toggleResponse}
+                    />
+                )
+            });
+        });
+    };
 
     render() {
-        const { response_view, nlpql } = this.state;
+        const {
+            response_view,
+            documentSets,
+            termSets,
+            cohorts,
+            features
+        } = this.state;
 
         return (
             <div className="JobRunner container">
+                {response_view}
                 <PhenotypeForm
                     updateNLPQL={this.updateNLPQL}
                     toggle={this.disablePhenotypeModal}
-                    modal={this.state.togglePhenotype}
+                    isOpen={this.state.togglePhenotype}
                 />
                 <div className="NLPQLAreaHeader columns">
                     <div className="column is-half">
@@ -123,11 +197,7 @@ class JobRunner extends Component {
                             <div className="column is-one-third">
                                 <button
                                     className="button is-large"
-                                    onClick={() =>
-                                        this.handleButtonAction(
-                                            "nlpql_expander"
-                                        )
-                                    }
+                                    onClick={this.handleExpandClick}
                                 >
                                     Expand
                                 </button>
@@ -135,9 +205,7 @@ class JobRunner extends Component {
                             <div className="column is-one-third level-right">
                                 <button
                                     className="button is-large"
-                                    onClick={() =>
-                                        this.handleButtonAction("nlpql_tester")
-                                    }
+                                    onClick={this.handleTestClick}
                                 >
                                     Test
                                 </button>
@@ -147,23 +215,77 @@ class JobRunner extends Component {
                     <div className="column is-half level">
                         <div className="columns level-right">
                             <div className="column is-half">
-                                <LimitForm
-                                    updateNLPQL={this.updateNLPQL}
-                                    handleSubmit={() =>
-                                        this.handleButtonAction("nlpql")
-                                    }
-                                />
+                                <button
+                                    className="button is-large is-primary"
+                                    onClick={this.toggleLimitModal}
+                                >
+                                    Run
+                                </button>
                             </div>
                         </div>
                     </div>
                 </div>
-                <QueryBuilder
-                    query={nlpql}
-                    updateNLPQL={this.updateNLPQL}
-                    overwriteNLPQL={this.overwriteNLPQL}
-                    response_view={response_view}
-                    clear={this.clear}
-                />
+                <div className="NLPQLQueryBuilder">
+                    <div className="columns">
+                        <div className="column is-half">
+                            <div className="card">
+                                <DocumentSetForm
+                                    documentSets={documentSets}
+                                    appendDocumentSet={this.appendDocumentSet}
+                                    updateNLPQL={this.updateNLPQL}
+                                />
+                                <TermsetForm
+                                    termSets={termSets}
+                                    appendTermSet={this.appendTermSet}
+                                    updateNLPQL={this.updateNLPQL}
+                                />
+                                <CohortForm
+                                    cohorts={cohorts}
+                                    appendCohort={this.appendCohort}
+                                    updateNLPQL={this.updateNLPQL}
+                                />
+                                <DefineFeatureForm
+                                    termSets={termSets}
+                                    documentSets={documentSets}
+                                    cohorts={cohorts}
+                                    appendFeature={this.appendFeature}
+                                    updateNLPQL={this.updateNLPQL}
+                                />
+                                <LogicalContextForm
+                                    updateNLPQL={this.updateNLPQL}
+                                />
+                                <DefineResultForm
+                                    features={features}
+                                    updateNLPQL={this.updateNLPQL}
+                                />
+                            </div>
+                        </div>
+
+                        <div className="column is-half">
+                            <div id="editor">
+                                {this.renderEditor()}
+                                <div className="level">
+                                    <div className="column is-one-quarter">
+                                        <button
+                                            className="button"
+                                            onClick={this.clear}
+                                        >
+                                            Clear
+                                        </button>
+                                    </div>
+                                    <div className="column is-one-quarter level-right">
+                                        <button
+                                            className="button"
+                                            onClick={this.toggleEdit}
+                                        >
+                                            {this.state.editText}
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         );
     }

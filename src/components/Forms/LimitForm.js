@@ -1,29 +1,19 @@
 /* eslint react/no-multi-comp: 0, react/prop-types: 0 */
 
 import React from "react";
-import { Modal, Button, ModalBody } from "reactstrap";
 
-import SubmitButton from "../../UIkit/SubmitButton";
-
-const initialState = { limit: "", modal: false };
+const initialState = { limit: "" };
 
 class LimitForm extends React.Component {
     constructor(props) {
         super(props);
 
-        this.toggle = this.toggle.bind(this);
         this.handleInputChange = this.handleInputChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
         this.noLimit = this.noLimit.bind(this);
 
         this.state = initialState;
     }
-
-    toggle = () => {
-        this.setState({
-            modal: !this.state.modal
-        });
-    };
 
     handleInputChange(event) {
         const target = event.target;
@@ -42,58 +32,77 @@ class LimitForm extends React.Component {
         let text = "limit " + limit + ";\n\n";
 
         this.props.updateNLPQL(text);
-        this.toggle();
-        this.setState(initialState);
+        this.props.toggle();
         this.props.handleSubmit();
+        this.setState(initialState);
     }
 
-    noLimit() {
-        this.toggle();
+    noLimit(event) {
+        event.preventDefault();
+
+        this.props.toggle();
         this.props.handleSubmit();
+        this.setState(initialState);
     }
 
     render() {
-        const { modal, limit } = this.state;
+        const { toggle } = this.props;
+        const { limit } = this.state;
 
         return (
             <div>
-                <button
-                    className="button is-large is-primary"
-                    onClick={this.toggle}
-                >
-                    Run
-                </button>
-                <Modal isOpen={modal} data-parent="#formAccordion">
-                    <ModalBody>
-                        <form>
-                            <div className="field">
-                                <label className="label" for="limit">
-                                    Limit Results
-                                </label>
-                                <input
-                                    type="number"
-                                    id="limit"
-                                    name="limit"
-                                    value={limit}
-                                    onChange={this.handleInputChange}
-                                />
+                <div className="modal is-active">
+                    <div className="modal-background" />
+                    <div className="modal-content">
+                        <div className="card">
+                            <div className="card-content">
+                                <div className="content">
+                                    <form>
+                                        <div className="field">
+                                            <label className="label">
+                                                Limit Results
+                                            </label>
+                                            <input
+                                                className="input"
+                                                type="number"
+                                                name="limit"
+                                                value={limit}
+                                                onChange={
+                                                    this.handleInputChange
+                                                }
+                                            />
+                                        </div>
+                                    </form>
+                                </div>
                             </div>
-
-                            <SubmitButton
-                                handleSubmit={this.handleSubmit}
-                                label="Run Query"
-                            >
-                                <Button
-                                    outline
-                                    color="link"
+                            <footer className="card-footer">
+                                <a
+                                    className="card-footer-item"
+                                    onClick={toggle}
+                                >
+                                    Close
+                                </a>
+                                <a
+                                    className="card-footer-item"
                                     onClick={this.noLimit}
                                 >
                                     No, thanks
-                                </Button>
-                            </SubmitButton>
-                        </form>
-                    </ModalBody>
-                </Modal>
+                                </a>
+                                <a
+                                    className="card-footer-item"
+                                    onClick={this.handleSubmit}
+                                >
+                                    Run Query
+                                </a>
+                            </footer>
+                        </div>
+                    </div>
+                    <button
+                        className="modal-close is-large"
+                        aria-label="close"
+                        onClick={toggle}
+                    />
+                </div>
             </div>
         );
     }

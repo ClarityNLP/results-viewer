@@ -7,11 +7,8 @@ const initialState = {
     name: "",
     version: "",
     limit: "",
-    validation: {
-        name: "",
-        version: "",
-        limit: ""
-    }
+    clarityLibrary: true,
+    OHDSILibrary: false
 };
 
 class PhenotypeForm extends React.Component {
@@ -22,134 +19,107 @@ class PhenotypeForm extends React.Component {
     }
 
     componentDidMount() {
-        this.toggle();
+        this.props.toggle();
     }
-
-    toggle = () => {
-        let htmlClasses = document.getElementsByTagName("html")[0].classList;
-
-        if (htmlClasses.contains("is-clipped")) {
-            htmlClasses.remove("is-clipped");
-        } else {
-            htmlClasses.add("is-clipped");
-        }
-
-        let openClass = this.state.isOpen !== "" ? "" : "is-active";
-
-        this.setState({
-            isOpen: openClass
-        });
-    };
 
     handleInputChange = event => {
         const target = event.target;
-        let value = target.value;
+        let value = target.type === "checkbox" ? target.checked : target.value;
         const name = target.name;
-        let isValid = value.trim() !== "" ? "is-valid" : "is-invalid";
 
         this.setState({
-            [name]: value,
-            validation: {
-                ...this.state.validation,
-                [name]: isValid
-            }
+            [name]: value
         });
-    };
-
-    allInputsAreValid = () => {
-        const { validation } = this.state;
-
-        let allValidInputs = true;
-        let validCheck = {
-            name: "",
-            version: ""
-        };
-
-        if (validation.name !== "is-valid") {
-            validCheck.name = "is-invalid";
-            allValidInputs = false;
-        } else {
-            validCheck.name = "is-valid";
-        }
-
-        if (validation.version !== "is-valid") {
-            validCheck.version = "is-invalid";
-            allValidInputs = false;
-        } else {
-            validCheck.version = "is-valid";
-        }
-
-        this.setState({
-            validation: validCheck
-        });
-
-        return allValidInputs;
     };
 
     handleSubmit = event => {
         event.preventDefault();
 
-        const { name, version, limit } = this.state;
-        let valid = this.allInputsAreValid();
+        const { name, version, clarityLibrary, OHDSILibrary } = this.state;
         let text = "";
 
-        if (!valid) {
-            return;
+        text += 'phenotype "' + name + '" version "' + version + '";\n\n';
+
+        if (clarityLibrary) {
+            text += 'include ClarityCore version "1.0" called Clarity;\n';
         }
 
-        if (limit) {
-            text += "limit " + limit + ";\n\n";
+        if (OHDSILibrary) {
+            text += 'include OHDSIHelpers version "1.0" called OHDSI;';
         }
 
-        text +=
-            'phenotype "' +
-            name +
-            '" version "' +
-            version +
-            '";\n\n' +
-            'include ClarityCore version "1.0" called Clarity;\n\n';
+        text += "\n\n";
 
         this.props.updateNLPQL(text);
-        this.toggle();
+        this.props.toggle();
         this.setState(initialState);
     };
 
     render() {
-        const { isOpen, name, version, validation } = this.state;
+        const { name, version, clarityLibrary, OHDSILibrary } = this.state;
+        const { isOpen } = this.props;
 
         return (
             <div className={"modal " + isOpen}>
                 <div className="modal-background" />
                 <div className="modal-content">
                     <div className="box">
-                        {/* NAME INPUT */}
-                        <div className="field">
-                            <label className="label">Phenotype Name</label>
-                            <input
-                                className={"input " + validation.name}
-                                type="text"
-                                name="name"
-                                value={name}
-                                onChange={this.handleInputChange}
-                            />
-                        </div>
+                        <form>
+                            {/* NAME INPUT */}
+                            <div className="field">
+                                <label className="label">Phenotype Name</label>
+                                <input
+                                    className="input"
+                                    type="text"
+                                    name="name"
+                                    value={name}
+                                    onChange={this.handleInputChange}
+                                />
+                            </div>
 
-                        {/* VERSION INPUT */}
-                        <div className="field">
-                            <label className="label">Phenotype Version</label>
-                            <input
-                                className={"input " + validation.version}
-                                type="text"
-                                name="version"
-                                value={version}
-                                onChange={this.handleInputChange}
-                            />
-                        </div>
+                            {/* VERSION INPUT */}
+                            <div className="field">
+                                <label className="label">
+                                    Phenotype Version
+                                </label>
+                                <input
+                                    className="input"
+                                    type="text"
+                                    name="version"
+                                    value={version}
+                                    onChange={this.handleInputChange}
+                                />
+                            </div>
 
-                        <SubmitButton
-                            handleSubmit={this.handleSubmit}
-                            label="Build Query"
-                        />
+                            <div className="field">
+                                <label className="checkbox">
+                                    <input
+                                        type="checkbox"
+                                        name="clarityLibrary"
+                                        checked={clarityLibrary}
+                                        onChange={this.handleInputChange}
+                                    />{" "}
+                                    Include Clarity Library
+                                </label>
+                            </div>
+
+                            <div className="field">
+                                <label className="checkbox">
+                                    <input
+                                        type="checkbox"
+                                        name="OHDSILibrary"
+                                        checked={OHDSILibrary}
+                                        onChange={this.handleInputChange}
+                                    />{" "}
+                                    Include OHDSI Library
+                                </label>
+                            </div>
+
+                            <SubmitButton
+                                handleSubmit={this.handleSubmit}
+                                label="Build Query"
+                            />
+                        </form>
                     </div>
                 </div>
             </div>

@@ -22,15 +22,6 @@ const initialState = {
 class DefineResultForm extends React.Component {
     constructor(props) {
         super(props);
-
-        this.toggle = this.toggle.bind(this);
-        this.handleInputChange = this.handleInputChange.bind(this);
-        this.handleFeatureInputChange = this.handleFeatureInputChange.bind(
-            this
-        );
-        this.addFeatureToLogic = this.addFeatureToLogic.bind(this);
-        this.handleSubmit = this.handleSubmit.bind(this);
-
         this.state = initialState;
     }
 
@@ -50,18 +41,20 @@ class DefineResultForm extends React.Component {
         });
     };
 
-    addFeatureToLogic() {
+    addFeatureToLogic = e => {
+        // e.stopPropagation();
+        e.preventDefault();
         const { feature, subField } = this.state;
-        let text = feature;
+        let text = feature.value;
 
-        if (subField.trim() !== "") {
-            text += "." + subField;
+        if (subField.value.trim() !== "") {
+            text += "." + subField.value;
         }
 
         this.setState({
             logic: this.state.logic + text
         });
-    }
+    };
 
     handleInputChange = event => {
         const target = event.target;
@@ -87,32 +80,26 @@ class DefineResultForm extends React.Component {
 
     handleSubFieldChange = value => {
         this.setState({
-            subField: value.value
+            subField: value
         });
     };
 
-    handleFeatureInputChange(value) {
+    handleFeatureInputChange = value => {
         const { features } = this.props;
 
         let algorithm = "";
-        let feature = "";
 
         for (let i = 0; i < features.length; i++) {
             if (features[i].name === value.value) {
                 algorithm = features[i].algorithm;
-                feature = features[i].name;
             }
         }
 
-        console.log(value);
-        console.log("Feature : " + feature);
-        console.log("Algorithm : " + algorithm);
-
         this.setState({
             algorithm: algorithm,
-            feature: feature
+            feature: value
         });
-    }
+    };
 
     getSubFields = () => {
         const { algorithm } = this.state;
@@ -136,7 +123,7 @@ class DefineResultForm extends React.Component {
         });
     };
 
-    renderSubFieldSelect() {
+    renderSubFieldSelect = () => {
         const { algorithm, subField } = this.state;
 
         if (algorithm !== "") {
@@ -150,9 +137,9 @@ class DefineResultForm extends React.Component {
         }
 
         return null;
-    }
+    };
 
-    handleSubmit(event) {
+    handleSubmit = event => {
         event.preventDefault();
 
         const { name, logic, isFinal } = this.state;
@@ -172,7 +159,7 @@ class DefineResultForm extends React.Component {
         this.props.updateNLPQL(text);
         this.toggle();
         this.setState(initialState);
-    }
+    };
 
     render() {
         const { icon, collapse, name, feature, logic, isFinal } = this.state;
@@ -223,6 +210,7 @@ class DefineResultForm extends React.Component {
                                 </div>
                                 <div className="column is-2">
                                     <button
+                                        type="button"
                                         className="button is-primary"
                                         onClick={this.addFeatureToLogic}
                                     >
@@ -250,7 +238,7 @@ class DefineResultForm extends React.Component {
                                     checked={isFinal}
                                     onChange={this.handleInputChange}
                                 />{" "}
-                                Include in final results
+                                Include in Final Results
                             </label>
                         </div>
 

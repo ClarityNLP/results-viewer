@@ -254,30 +254,46 @@ class DefineFeatureForm extends React.Component {
             }
 
             //filter-nums
-            payload.push("filter_nums: " + customFilterNums);
+            if (customFilterNums) {
+                payload.push("filter_nums: " + customFilterNums);
+            }
 
             //filter-stops
-            payload.push("filter_stops: " + customFilterStops);
+            if (customFilterStops) {
+                payload.push("filter_stops: " + customFilterStops);
+            }
 
             //filter-punct
-            payload.push("filter_punct: " + customFilterPunct);
+            if (customFilterPunct) {
+                payload.push("filter_punct: " + customFilterPunct);
+            }
 
             //lemmas
-            payload.push("lemmas: " + customLemmas);
+            if (customLemmas) {
+                payload.push("lemmas: " + customLemmas);
+            }
 
             // limit termset
-            payload.push("limit_to_termset: " + customLimitTermset);
+            if (customLimitTermset) {
+                payload.push("limit_to_termset: " + customLimitTermset);
+            }
         }
 
         if (algorithm === "ProviderAssertion" || algorithm === "TermFinder") {
             //Synonyms
-            payload.push("include_synonyms: " + customSynonyms);
+            if (customSynonyms) {
+                payload.push("include_synonyms: " + customSynonyms);
+            }
 
             // descendants
-            payload.push("include_descendants: " + customDescendants);
+            if (customDescendants) {
+                payload.push("include_descendants: " + customDescendants);
+            }
 
             // include_ancestors
-            payload.push("include_ancestors: " + customAncestors);
+            if (customAncestors) {
+                payload.push("include_ancestors: " + customAncestors);
+            }
 
             // vocabulary
             if (customVocabulary != null && customVocabulary.length > 0) {
@@ -292,7 +308,9 @@ class DefineFeatureForm extends React.Component {
             }
 
             //anyorder
-            payload.push("any_order: " + customAnyOrder);
+            if (customAnyOrder) {
+                payload.push("any_order: " + customAnyOrder);
+            }
         }
 
         if (algorithm === "ValueExtraction") {
@@ -315,7 +333,9 @@ class DefineFeatureForm extends React.Component {
             }
 
             // case Sensitive
-            payload.push("case_sensitive: " + customCaseSensitive);
+            if (customCaseSensitive) {
+                payload.push("case_sensitive: " + customCaseSensitive);
+            }
         }
 
         // Constructing custom task element
@@ -334,7 +354,7 @@ class DefineFeatureForm extends React.Component {
         }
         text += "\n\t});\n\n";
 
-        this.props.appendFeature({
+        this.props.appendToArray("features", {
             name: featureName,
             algorithm: algorithm
         });
@@ -427,9 +447,7 @@ class DefineFeatureForm extends React.Component {
 
         let customSectionsDiv = (
             <div className="field">
-                <label className="label" for="customSections">
-                    Sections
-                </label>
+                <label className="label">Sections</label>
                 <input
                     className="input"
                     type="text"
@@ -443,9 +461,7 @@ class DefineFeatureForm extends React.Component {
 
         let customEnumListDiv = (
             <div className="field">
-                <label className="label" for="customEnumList">
-                    Enum List
-                </label>
+                <label className="label">Enum List</label>
                 <input
                     className="input"
                     type="text"
@@ -476,9 +492,7 @@ class DefineFeatureForm extends React.Component {
 
         let customGroupbyDiv = (
             <div className="field">
-                <label className="label" for="customGroupby">
-                    Group By
-                </label>
+                <label className="label">Group By</label>
                 <input
                     className="input"
                     type="text"
@@ -660,7 +674,7 @@ class DefineFeatureForm extends React.Component {
                         checked={customSynonyms}
                         onChange={this.handleInputChange}
                     />{" "}
-                    Include Synonyms
+                    Synonyms
                 </label>
             </div>
         );
@@ -674,7 +688,7 @@ class DefineFeatureForm extends React.Component {
                         checked={customDescendants}
                         onChange={this.handleInputChange}
                     />{" "}
-                    Include Descendants
+                    Descendants
                 </label>
             </div>
         );
@@ -688,7 +702,7 @@ class DefineFeatureForm extends React.Component {
                         checked={customAncestors}
                         onChange={this.handleInputChange}
                     />{" "}
-                    Include Ancestors
+                    Ancestors
                 </label>
             </div>
         );
@@ -716,7 +730,7 @@ class DefineFeatureForm extends React.Component {
                         checked={isFinal}
                         onChange={this.handleInputChange}
                     />{" "}
-                    Include in final results
+                    Include in Final Results
                 </label>
             </div>
         );
@@ -796,9 +810,7 @@ class DefineFeatureForm extends React.Component {
                 >
                     <form>
                         <div className="field">
-                            <label className="label" for="featureName">
-                                Feature Name
-                            </label>
+                            <label className="label">Feature Name</label>
                             <input
                                 className="input"
                                 type="text"
@@ -809,9 +821,7 @@ class DefineFeatureForm extends React.Component {
                         </div>
 
                         <div className="field">
-                            <label className="label" for="featureAlgorithm">
-                                Select Algorithm
-                            </label>
+                            <label className="label">Select Algorithm</label>
                             <Select
                                 value={featureAlgorithm}
                                 onChange={this.handleAlgorithmChange}

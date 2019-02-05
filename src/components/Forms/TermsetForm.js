@@ -84,7 +84,7 @@ class TermsetForm extends React.Component {
             return null;
         }
 
-        return <span class="tag">{count}</span>;
+        return <span className="tag">{count}</span>;
     }
 
     handleSubmit = event => {
@@ -203,7 +203,7 @@ class TermsetForm extends React.Component {
                         </div>
 
                         <div className="field">
-                            <label class="checkbox">
+                            <label className="checkbox">
                                 <input
                                     type="checkbox"
                                     name="termsetSynonyms"
@@ -215,7 +215,7 @@ class TermsetForm extends React.Component {
                         </div>
 
                         <div className="field">
-                            <label class="checkbox">
+                            <label className="checkbox">
                                 <input
                                     type="checkbox"
                                     name="termsetPlurals"
@@ -227,7 +227,7 @@ class TermsetForm extends React.Component {
                         </div>
 
                         <div className="field">
-                            <label class="checkbox">
+                            <label className="checkbox">
                                 <input
                                     type="checkbox"
                                     name="termsetVerbInflections"

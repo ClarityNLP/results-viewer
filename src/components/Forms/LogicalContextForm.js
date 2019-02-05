@@ -83,9 +83,7 @@ class LogicalContextForm extends React.Component {
                 >
                     <form>
                         <div className="field">
-                            <label className="label" for="logicalContext">
-                                Logical Context
-                            </label>
+                            <label className="label">Logical Context</label>
                             <Select
                                 value={logicalContext}
                                 onChange={this.handleInputChange}

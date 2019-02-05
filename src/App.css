@@ -271,6 +271,12 @@ pre,
 }
 
 .optional-text {
+    margin-left: 10px;
     font-style: italic;
     font-weight: 100;
+}
+
+.response-json {
+    height: 400px;
+    overflow: scroll;
 }
