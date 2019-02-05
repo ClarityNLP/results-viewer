@@ -16,12 +16,12 @@ import DefineResultForm from "./Forms/DefineResultForm";
 const initialState = {
     editing: false,
     editText: "Edit",
+    phenotypeModal: "is-active",
     termSets: [],
     documentSets: [],
     cohorts: [],
     features: [],
     response_view: null,
-    togglePhenotype: "",
     limitModal: null
 };
 
@@ -111,7 +111,7 @@ class JobRunner extends Component {
         this.setState({
             response_view: (
                 <LimitForm
-                    toggle={this.toggleLimitModal}
+                    toggle={this.toggleResponse}
                     updateNLPQL={this.updateNLPQL}
                     handleSubmit={this.handleRunClick}
                 />
@@ -131,7 +131,7 @@ class JobRunner extends Component {
         let openClass = this.state.togglePhenotype !== "" ? "" : "is-active";
 
         this.setState({
-            togglePhenotype: openClass
+            phenotypeModal: openClass
         });
     };
 
@@ -180,20 +180,21 @@ class JobRunner extends Component {
             documentSets,
             termSets,
             cohorts,
-            features
+            features,
+            editText
         } = this.state;
 
         return (
             <div className="JobRunner container">
                 {response_view}
                 <PhenotypeForm
+                    modal={this.state.phenotypeModal}
                     updateNLPQL={this.updateNLPQL}
                     toggle={this.disablePhenotypeModal}
-                    isOpen={this.state.togglePhenotype}
                 />
                 <div className="NLPQLAreaHeader columns">
-                    <div className="column is-half">
-                        <div className="columns level">
+                    <div className="column is-half level">
+                        <div className="columns level-right">
                             <div className="column is-one-third">
                                 <button
                                     className="button is-large"
@@ -202,7 +203,7 @@ class JobRunner extends Component {
                                     Expand
                                 </button>
                             </div>
-                            <div className="column is-one-third level-right">
+                            <div className="column is-one-third">
                                 <button
                                     className="button is-large"
                                     onClick={this.handleTestClick}
@@ -210,6 +211,37 @@ class JobRunner extends Component {
                                     Test
                                 </button>
                             </div>
+                        </div>
+                        <div className="card">
+                            <DocumentSetForm
+                                documentSets={documentSets}
+                                appendDocumentSet={this.appendDocumentSet}
+                                updateNLPQL={this.updateNLPQL}
+                            />
+                            <TermsetForm
+                                termSets={termSets}
+                                appendTermSet={this.appendTermSet}
+                                updateNLPQL={this.updateNLPQL}
+                            />
+                            <CohortForm
+                                cohorts={cohorts}
+                                appendCohort={this.appendCohort}
+                                updateNLPQL={this.updateNLPQL}
+                            />
+                            <DefineFeatureForm
+                                termSets={termSets}
+                                documentSets={documentSets}
+                                cohorts={cohorts}
+                                appendFeature={this.appendFeature}
+                                updateNLPQL={this.updateNLPQL}
+                            />
+                            <LogicalContextForm
+                                updateNLPQL={this.updateNLPQL}
+                            />
+                            <DefineResultForm
+                                features={features}
+                                updateNLPQL={this.updateNLPQL}
+                            />
                         </div>
                     </div>
                     <div className="column is-half level">
@@ -223,64 +255,24 @@ class JobRunner extends Component {
                                 </button>
                             </div>
                         </div>
-                    </div>
-                </div>
-                <div className="NLPQLQueryBuilder">
-                    <div className="columns">
-                        <div className="column is-half">
-                            <div className="card">
-                                <DocumentSetForm
-                                    documentSets={documentSets}
-                                    appendDocumentSet={this.appendDocumentSet}
-                                    updateNLPQL={this.updateNLPQL}
-                                />
-                                <TermsetForm
-                                    termSets={termSets}
-                                    appendTermSet={this.appendTermSet}
-                                    updateNLPQL={this.updateNLPQL}
-                                />
-                                <CohortForm
-                                    cohorts={cohorts}
-                                    appendCohort={this.appendCohort}
-                                    updateNLPQL={this.updateNLPQL}
-                                />
-                                <DefineFeatureForm
-                                    termSets={termSets}
-                                    documentSets={documentSets}
-                                    cohorts={cohorts}
-                                    appendFeature={this.appendFeature}
-                                    updateNLPQL={this.updateNLPQL}
-                                />
-                                <LogicalContextForm
-                                    updateNLPQL={this.updateNLPQL}
-                                />
-                                <DefineResultForm
-                                    features={features}
-                                    updateNLPQL={this.updateNLPQL}
-                                />
-                            </div>
-                        </div>
-
-                        <div className="column is-half">
-                            <div id="editor">
-                                {this.renderEditor()}
-                                <div className="level">
-                                    <div className="column is-one-quarter">
-                                        <button
-                                            className="button"
-                                            onClick={this.clear}
-                                        >
-                                            Clear
-                                        </button>
-                                    </div>
-                                    <div className="column is-one-quarter level-right">
-                                        <button
-                                            className="button"
-                                            onClick={this.toggleEdit}
-                                        >
-                                            {this.state.editText}
-                                        </button>
-                                    </div>
+                        <div id="editor">
+                            {this.renderEditor()}
+                            <div className="level">
+                                <div className="column is-one-quarter">
+                                    <button
+                                        className="button"
+                                        onClick={this.clear}
+                                    >
+                                        Clear
+                                    </button>
+                                </div>
+                                <div className="column is-one-quarter level-right">
+                                    <button
+                                        className="button"
+                                        onClick={this.toggleEdit}
+                                    >
+                                        {editText}
+                                    </button>
                                 </div>
                             </div>
                         </div>

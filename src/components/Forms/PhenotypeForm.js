@@ -3,7 +3,6 @@ import React from "react";
 import SubmitButton from "../../UIkit/SubmitButton";
 
 const initialState = {
-    isOpen: "",
     name: "",
     version: "",
     limit: "",
@@ -16,10 +15,6 @@ class PhenotypeForm extends React.Component {
         super(props);
 
         this.state = initialState;
-    }
-
-    componentDidMount() {
-        this.props.toggle();
     }
 
     handleInputChange = event => {
@@ -57,72 +52,76 @@ class PhenotypeForm extends React.Component {
 
     render() {
         const { name, version, clarityLibrary, OHDSILibrary } = this.state;
-        const { isOpen } = this.props;
+        const { modal } = this.props;
 
         return (
-            <div className={"modal " + isOpen}>
-                <div className="modal-background" />
-                <div className="modal-content">
-                    <div className="box">
-                        <form>
-                            {/* NAME INPUT */}
-                            <div className="field">
-                                <label className="label">Phenotype Name</label>
-                                <input
-                                    className="input"
-                                    type="text"
-                                    name="name"
-                                    value={name}
-                                    onChange={this.handleInputChange}
-                                />
-                            </div>
-
-                            {/* VERSION INPUT */}
-                            <div className="field">
-                                <label className="label">
-                                    Phenotype Version
-                                </label>
-                                <input
-                                    className="input"
-                                    type="text"
-                                    name="version"
-                                    value={version}
-                                    onChange={this.handleInputChange}
-                                />
-                            </div>
-
-                            <div className="field">
-                                <label className="checkbox">
+            <React.Fragment>
+                <div className={"modal " + modal}>
+                    <div className="modal-background" />
+                    <div className="modal-content">
+                        <div className="box">
+                            <form>
+                                {/* NAME INPUT */}
+                                <div className="field">
+                                    <label className="label">
+                                        Phenotype Name
+                                    </label>
                                     <input
-                                        type="checkbox"
-                                        name="clarityLibrary"
-                                        checked={clarityLibrary}
+                                        className="input"
+                                        type="text"
+                                        name="name"
+                                        value={name}
                                         onChange={this.handleInputChange}
-                                    />{" "}
-                                    Include Clarity Library
-                                </label>
-                            </div>
+                                    />
+                                </div>
 
-                            <div className="field">
-                                <label className="checkbox">
+                                {/* VERSION INPUT */}
+                                <div className="field">
+                                    <label className="label">
+                                        Phenotype Version
+                                    </label>
                                     <input
-                                        type="checkbox"
-                                        name="OHDSILibrary"
-                                        checked={OHDSILibrary}
+                                        className="input"
+                                        type="text"
+                                        name="version"
+                                        value={version}
                                         onChange={this.handleInputChange}
-                                    />{" "}
-                                    Include OHDSI Library
-                                </label>
-                            </div>
+                                    />
+                                </div>
 
-                            <SubmitButton
-                                handleSubmit={this.handleSubmit}
-                                label="Build Query"
-                            />
-                        </form>
+                                <div className="field">
+                                    <label className="checkbox">
+                                        <input
+                                            type="checkbox"
+                                            name="clarityLibrary"
+                                            checked={clarityLibrary}
+                                            onChange={this.handleInputChange}
+                                        />{" "}
+                                        Include Clarity Library
+                                    </label>
+                                </div>
+
+                                <div className="field">
+                                    <label className="checkbox">
+                                        <input
+                                            type="checkbox"
+                                            name="OHDSILibrary"
+                                            checked={OHDSILibrary}
+                                            onChange={this.handleInputChange}
+                                        />{" "}
+                                        Include OHDSI Library
+                                    </label>
+                                </div>
+
+                                <SubmitButton
+                                    handleSubmit={this.handleSubmit}
+                                    label="Build Query"
+                                />
+                            </form>
+                        </div>
                     </div>
                 </div>
-            </div>
+            </React.Fragment>
         );
     }
 }

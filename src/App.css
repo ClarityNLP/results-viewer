@@ -131,9 +131,6 @@ table {
     text-align: left;
 }
 
-.PhenotypeSubDetailButtons {
-}
-
 .EntitySpacer {
     height: 15px;
 }
@@ -252,10 +249,9 @@ pre,
     overflow: hidden;
 }
 
-#editor,
 #editor pre,
 #editor textarea {
-    height: 100%;
+    min-height: 240px;
 }
 
 .mt-1 {

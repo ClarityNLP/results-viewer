@@ -50,7 +50,7 @@ class LimitForm extends React.Component {
         const { limit } = this.state;
 
         return (
-            <div>
+            <React.Fragment>
                 <div className="modal is-active">
                     <div className="modal-background" />
                     <div className="modal-content">
@@ -103,7 +103,7 @@ class LimitForm extends React.Component {
                         onClick={toggle}
                     />
                 </div>
-            </div>
+            </React.Fragment>
         );
     }
 }

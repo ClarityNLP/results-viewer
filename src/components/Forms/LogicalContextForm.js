@@ -63,7 +63,7 @@ class LogicalContextForm extends React.Component {
         const { icon, collapse, logicalContext } = this.state;
 
         return (
-            <div>
+            <React.Fragment>
                 <header className="card-header" onClick={this.toggle}>
                     <p className="card-header-title">Logical Context</p>
                     <a
@@ -106,7 +106,7 @@ class LogicalContextForm extends React.Component {
                         />
                     </form>
                 </div>
-            </div>
+            </React.Fragment>
         );
     }
 }

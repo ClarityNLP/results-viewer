@@ -165,7 +165,7 @@ class DefineResultForm extends React.Component {
         const { icon, collapse, name, feature, logic, isFinal } = this.state;
 
         return (
-            <div>
+            <React.Fragment>
                 <header className="card-header" onClick={this.toggle}>
                     <p className="card-header-title">Result</p>
                     <a
@@ -248,7 +248,7 @@ class DefineResultForm extends React.Component {
                         />
                     </form>
                 </div>
-            </div>
+            </React.Fragment>
         );
     }
 }

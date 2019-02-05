@@ -742,7 +742,7 @@ class DefineFeatureForm extends React.Component {
         }
 
         return (
-            <div>
+            <React.Fragment>
                 {customTermsetDiv}
                 {algorithm === "TermProximityTask" ? customTermset2Div : null}
                 {customDocumentsetDiv}
@@ -782,7 +782,7 @@ class DefineFeatureForm extends React.Component {
                 {algorithm === "Ngram" ? customLemmasDiv : null}
                 {algorithm === "Ngram" ? customLimitTermsetDiv : null}
                 {algorithm !== "" ? isFinalDiv : null}
-            </div>
+            </React.Fragment>
         );
     };
 
@@ -790,7 +790,7 @@ class DefineFeatureForm extends React.Component {
         const { icon, collapse, featureName, featureAlgorithm } = this.state;
 
         return (
-            <div>
+            <React.Fragment>
                 <header className="card-header" onClick={this.toggle}>
                     <p className="card-header-title">Feature</p>
                     <a
@@ -899,7 +899,7 @@ class DefineFeatureForm extends React.Component {
                         />
                     </form>
                 </div>
-            </div>
+            </React.Fragment>
         );
     }
 }
