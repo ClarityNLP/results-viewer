@@ -263,19 +263,22 @@ class TableJobs extends Component {
 
         return (
             <div>
-                <div className="SubHeader">
-                    NLPQL Results
-                    <div className="float-lg-right">
-                        <input
-                            type="text"
-                            name="filter"
-                            id="jobs_filter"
-                            placeholder="Search..."
-                            onKeyUp={this.keyUpHandler}
-                        />
+                <div className="SubHeader columns">
+                    <div className="column is-half">
+                        <div className="field">
+                            <label className="label">NLPQL Results</label>
+                            <input
+                                id="jobs_filter"
+                                className="input"
+                                type="text"
+                                name="filter"
+                                onKeyUp={this.keyUpHandler}
+                                placeholder="Search..."
+                            />
+                        </div>
                     </div>
                 </div>
-                <Table striped>
+                <Table striped className="JobTable">
                     <thead>
                         <tr>{header_items}</tr>
                     </thead>

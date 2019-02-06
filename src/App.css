@@ -59,14 +59,6 @@ button {
     font-weight: normal;
 }
 
-.JobRow td:nth-child(2) {
-    width: 420px;
-}
-
-.JobRow td:nth-child(5) {
-    width: 180px;
-}
-
 .JobRow:hover {
     text-decoration: underline;
 }
@@ -103,8 +95,9 @@ button {
     margin-top: 20px;
 }
 
-table {
+.JobTable {
     font-size: 12pt;
+    width: 100%;
 }
 
 .public_fixedDataTableCell_cellContent {
