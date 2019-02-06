@@ -47,34 +47,45 @@ class JobRunner extends Component {
     };
 
     setArraysFromJSON = () => {
-        const { nlpql_JSON } = this.props.runner;
         let termSets = [];
         let documentSets = [];
         let cohorts = [];
         let features = [];
 
-        if (nlpql_JSON.term_sets) {
-            termSets = this.getNamesArray(nlpql_JSON.term_sets);
-        }
-        if (nlpql_JSON.document_sets) {
-            documentSets = this.getNamesArray(nlpql_JSON.document_sets);
-        }
-        if (nlpql_JSON.cohorts) {
-            cohorts = this.getNamesArray(nlpql_JSON.cohorts);
-        }
-        if (nlpql_JSON.data_entities) {
-            features = this.getFeaturesArray(nlpql_JSON.data_entities);
-        }
+        this.props
+            .postToClarityAPI("nlpql_tester", this.props.runner.nlpql)
+            .then(() => {
+                if (this.props.runner.nlpql_JSON.term_sets) {
+                    termSets = this.getNamesArray(
+                        this.props.runner.nlpql_JSON.term_sets
+                    );
+                }
+                if (this.props.runner.nlpql_JSON.document_sets) {
+                    documentSets = this.getNamesArray(
+                        this.props.runner.nlpql_JSON.document_sets
+                    );
+                }
+                if (this.props.runner.nlpql_JSON.cohorts) {
+                    cohorts = this.getNamesArray(
+                        this.props.runner.nlpql_JSON.cohorts
+                    );
+                }
+                if (this.props.runner.nlpql_JSON.data_entities) {
+                    features = this.getFeaturesArray(
+                        this.props.runner.nlpql_JSON.data_entities
+                    );
+                }
 
-        this.setState({
-            termSets: termSets,
-            documentSets: documentSets,
-            cohorts: cohorts,
-            features: features
-        });
+                this.setState({
+                    termSets: termSets,
+                    documentSets: documentSets,
+                    cohorts: cohorts,
+                    features: features
+                });
+            });
     };
 
-    componentDidMount() {
+    componentWillMount() {
         this.props.setNLPQL("");
         let htmlClasses = document.getElementsByTagName("html")[0].classList;
 
@@ -86,10 +97,7 @@ class JobRunner extends Component {
         let text = null;
 
         if (editing) {
-            this.props.postToClarityAPI(
-                "nlpql_tester",
-                this.props.runner.nlpql
-            );
+            this.setArraysFromJSON();
             text = "Edit";
         } else {
             text = "Save";
@@ -132,11 +140,7 @@ class JobRunner extends Component {
         const { nlpql } = this.props.runner;
 
         this.props.setNLPQL(nlpql + value).then(() => {
-            this.props
-                .postToClarityAPI("nlpql_tester", this.props.runner.nlpql)
-                .then(() => {
-                    this.setArraysFromJSON();
-                });
+            this.setArraysFromJSON();
         });
     };
 
@@ -175,6 +179,7 @@ class JobRunner extends Component {
                 this.setState({
                     response_view: (
                         <TestResponse
+                            valid={this.props.runner.nlpql_JSON.valid}
                             data={this.props.runner.nlpql_JSON}
                             toggle={this.toggleResponse}
                             toggleLimitModal={this.toggleLimitModal}
@@ -218,97 +223,100 @@ class JobRunner extends Component {
         } = this.state;
 
         return (
-            <div className="JobRunner container">
-                {response_view}
+            <React.Fragment>
                 <PhenotypeForm
                     modal={this.state.phenotypeModal}
                     updateNLPQL={this.updateNLPQL}
                     toggle={this.disablePhenotypeModal}
                 />
-                <div className="NLPQLAreaHeader columns">
-                    <div className="column is-half level">
-                        <div className="columns level-right">
-                            <div className="column is-one-third">
-                                <button
-                                    className="button is-large"
-                                    onClick={this.handleExpandClick}
-                                >
-                                    Expand
-                                </button>
-                            </div>
-                            <div className="column is-one-third">
-                                <button
-                                    className="button is-large"
-                                    onClick={this.testNLPQL}
-                                >
-                                    Test
-                                </button>
-                            </div>
-                        </div>
-                        <div className="card">
-                            <DocumentSetForm
-                                documentSets={documentSets}
-                                updateNLPQL={this.updateNLPQL}
-                            />
-                            <TermsetForm
-                                termSets={termSets}
-                                updateNLPQL={this.updateNLPQL}
-                            />
-                            <CohortForm
-                                cohorts={cohorts}
-                                updateNLPQL={this.updateNLPQL}
-                            />
-                            <DefineFeatureForm
-                                features={features}
-                                termSets={termSets}
-                                documentSets={documentSets}
-                                cohorts={cohorts}
-                                updateNLPQL={this.updateNLPQL}
-                            />
-                            <LogicalContextForm
-                                updateNLPQL={this.updateNLPQL}
-                            />
-                            <DefineResultForm
-                                features={features}
-                                updateNLPQL={this.updateNLPQL}
-                            />
-                        </div>
-                    </div>
-                    <div className="column is-half level">
-                        <div className="columns level-right">
-                            <div className="column is-half">
-                                <button
-                                    className="button is-large is-primary"
-                                    onClick={this.toggleLimitModal}
-                                >
-                                    Run
-                                </button>
-                            </div>
-                        </div>
-                        <div id="editor">
-                            {this.renderEditor()}
-                            <div className="level">
-                                <div className="column is-one-quarter">
+                <div className="JobRunner container">
+                    {response_view}
+
+                    <div className="NLPQLAreaHeader columns">
+                        <div className="column is-half level">
+                            <div className="columns level-right">
+                                <div className="column is-one-third">
                                     <button
-                                        className="button"
-                                        onClick={this.clear}
+                                        className="button is-large"
+                                        onClick={this.handleExpandClick}
                                     >
-                                        Clear
+                                        Expand
                                     </button>
                                 </div>
-                                <div className="column is-one-quarter level-right">
+                                <div className="column is-one-third">
                                     <button
-                                        className="button"
-                                        onClick={this.toggleEdit}
+                                        className="button is-large"
+                                        onClick={this.testNLPQL}
                                     >
-                                        {editText}
+                                        Test
                                     </button>
+                                </div>
+                            </div>
+                            <div className="card">
+                                <DocumentSetForm
+                                    documentSets={documentSets}
+                                    updateNLPQL={this.updateNLPQL}
+                                />
+                                <TermsetForm
+                                    termSets={termSets}
+                                    updateNLPQL={this.updateNLPQL}
+                                />
+                                <CohortForm
+                                    cohorts={cohorts}
+                                    updateNLPQL={this.updateNLPQL}
+                                />
+                                <DefineFeatureForm
+                                    features={features}
+                                    termSets={termSets}
+                                    documentSets={documentSets}
+                                    cohorts={cohorts}
+                                    updateNLPQL={this.updateNLPQL}
+                                />
+                                <LogicalContextForm
+                                    updateNLPQL={this.updateNLPQL}
+                                />
+                                <DefineResultForm
+                                    features={features}
+                                    updateNLPQL={this.updateNLPQL}
+                                />
+                            </div>
+                        </div>
+                        <div className="column is-half level">
+                            <div className="columns level-right">
+                                <div className="column is-half">
+                                    <button
+                                        className="button is-large is-primary"
+                                        onClick={this.toggleLimitModal}
+                                    >
+                                        Run
+                                    </button>
+                                </div>
+                            </div>
+                            <div id="editor">
+                                {this.renderEditor()}
+                                <div className="level">
+                                    <div className="column is-one-quarter">
+                                        <button
+                                            className="button"
+                                            onClick={this.clear}
+                                        >
+                                            Clear
+                                        </button>
+                                    </div>
+                                    <div className="column is-one-quarter level-right">
+                                        <button
+                                            className="button"
+                                            onClick={this.toggleEdit}
+                                        >
+                                            {editText}
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
+            </React.Fragment>
         );
     }
 }

@@ -7,46 +7,62 @@ export default class TestResponse extends Component {
         this.props.toggleLimitModal();
     };
 
+    componentDidMount() {
+        let htmlClasses = document.getElementsByTagName("html")[0].classList;
+
+        htmlClasses.add("is-clipped");
+    }
+
+    componentWillUnmount() {
+        let htmlClasses = document.getElementsByTagName("html")[0].classList;
+
+        htmlClasses.remove("is-clipped");
+    }
+
     render() {
-        const { data, toggle } = this.props;
+        const { data, toggle, valid } = this.props;
 
         return (
-            <div className={"modal is-active"}>
+            <div className="modal is-active">
                 <div className="modal-background" />
-                <div className="modal-content">
-                    <div className="card">
-                        <header className="card-header">
-                            <p className="card-header-title">Your Query:</p>
-                        </header>
-                        <div className="card-content">
-                            <div className="content">
-                                <div className="response-json">
-                                    <ReactJson
-                                        src={data}
-                                        displayObjectSize={false}
-                                        displayDataTypes={false}
-                                    />
-                                </div>
-                            </div>
+                <div class="modal-card">
+                    <header class="modal-card-head">
+                        <p class="modal-card-title">
+                            {" "}
+                            Your NLPQL is&nbsp;
+                            {valid ? (
+                                <span className="has-text-success">VALID</span>
+                            ) : (
+                                <span className="has-text-danger">INVALID</span>
+                            )}
+                            :
+                        </p>
+                        <button
+                            class="delete"
+                            aria-label="close"
+                            onClick={toggle}
+                        />
+                    </header>
+                    <section class="modal-card-body">
+                        <div className="response-json">
+                            <ReactJson
+                                src={data}
+                                displayObjectSize={false}
+                                displayDataTypes={false}
+                            />
                         </div>
-                        <footer className="card-footer">
-                            <a className="card-footer-item" onClick={toggle}>
-                                Close
-                            </a>
+                    </section>
+                    <footer class="modal-card-foot level">
+                        <div className="level-right level-item">
                             <a
-                                className="card-footer-item"
+                                className="button is-large is-primary"
                                 onClick={this.toggleLimitModal}
                             >
                                 Run Query
                             </a>
-                        </footer>
-                    </div>
+                        </div>
+                    </footer>
                 </div>
-                <button
-                    className="modal-close is-large"
-                    aria-label="close"
-                    onClick={toggle}
-                />
             </div>
         );
     }

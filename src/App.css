@@ -35,6 +35,10 @@ button {
     padding: 25px 20px 20px;
 }
 
+.slideout-panel {
+    will-change: unset !important;
+}
+
 .JobList {
     padding: 20px;
 }
@@ -251,11 +255,8 @@ pre,
 
 #editor pre,
 #editor textarea {
+    padding: 1.25rem 1.5rem;
     min-height: 240px;
-}
-
-.mt-1 {
-    margin-top: 1rem;
 }
 
 .JobRunner.container {
@@ -270,9 +271,4 @@ pre,
     margin-left: 10px;
     font-style: italic;
     font-weight: 100;
-}
-
-.response-json {
-    height: 400px;
-    overflow: scroll;
 }

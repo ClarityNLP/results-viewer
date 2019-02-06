@@ -15,6 +15,18 @@ class LimitForm extends React.Component {
         this.state = initialState;
     }
 
+    componentDidMount() {
+        let htmlClasses = document.getElementsByTagName("html")[0].classList;
+
+        htmlClasses.add("is-clipped");
+    }
+
+    componentWillUnmount() {
+        let htmlClasses = document.getElementsByTagName("html")[0].classList;
+
+        htmlClasses.remove("is-clipped");
+    }
+
     handleInputChange(event) {
         const target = event.target;
         let value = target.value;
@@ -53,55 +65,52 @@ class LimitForm extends React.Component {
             <React.Fragment>
                 <div className="modal is-active">
                     <div className="modal-background" />
-                    <div className="modal-content">
-                        <div className="card">
-                            <div className="card-content">
-                                <div className="content">
-                                    <form>
-                                        <div className="field">
-                                            <label className="label">
-                                                Limit Results
-                                            </label>
-                                            <input
-                                                className="input"
-                                                type="number"
-                                                name="limit"
-                                                value={limit}
-                                                onChange={
-                                                    this.handleInputChange
-                                                }
-                                            />
-                                        </div>
-                                    </form>
+                    <div class="modal-card">
+                        <header class="modal-card-head">
+                            <p class="modal-card-title">
+                                Would you like to limit the number of results?
+                            </p>
+                            <button
+                                class="delete"
+                                aria-label="close"
+                                onClick={toggle}
+                            />
+                        </header>
+                        <section class="modal-card-body">
+                            <form>
+                                <div className="field">
+                                    <label className="label">
+                                        Limit Results
+                                    </label>
+                                    <input
+                                        className="input"
+                                        type="number"
+                                        name="limit"
+                                        value={limit}
+                                        onChange={this.handleInputChange}
+                                    />
                                 </div>
-                            </div>
-                            <footer className="card-footer">
-                                <a
-                                    className="card-footer-item"
-                                    onClick={toggle}
-                                >
-                                    Close
-                                </a>
-                                <a
-                                    className="card-footer-item"
+                            </form>
+                        </section>
+                        <footer class="modal-card-foot level cloumns">
+                            <div className="column">
+                                <button
+                                    className="button is-large is-secondary"
                                     onClick={this.noLimit}
                                 >
-                                    Run All
-                                </a>
-                                <a
-                                    className="card-footer-item"
+                                    No, Thanks
+                                </button>
+                            </div>
+                            <div className="column">
+                                <button
+                                    className="button is-large is-primary"
                                     onClick={this.handleSubmit}
                                 >
-                                    Run Query
-                                </a>
-                            </footer>
-                        </div>
+                                    Build Query
+                                </button>
+                            </div>
+                        </footer>
                     </div>
-                    <button
-                        className="modal-close is-large"
-                        aria-label="close"
-                        onClick={toggle}
-                    />
                 </div>
             </React.Fragment>
         );

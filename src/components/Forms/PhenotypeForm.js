@@ -1,7 +1,5 @@
 import React from "react";
 
-import SubmitButton from "../../UIkit/SubmitButton";
-
 const initialState = {
     name: "",
     version: "",
@@ -64,8 +62,16 @@ class PhenotypeForm extends React.Component {
             <React.Fragment>
                 <div className={"modal " + modal}>
                     <div className="modal-background" />
-                    <div className="modal-content">
-                        <div className="box">
+                    <div class="modal-card">
+                        <header class="modal-card-head">
+                            <p class="modal-card-title">Welcome!</p>
+                            <button
+                                class="delete"
+                                aria-label="close"
+                                onClick={this.props.toggle}
+                            />
+                        </header>
+                        <section class="modal-card-body">
                             <form>
                                 {/* NAME INPUT */}
                                 <div className="field">
@@ -118,13 +124,18 @@ class PhenotypeForm extends React.Component {
                                         Include OHDSI Library
                                     </label>
                                 </div>
-
-                                <SubmitButton
-                                    handleSubmit={this.handleSubmit}
-                                    label="Build Query"
-                                />
                             </form>
-                        </div>
+                        </section>
+                        <footer class="modal-card-foot level">
+                            <div className="level-right level-item">
+                                <a
+                                    className="button is-large is-primary"
+                                    onClick={this.handleSubmit}
+                                >
+                                    Build Query
+                                </a>
+                            </div>
+                        </footer>
                     </div>
                 </div>
             </React.Fragment>
