@@ -17,6 +17,12 @@ class PhenotypeForm extends React.Component {
         this.state = initialState;
     }
 
+    componentDidMount() {
+        let htmlClasses = document.getElementsByTagName("html")[0].classList;
+
+        htmlClasses.add("is-clipped");
+    }
+
     handleInputChange = event => {
         const target = event.target;
         let value = target.type === "checkbox" ? target.checked : target.value;

@@ -141,6 +141,16 @@ class DefineFeatureForm extends React.Component {
         return tmp;
     };
 
+    renderFeatureCount() {
+        let count = this.props.features.length;
+
+        if (count > 0) {
+            return <span className="tag">{count}</span>;
+        }
+
+        return null;
+    }
+
     handleSubmit = event => {
         event.preventDefault();
 
@@ -353,11 +363,6 @@ class DefineFeatureForm extends React.Component {
             }
         }
         text += "\n\t});\n\n";
-
-        this.props.appendToArray("features", {
-            name: featureName,
-            algorithm: algorithm
-        });
 
         this.props.updateNLPQL(text);
         this.toggle();
@@ -792,16 +797,17 @@ class DefineFeatureForm extends React.Component {
         return (
             <React.Fragment>
                 <header className="card-header" onClick={this.toggle}>
-                    <p className="card-header-title">Feature</p>
-                    <a
-                        href="#"
+                    <p className="card-header-title">
+                        Feature {this.renderFeatureCount()}
+                    </p>
+                    <span
                         className="card-header-icon"
                         aria-label="more options"
                     >
                         <span className="icon">
                             <img height="16px" src={icon} alt="" />
                         </span>
-                    </a>
+                    </span>
                 </header>
                 <div
                     className={

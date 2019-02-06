@@ -2,8 +2,9 @@ import * as types from "../actions/types";
 
 const initialState = {
     nlpql: "",
-    nlpqlJSON: null,
-    nlpqlError: ""
+    nlpql_JSON: null,
+    nlpql_Error: null,
+    posting: null
 };
 
 const reducer = (state = initialState, action) => {
@@ -13,15 +14,40 @@ const reducer = (state = initialState, action) => {
                 ...state,
                 nlpql: action.data
             };
-        case types.SET_NLPQL_JSON:
+        case types.SETTING_NLPQL:
             return {
                 ...state,
-                nlpqlJSON: action.data
+                posting: true
             };
-        case types.SET_POST_ERROR:
+        case types.SETTING_NLPQL_SUCCESS:
             return {
                 ...state,
-                nlpqlError: action.data
+                posting: false,
+                nlpql: action.payload.data
+            };
+        case types.SETTING_NLPQL_FAIL:
+            return {
+                ...state,
+                posting: false,
+                nlpql_Error: action.error
+            };
+        case types.SETTING_NLPQL_JSON:
+            return {
+                ...state,
+                posting: true
+            };
+
+        case types.SETTING_NLPQL_JSON_SUCCESS:
+            return {
+                ...state,
+                nlpql_JSON: action.payload.data,
+                posting: false
+            };
+        case types.SETTING_NLPQL_JSON_FAIL:
+            return {
+                ...state,
+                posting: false,
+                nlpql_Error: action.error
             };
         default:
             return state;

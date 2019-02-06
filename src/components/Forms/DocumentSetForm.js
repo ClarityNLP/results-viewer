@@ -89,7 +89,7 @@ class DocumentSetForm extends React.Component {
             return null;
         }
 
-        return <span class="tag">{count}</span>;
+        return <span className="tag">{count}</span>;
     }
 
     handleSubmit = event => {
@@ -179,7 +179,6 @@ class DocumentSetForm extends React.Component {
             text += "Clarity.createDocumentSet(" + payload + ");\n\n";
         }
 
-        this.props.appendDocumentSet(name);
         this.props.updateNLPQL(text);
         this.toggle();
         this.setState(initialState);
@@ -203,15 +202,14 @@ class DocumentSetForm extends React.Component {
                     <p className="card-header-title">
                         Document Set {this.renderDocumentSetCount()}
                     </p>
-                    <a
-                        href="#"
+                    <span
                         className="card-header-icon"
                         aria-label="more options"
                     >
                         <span className="icon">
                             <img height="16px" src={icon} alt="" />
                         </span>
-                    </a>
+                    </span>
                 </header>
                 <div
                     className={

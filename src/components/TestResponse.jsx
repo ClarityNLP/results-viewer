@@ -14,12 +14,12 @@ export default class TestResponse extends Component {
             <div className={"modal is-active"}>
                 <div className="modal-background" />
                 <div className="modal-content">
-                    <div class="card">
-                        <header class="card-header">
+                    <div className="card">
+                        <header className="card-header">
                             <p className="card-header-title">Your Query:</p>
                         </header>
-                        <div class="card-content">
-                            <div class="content">
+                        <div className="card-content">
+                            <div className="content">
                                 <div className="response-json">
                                     <ReactJson
                                         src={data}
@@ -29,12 +29,12 @@ export default class TestResponse extends Component {
                                 </div>
                             </div>
                         </div>
-                        <footer class="card-footer">
-                            <a class="card-footer-item" onClick={toggle}>
+                        <footer className="card-footer">
+                            <a className="card-footer-item" onClick={toggle}>
                                 Close
                             </a>
                             <a
-                                class="card-footer-item"
+                                className="card-footer-item"
                                 onClick={this.toggleLimitModal}
                             >
                                 Run Query
@@ -43,7 +43,7 @@ export default class TestResponse extends Component {
                     </div>
                 </div>
                 <button
-                    class="modal-close is-large"
+                    className="modal-close is-large"
                     aria-label="close"
                     onClick={toggle}
                 />

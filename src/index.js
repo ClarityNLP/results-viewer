@@ -17,9 +17,8 @@ const history = createBrowserHistory();
 const initialState = {};
 
 const apiClient = axios.create({
-    baseURL: "http://localhost:5003",
-    responseType: "json",
-    withCredentials: true
+    baseURL: process.env.REACT_APP_CLARITY_NLP_URL,
+    responseType: "json"
 });
 
 const store = configureStore(initialState, apiClient, history);

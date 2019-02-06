@@ -86,7 +86,7 @@ class LimitForm extends React.Component {
                                     className="card-footer-item"
                                     onClick={this.noLimit}
                                 >
-                                    No, thanks
+                                    Run All
                                 </a>
                                 <a
                                     className="card-footer-item"

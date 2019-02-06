@@ -1,3 +1,5 @@
+/* eslint no-eval: 0 */
+
 import React, { Component } from "react";
 import { Cell, Column, Table } from "fixed-data-table-2";
 import axios from "axios";
@@ -8,10 +10,6 @@ import {
     ModalHeader,
     ModalBody,
     ModalFooter,
-    Form,
-    FormGroup,
-    Label,
-    Input,
     Alert
 } from "reactstrap";
 

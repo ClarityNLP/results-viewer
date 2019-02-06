@@ -1,18 +1,6 @@
 /* eslint react/no-multi-comp: 0, react/prop-types: 0 */
 
 import React from "react";
-import {
-    Row,
-    Col,
-    Collapse,
-    Form,
-    FormGroup,
-    Label,
-    Input,
-    CardHeader,
-    CardBody,
-    Badge
-} from "reactstrap";
 
 import SubmitButton from "../../UIkit/SubmitButton";
 
@@ -71,7 +59,6 @@ class CohortForm extends React.Component {
 
         let text = "cohort " + name + ": OHDSI.getCohort(" + id + ");\n\n";
 
-        this.props.appendCohort(name);
         this.props.updateNLPQL(text);
         this.toggle();
         this.setState(initialState);
@@ -84,7 +71,7 @@ class CohortForm extends React.Component {
             return <span className="optional-text"> - Optional</span>;
         }
 
-        return <span class="tag">{count}</span>;
+        return <span className="tag">{count}</span>;
     }
 
     render() {
@@ -96,15 +83,14 @@ class CohortForm extends React.Component {
                     <p className="card-header-title">
                         OHDSI Cohort {this.renderCohortCount()}
                     </p>
-                    <a
-                        href="#"
+                    <span
                         className="card-header-icon"
                         aria-label="more options"
                     >
                         <span className="icon">
                             <img height="16px" src={icon} alt="" />
                         </span>
-                    </a>
+                    </span>
                 </header>
                 <div
                     className={

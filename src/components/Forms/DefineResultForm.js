@@ -168,15 +168,14 @@ class DefineResultForm extends React.Component {
             <React.Fragment>
                 <header className="card-header" onClick={this.toggle}>
                     <p className="card-header-title">Result</p>
-                    <a
-                        href="#"
+                    <span
                         className="card-header-icon"
                         aria-label="more options"
                     >
                         <span className="icon">
                             <img height="16px" src={icon} alt="" />
                         </span>
-                    </a>
+                    </span>
                 </header>
                 <div
                     className={

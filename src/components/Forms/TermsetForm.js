@@ -136,12 +136,11 @@ class TermsetForm extends React.Component {
         } else {
             let text = "termset " + termsetName + ":\n";
             text +=
-                "\t" + this.buildArrayStringWithQuotes(termsetTerms) + "\n\n";
+                "\t" + this.buildArrayStringWithQuotes(termsetTerms) + ";\n\n";
 
             this.props.updateNLPQL(text);
         }
 
-        this.props.appendTermSet(termsetName);
         this.toggle();
         this.setState(initialState);
     };
@@ -163,15 +162,14 @@ class TermsetForm extends React.Component {
                     <p className="card-header-title">
                         Term Set {this.renderTermSetCount()}
                     </p>
-                    <a
-                        href="#"
+                    <span
                         className="card-header-icon"
                         aria-label="more options"
                     >
                         <span className="icon">
                             <img height="16px" src={icon} alt="" />
                         </span>
-                    </a>
+                    </span>
                 </header>
                 <div
                     className={
