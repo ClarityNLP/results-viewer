@@ -31,6 +31,19 @@ class JobRunner extends Component {
         this.state = initialState;
     }
 
+    response_ERROR = () => {
+        return (
+            <TestResponse
+                valid={false}
+                data={{
+                    ERROR: "There was an error with the nlpql."
+                }}
+                toggle={this.toggleResponse}
+                toggleLimitModal={this.toggleLimitModal}
+            />
+        );
+    };
+
     getNamesArray = arr => {
         return arr.map(value => {
             return value.name;
@@ -47,6 +60,8 @@ class JobRunner extends Component {
     };
 
     setArraysFromJSON = () => {
+        if (!this.props.runner.nlpql_JSON) return;
+
         let termSets = [];
         let documentSets = [];
         let cohorts = [];
@@ -98,6 +113,7 @@ class JobRunner extends Component {
 
         if (editing) {
             this.setArraysFromJSON();
+
             text = "Edit";
         } else {
             text = "Save";
@@ -190,16 +206,7 @@ class JobRunner extends Component {
                 });
         } else {
             this.setState({
-                response_view: (
-                    <TestResponse
-                        valid={false}
-                        data={{
-                            ERROR: "Please POST text containing NLPQL."
-                        }}
-                        toggle={this.toggleResponse}
-                        toggleLimitModal={this.toggleLimitModal}
-                    />
-                )
+                response_view: this.response_ERROR()
             });
         }
     };
@@ -209,22 +216,40 @@ class JobRunner extends Component {
     };
 
     handleRunClick = () => {
-        this.props
-            .postToClarityAPI("nlpql", this.props.runner.nlpql)
-            .then(() => {
-                this.setState({
-                    response_view: (
-                        <RunResponse
-                            valid={
-                                this.props.runner.nlpql_JSON.success !== false
-                            }
-                            data={this.props.runner.nlpql_JSON}
-                            clear={this.clear}
-                            toggle={this.toggleResponse}
-                        />
-                    )
+        if (this.props.runner.nlpql) {
+            this.props
+                .postToClarityAPI("nlpql", this.props.runner.nlpql)
+                .then(() => {
+                    if (!this.props.runner.nlpql_JSON) {
+                        this.setState({
+                            response_view: this.response_ERROR()
+                        });
+                    }
+
+                    this.setState({
+                        response_view: (
+                            <RunResponse
+                                valid={
+                                    this.props.runner.nlpql_JSON.success !==
+                                    false
+                                }
+                                data={this.props.runner.nlpql_JSON}
+                                clear={this.clear}
+                                toggle={this.toggleResponse}
+                            />
+                        )
+                    });
+                })
+                .catch(() => {
+                    this.setState({
+                        response_view: this.response_ERROR()
+                    });
                 });
+        } else {
+            this.setState({
+                response_view: this.response_ERROR()
             });
+        }
     };
 
     render() {

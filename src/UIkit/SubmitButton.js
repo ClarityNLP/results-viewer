@@ -4,7 +4,7 @@ class SubmitButton extends React.Component {
     render() {
         return (
             <div className="level-right">
-                <div className="column is-5">
+                <div className="column is-half">
                     {this.props.children}
                     <button
                         className="button is-primary"
