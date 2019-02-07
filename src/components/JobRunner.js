@@ -173,20 +173,35 @@ class JobRunner extends Component {
     };
 
     testNLPQL = () => {
-        this.props
-            .postToClarityAPI("nlpql_tester", this.props.runner.nlpql)
-            .then(() => {
-                this.setState({
-                    response_view: (
-                        <TestResponse
-                            valid={this.props.runner.nlpql_JSON.valid}
-                            data={this.props.runner.nlpql_JSON}
-                            toggle={this.toggleResponse}
-                            toggleLimitModal={this.toggleLimitModal}
-                        />
-                    )
+        if (this.props.runner.nlpql) {
+            this.props
+                .postToClarityAPI("nlpql_tester", this.props.runner.nlpql)
+                .then(() => {
+                    this.setState({
+                        response_view: (
+                            <TestResponse
+                                valid={this.props.runner.nlpql_JSON.valid}
+                                data={this.props.runner.nlpql_JSON}
+                                toggle={this.toggleResponse}
+                                toggleLimitModal={this.toggleLimitModal}
+                            />
+                        )
+                    });
                 });
+        } else {
+            this.setState({
+                response_view: (
+                    <TestResponse
+                        valid={false}
+                        data={{
+                            ERROR: "Please POST text containing NLPQL."
+                        }}
+                        toggle={this.toggleResponse}
+                        toggleLimitModal={this.toggleLimitModal}
+                    />
+                )
             });
+        }
     };
 
     handleExpandClick = () => {
@@ -233,7 +248,7 @@ class JobRunner extends Component {
                     {response_view}
 
                     <div className="NLPQLAreaHeader columns">
-                        <div className="column is-half level">
+                        <div className="column is-5 level">
                             <div className="columns level-right">
                                 <div className="column is-one-third">
                                     <button
@@ -281,9 +296,9 @@ class JobRunner extends Component {
                                 />
                             </div>
                         </div>
-                        <div className="column is-half level">
+                        <div className="column is-7 level">
                             <div className="columns level-right">
-                                <div className="column is-half">
+                                <div className="column is-4">
                                     <button
                                         className="button is-large is-primary"
                                         onClick={this.toggleLimitModal}

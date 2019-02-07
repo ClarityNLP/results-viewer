@@ -126,14 +126,14 @@ class PhenotypeForm extends React.Component {
                                 </div>
                             </form>
                         </section>
-                        <footer class="modal-card-foot level">
-                            <div className="level-right level-item">
-                                <a
+                        <footer class="modal-card-foot">
+                            <div className="column is-5 is-offset-7">
+                                <button
                                     className="button is-large is-primary"
                                     onClick={this.handleSubmit}
                                 >
                                     Build Query
-                                </a>
+                                </button>
                             </div>
                         </footer>
                     </div>

@@ -14,6 +14,11 @@ const reducer = (state = initialState, action) => {
                 ...state,
                 nlpql: action.data
             };
+        case types.SET_NLPQL_JSON:
+            return {
+                ...state,
+                nlpql_JSON: action.data
+            };
         case types.SETTING_NLPQL:
             return {
                 ...state,

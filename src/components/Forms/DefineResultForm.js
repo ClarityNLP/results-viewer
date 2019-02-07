@@ -47,7 +47,7 @@ class DefineResultForm extends React.Component {
         const { feature, subField } = this.state;
         let text = feature.value;
 
-        if (subField.value.trim() !== "") {
+        if (subField.value) {
             text += "." + subField.value;
         }
 

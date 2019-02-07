@@ -52,14 +52,15 @@ export default class TestResponse extends Component {
                             />
                         </div>
                     </section>
-                    <footer class="modal-card-foot level">
-                        <div className="level-right level-item">
-                            <a
+                    <footer class="modal-card-foot">
+                        <div className="column is-5 is-offset-7">
+                            <button
+                                disabled={!valid}
                                 className="button is-large is-primary"
                                 onClick={this.toggleLimitModal}
                             >
                                 Run Query
-                            </a>
+                            </button>
                         </div>
                     </footer>
                 </div>
