@@ -62,16 +62,16 @@ class PhenotypeForm extends React.Component {
             <React.Fragment>
                 <div className={"modal " + modal}>
                     <div className="modal-background" />
-                    <div class="modal-card">
-                        <header class="modal-card-head">
-                            <p class="modal-card-title">Welcome!</p>
+                    <div className="modal-card">
+                        <header className="modal-card-head">
+                            <p className="modal-card-title">Welcome!</p>
                             <button
-                                class="delete"
+                                className="delete"
                                 aria-label="close"
                                 onClick={this.props.toggle}
                             />
                         </header>
-                        <section class="modal-card-body">
+                        <section className="modal-card-body">
                             <form>
                                 {/* NAME INPUT */}
                                 <div className="field">
@@ -126,7 +126,7 @@ class PhenotypeForm extends React.Component {
                                 </div>
                             </form>
                         </section>
-                        <footer class="modal-card-foot">
+                        <footer className="modal-card-foot">
                             <div className="column is-5 is-offset-7">
                                 <button
                                     className="button is-large is-primary"

@@ -60,8 +60,6 @@ class JobRunner extends Component {
     };
 
     setArraysFromJSON = () => {
-        if (!this.props.runner.nlpql_JSON) return;
-
         let termSets = [];
         let documentSets = [];
         let cohorts = [];
@@ -112,7 +110,9 @@ class JobRunner extends Component {
         let text = null;
 
         if (editing) {
-            this.setArraysFromJSON();
+            if (this.props.runner.nlpql !== "") {
+                this.setArraysFromJSON();
+            }
 
             text = "Edit";
         } else {

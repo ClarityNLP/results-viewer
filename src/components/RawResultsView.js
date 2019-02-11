@@ -4,14 +4,6 @@ import React, { Component } from "react";
 import { Cell, Column, Table } from "fixed-data-table-2";
 import axios from "axios";
 import _ from "lodash";
-import {
-    Button,
-    Modal,
-    ModalHeader,
-    ModalBody,
-    ModalFooter,
-    Alert
-} from "reactstrap";
 
 const ALL = 4;
 const page_size = 100;
@@ -193,6 +185,7 @@ class RawResultsView extends Component {
                 job_id +
                 "/" +
                 final_results;
+
             this.setState({
                 ResultData: new ResultData(
                     this.updateData,
@@ -299,6 +292,7 @@ class RawResultsView extends Component {
     render() {
         // iterating over the results to get the unique nlpql_feature names
         let result_names = new Set();
+
         this.state.ResultData._dataList.forEach(function(resultData) {
             result_names.add(resultData.nlpql_feature);
         });
@@ -311,12 +305,14 @@ class RawResultsView extends Component {
             "_id_y",
             "_id_z"
         ];
+
         const long_columns = [
             "sentence",
             "sentence_x",
             "sentence_y",
             "sentence_z"
         ];
+
         const med_columns = [
             "term",
             "section",
@@ -324,9 +320,11 @@ class RawResultsView extends Component {
             "report_id",
             "job_date"
         ];
+
         let { ResultData, width } = this.state;
 
         let w = width - 100;
+
         let columns = ResultData.columns
             .filter(c => filter_out_columns.indexOf(c) < 0)
             .map(c => {
@@ -350,95 +348,100 @@ class RawResultsView extends Component {
                     />
                 );
             });
-        return (
-            <div>
-                {this.state.ResultData.getSize() > 0 ? (
-                    <div>
-                        <div className="RawResultsTable">
-                            <Table
-                                rowHeight={row_height}
-                                rowsCount={ResultData.getSize()}
-                                headerHeight={header_height}
-                                width={w}
-                                height={Math.min(
-                                    600,
-                                    ResultData.getSize() * (row_height + 3) +
-                                        header_height +
-                                        5
-                                )}
-                                {...this.props}
-                            >
-                                {columns}
-                            </Table>
-                            {this.state.ResultData.getSize() > 0 &&
-                            this.state.exportApiHealth === true ? (
-                                <div className="exportButton">
-                                    <Button
-                                        size="lg"
-                                        onClick={() => {
-                                            this.openExportModal();
-                                        }}
-                                    >
-                                        Export Results
-                                    </Button>{" "}
-                                </div>
-                            ) : (
-                                <div />
-                            )}
 
-                            <div id="exportResultModal">
-                                <Modal
-                                    isOpen={this.state.modal}
-                                    toggle={this.toggle}
-                                    className={this.props.className}
+        return (
+            <React.Fragment>
+                {this.state.ResultData.getSize() > 0 ? (
+                    <div className="RawResultsTable">
+                        <Table
+                            rowHeight={row_height}
+                            rowsCount={ResultData.getSize()}
+                            headerHeight={header_height}
+                            width={w}
+                            height={Math.min(
+                                600,
+                                ResultData.getSize() * (row_height + 3) +
+                                    header_height +
+                                    5
+                            )}
+                            {...this.props}
+                        >
+                            {columns}
+                        </Table>
+
+                        {this.state.ResultData.getSize() > 0 &&
+                        this.state.exportApiHealth === true ? (
+                            <div className="exportButton">
+                                <button
+                                    className="button is-priamry is-large"
+                                    onClick={this.openExportModal}
                                 >
-                                    <ModalHeader toggle={this.toggle}>
-                                        Export Results - Job ID:{" "}
-                                        {this.props.job.nlp_job_id}
-                                    </ModalHeader>
-                                    <form>
-                                        <ModalBody>
+                                    Export Results
+                                </button>
+                            </div>
+                        ) : null}
+
+                        <div id="exportResultModal">
+                            <div
+                                className={
+                                    this.state.modal
+                                        ? "modal is-active"
+                                        : "modal"
+                                }
+                            >
+                                <div className="modal-background" />
+                                <div className="modal-card">
+                                    <header className="modal-card-head">
+                                        <p className="modal-card-title">
+                                            Export Results - Job ID:{" "}
+                                            {this.props.job.nlp_job_id}
+                                        </p>
+                                        <button
+                                            className="delete"
+                                            aria-label="close"
+                                            onClick={this.toggle}
+                                        />
+                                    </header>
+                                    <section className="modal-card-body">
+                                        <form>
                                             {this.state.successAlert ===
                                             true ? (
-                                                <Alert color="success">
+                                                <div class="notification is-success">
                                                     {this.state.alertMessage}
-                                                </Alert>
-                                            ) : (
-                                                <div />
-                                            )}
+                                                </div>
+                                            ) : null}
                                             {this.state.failureAlert ===
                                             true ? (
-                                                <Alert color="danger">
+                                                <div class="notification is-danger">
                                                     {this.state.alertMessage}
-                                                </Alert>
-                                            ) : (
-                                                <div />
-                                            )}
+                                                </div>
+                                            ) : null}
                                             <div className="field">
                                                 <label
                                                     className="label"
-                                                    for="resultName"
+                                                    htmlFor="resultName"
                                                 >
                                                     Result Name
                                                 </label>
-                                                <input
-                                                    type="select"
+                                                <select
+                                                    className="input"
                                                     name="resultName"
                                                     id="omopResultName"
                                                 >
                                                     {this.populateResultListInModal(
                                                         result_names
                                                     )}
-                                                </input>
+                                                </select>
                                             </div>
                                             <div className="field">
                                                 <label
                                                     className="label"
-                                                    for="conceptId"
+                                                    htmlFor="conceptId"
                                                 >
                                                     Concept ID
                                                 </label>
                                                 <input
+                                                    className="input"
                                                     type="text"
                                                     name="conceptId"
                                                     id="omopConceptId"
@@ -448,40 +451,41 @@ class RawResultsView extends Component {
                                             <div className="field">
                                                 <label
                                                     className="label"
-                                                    for="domain"
+                                                    htmlFor="domain"
                                                 >
                                                     OMOP Domain
                                                 </label>
-                                                <input
-                                                    type="select"
+                                                <select
+                                                    className="input"
                                                     name="domain"
                                                     id="omopDomain"
                                                 >
                                                     <option>Observation</option>
                                                     <option>Condition</option>
                                                     <option>Measurement</option>
-                                                </input>
+                                                </select>
                                             </div>
-                                        </ModalBody>
-                                        <ModalFooter>
-                                            <Button
-                                                color="primary"
-                                                onClick={() => {
-                                                    this.exportToOMOP();
-                                                }}
+                                            <pre>{this.state.report_text}</pre>
+                                        </form>
+                                    </section>
+                                    <footer className="modal-card-foot">
+                                        <div className="column is-5 is-offset-7">
+                                            <button
+                                                className="button is-primary"
+                                                onClick={this.exportToOMOP}
                                             >
                                                 Export
-                                            </Button>{" "}
-                                        </ModalFooter>
-                                    </form>
-                                </Modal>
+                                            </button>
+                                        </div>
+                                    </footer>
+                                </div>
                             </div>
                         </div>
                     </div>
                 ) : (
-                    <div className="emptyResults">No results present.</div>
+                    <p>No results present.</p>
                 )}
-            </div>
+            </React.Fragment>
         );
     }
 }

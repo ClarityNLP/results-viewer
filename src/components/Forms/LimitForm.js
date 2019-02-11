@@ -65,18 +65,18 @@ class LimitForm extends React.Component {
             <React.Fragment>
                 <div className="modal is-active">
                     <div className="modal-background" />
-                    <div class="modal-card">
-                        <header class="modal-card-head">
-                            <p class="modal-card-title">
+                    <div className="modal-card">
+                        <header className="modal-card-head">
+                            <p className="modal-card-title">
                                 Would you like to limit the number of results?
                             </p>
                             <button
-                                class="delete"
+                                className="delete"
                                 aria-label="close"
                                 onClick={toggle}
                             />
                         </header>
-                        <section class="modal-card-body">
+                        <section className="modal-card-body">
                             <form>
                                 <div className="field">
                                     <label className="label">
@@ -92,7 +92,7 @@ class LimitForm extends React.Component {
                                 </div>
                             </form>
                         </section>
-                        <footer class="modal-card-foot level cloumns">
+                        <footer className="modal-card-foot level cloumns">
                             <div className="column">
                                 <button
                                     className="button is-large is-secondary"

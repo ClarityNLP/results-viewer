@@ -25,9 +25,9 @@ export default class TestResponse extends Component {
         return (
             <div className="modal is-active">
                 <div className="modal-background" />
-                <div class="modal-card">
-                    <header class="modal-card-head">
-                        <p class="modal-card-title">
+                <div className="modal-card">
+                    <header className="modal-card-head">
+                        <p className="modal-card-title">
                             {" "}
                             Your NLPQL is&nbsp;
                             {valid ? (
@@ -38,12 +38,12 @@ export default class TestResponse extends Component {
                             :
                         </p>
                         <button
-                            class="delete"
+                            className="delete"
                             aria-label="close"
                             onClick={toggle}
                         />
                     </header>
-                    <section class="modal-card-body">
+                    <section className="modal-card-body">
                         <div className="response-json">
                             <ReactJson
                                 src={data}
@@ -52,7 +52,7 @@ export default class TestResponse extends Component {
                             />
                         </div>
                     </section>
-                    <footer class="modal-card-foot">
+                    <footer className="modal-card-foot">
                         <div className="column is-5 is-offset-7">
                             <button
                                 disabled={!valid}
