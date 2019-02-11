@@ -4,11 +4,9 @@ import React from "react";
 
 import SubmitButton from "../../UIkit/SubmitButton";
 
-import plus from "../../assets/icons/svg/plus.svg";
-import minus from "../../assets/icons/svg/minus.svg";
+import { FaAngleDown, FaAngleUp } from "react-icons/fa";
 
 const initialState = {
-    icon: plus,
     collapse: true,
     name: "",
     id: ""
@@ -27,18 +25,8 @@ class CohortForm extends React.Component {
     }
 
     toggle = () => {
-        const { icon } = this.state;
-        let tmp = null;
-
-        if (icon === plus) {
-            tmp = minus;
-        } else {
-            tmp = plus;
-        }
-
         this.setState({
-            collapse: !this.state.collapse,
-            icon: tmp
+            collapse: !this.state.collapse
         });
     };
 
@@ -75,7 +63,7 @@ class CohortForm extends React.Component {
     }
 
     render() {
-        const { icon, collapse, name, id } = this.state;
+        const { collapse, name, id } = this.state;
 
         return (
             <React.Fragment>
@@ -88,7 +76,7 @@ class CohortForm extends React.Component {
                         aria-label="more options"
                     >
                         <span className="icon">
-                            <img height="16px" src={icon} alt="" />
+                            {collapse ? <FaAngleDown /> : <FaAngleUp />}
                         </span>
                     </span>
                 </header>

@@ -4,11 +4,9 @@ import React from "react";
 
 import SubmitButton from "../../UIkit/SubmitButton";
 
-import plus from "../../assets/icons/svg/plus.svg";
-import minus from "../../assets/icons/svg/minus.svg";
+import { FaAngleDown, FaAngleUp } from "react-icons/fa";
 
 const initialState = {
-    icon: plus,
     termExpanderUrl: "http://18.220.133.76:5000/nlpql_expander",
     collapse: true,
     termsetName: "",
@@ -25,18 +23,8 @@ class TermsetForm extends React.Component {
     }
 
     toggle = () => {
-        const { icon } = this.state;
-        let tmp = null;
-
-        if (icon === plus) {
-            tmp = minus;
-        } else {
-            tmp = plus;
-        }
-
         this.setState({
-            collapse: !this.state.collapse,
-            icon: tmp
+            collapse: !this.state.collapse
         });
     };
 
@@ -147,7 +135,6 @@ class TermsetForm extends React.Component {
 
     render() {
         const {
-            icon,
             collapse,
             termsetName,
             termsetTerms,
@@ -167,7 +154,7 @@ class TermsetForm extends React.Component {
                         aria-label="more options"
                     >
                         <span className="icon">
-                            <img height="16px" src={icon} alt="" />
+                            {collapse ? <FaAngleDown /> : <FaAngleUp />}
                         </span>
                     </span>
                 </header>
