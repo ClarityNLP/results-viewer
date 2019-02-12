@@ -5,11 +5,9 @@ import Select from "react-select";
 
 import SubmitButton from "../../UIkit/SubmitButton";
 
-import plus from "../../assets/icons/svg/plus.svg";
-import minus from "../../assets/icons/svg/minus.svg";
+import { FaAngleDown, FaAngleUp } from "react-icons/fa";
 
 const initialState = {
-    icon: plus,
     collapse: true,
     logicalContext: { value: "Patient", label: "Patient" }
 };
@@ -26,18 +24,8 @@ class LogicalContextForm extends React.Component {
     }
 
     toggle = () => {
-        const { icon } = this.state;
-        let tmp = null;
-
-        if (icon === plus) {
-            tmp = minus;
-        } else {
-            tmp = plus;
-        }
-
         this.setState({
-            collapse: !this.state.collapse,
-            icon: tmp
+            collapse: !this.state.collapse
         });
     };
 
@@ -60,7 +48,7 @@ class LogicalContextForm extends React.Component {
     }
 
     render() {
-        const { icon, collapse, logicalContext } = this.state;
+        const { collapse, logicalContext } = this.state;
 
         return (
             <React.Fragment>
@@ -71,7 +59,7 @@ class LogicalContextForm extends React.Component {
                         aria-label="more options"
                     >
                         <span className="icon">
-                            <img height="16px" src={icon} alt="" />
+                            {collapse ? <FaAngleDown /> : <FaAngleUp />}
                         </span>
                     </span>
                 </header>

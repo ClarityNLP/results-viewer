@@ -1,32 +1,12 @@
 /* eslint no-eval: 0 */
 
 import React, { Component } from "react";
-import { Cell, Column, Table } from "fixed-data-table-2";
 import axios from "axios";
 import _ from "lodash";
+import uuid from "uuid";
 
 const ALL = 4;
 const page_size = 100;
-const row_height = 80;
-const header_height = 50;
-
-// Based on example from https://github.com/schrodinger/fixed-data-table-2/blob/master/examples/PaginationExample.js
-class PendingCell extends React.PureComponent {
-    render() {
-        const { data, rowIndex, columnKey, dataVersion, ...props } = this.props;
-        const rowObject = data.getObjectAt(rowIndex);
-        return (
-            <Cell {...props}>
-                {rowObject ? rowObject[columnKey] : "pending"}
-            </Cell>
-        );
-    }
-}
-
-const PagedCell = ({ data, ...props }) => {
-    const dataVersion = data.getDataVersion();
-    return <PendingCell data={data} dataVersion={dataVersion} {...props} />;
-};
 
 class ResultData {
     constructor(callback, job, get_url) {
@@ -124,12 +104,13 @@ class ResultData {
 class RawResultsView extends Component {
     constructor(props) {
         super(props);
+
         this.updateData = this.updateData.bind(this);
         this.checkExportApiHealth = this.checkExportApiHealth.bind(this);
         this.openExportModal = this.openExportModal.bind(this);
-        this.updateWindowDimensions = this.updateWindowDimensions.bind(this);
         this.toggle = this.toggle.bind(this);
         this.toggleAlert = this.toggleAlert.bind(this);
+
         let final_results = props.mode === ALL;
         let job_id = props.job.nlp_job_id;
         let get_url =
@@ -138,11 +119,10 @@ class RawResultsView extends Component {
             job_id +
             "/" +
             final_results;
+
         this.state = {
             ResultData: new ResultData(this.updateData, props.job, get_url),
             end: 0,
-            width: 0,
-            height: 0,
             mode: props.mode,
             modal: false,
             successAlert: false,
@@ -150,6 +130,7 @@ class RawResultsView extends Component {
             alertMessage: "",
             exportApiHealth: false
         };
+
         this.checkExportApiHealth();
     }
 
@@ -203,23 +184,10 @@ class RawResultsView extends Component {
         });
     }
 
-    componentDidMount() {
-        this.updateWindowDimensions();
-        window.addEventListener("resize", this.updateWindowDimensions);
-    }
-
     componentWillUnmount() {
         this.setState({
             successAlert: false,
             failureAlert: true
-        });
-        window.removeEventListener("resize", this.updateWindowDimensions);
-    }
-
-    updateWindowDimensions() {
-        this.setState({
-            width: window.innerWidth,
-            height: window.innerHeight
         });
     }
 
@@ -289,88 +257,56 @@ class RawResultsView extends Component {
         return items;
     }
 
+    getHeadings = () => {
+        const { ResultData } = this.state;
+        let tmp = [];
+        const result = ResultData._dataList[0];
+
+        for (let prop in result) {
+            if (result.hasOwnProperty(prop)) {
+                tmp.push(<th key={uuid.v4()}>{prop}</th>);
+            }
+        }
+
+        return <tr key={uuid.v4()}>{tmp}</tr>;
+    };
+
+    getRows = () => {
+        const { ResultData } = this.state;
+
+        return ResultData._dataList.map(result => {
+            let tmp = [];
+
+            for (let prop in result) {
+                if (result.hasOwnProperty(prop)) {
+                    tmp.push(<td key={uuid.v4()}>{result[prop]}</td>);
+                }
+            }
+
+            return <tr key={uuid.v4()}>{tmp}</tr>;
+        });
+    };
+
     render() {
+        let { ResultData } = this.state;
+
         // iterating over the results to get the unique nlpql_feature names
         let result_names = new Set();
 
-        this.state.ResultData._dataList.forEach(function(resultData) {
+        ResultData._dataList.forEach(function(resultData) {
             result_names.add(resultData.nlpql_feature);
         });
-
-        const filter_out_columns = [
-            "_id",
-            "inserted_date",
-            "phenotype_final",
-            "_id_x",
-            "_id_y",
-            "_id_z"
-        ];
-
-        const long_columns = [
-            "sentence",
-            "sentence_x",
-            "sentence_y",
-            "sentence_z"
-        ];
-
-        const med_columns = [
-            "term",
-            "section",
-            "report_date",
-            "report_id",
-            "job_date"
-        ];
-
-        let { ResultData, width } = this.state;
-
-        let w = width - 100;
-
-        let columns = ResultData.columns
-            .filter(c => filter_out_columns.indexOf(c) < 0)
-            .map(c => {
-                let col_width = 75;
-                if (long_columns.indexOf(c) >= 0) {
-                    col_width = 500;
-                } else if (med_columns.indexOf(c) >= 0) {
-                    col_width = 200;
-                } else if (c.length > 12) {
-                    col_width = 200;
-                } else if (c.length > 8) {
-                    col_width = 150;
-                }
-                return (
-                    <Column
-                        columnKey={c}
-                        key={c}
-                        header={<Cell>{c}</Cell>}
-                        cell={<PagedCell data={ResultData} />}
-                        width={col_width}
-                    />
-                );
-            });
 
         return (
             <React.Fragment>
                 {this.state.ResultData.getSize() > 0 ? (
-                    <div className="RawResultsTable">
-                        <Table
-                            rowHeight={row_height}
-                            rowsCount={ResultData.getSize()}
-                            headerHeight={header_height}
-                            width={w}
-                            height={Math.min(
-                                600,
-                                ResultData.getSize() * (row_height + 3) +
-                                    header_height +
-                                    5
-                            )}
-                            {...this.props}
-                        >
-                            {columns}
-                        </Table>
+                    <div className="RawResultsTable column is-full">
+                        <table className="table is-striped">
+                            <thead>{this.getHeadings()}</thead>
+                            <tbody>{this.getRows()}</tbody>
+                        </table>
 
-                        {this.state.ResultData.getSize() > 0 &&
-                        this.state.exportApiHealth === true ? (
+                        {this.state.exportApiHealth === true ? (
                             <div className="exportButton">
                                 <button
                                     className="button is-priamry is-large"

@@ -109,6 +109,17 @@ button {
     margin-top: 20px;
 }
 
+.RawResultsTable {
+    height: 500px;
+    overflow: scroll;
+}
+
+.RawResultsTable table,
+.RawResultsTable th,
+.RawResultsTable td {
+    border: 1px solid black !important;
+}
+
 .SubjectDetailNavigation {
     width: 85%;
 }
