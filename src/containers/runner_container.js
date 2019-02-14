@@ -2,7 +2,6 @@ import { connect } from "react-redux";
 import { setNLPQL } from "../redux/actions/set-nlpql";
 import { setNLPQLJSON } from "../redux/actions/set-nlpql-json";
 import { postToClarityAPI } from "../redux/actions/post-clarity-api";
-
 import JobRunner from "../components/JobRunner";
 
 function mapStateToProps(state) {

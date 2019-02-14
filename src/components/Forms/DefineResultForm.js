@@ -1,10 +1,7 @@
 /* eslint react/no-multi-comp: 0, react/prop-types: 0 */
-
 import React from "react";
 import Select from "react-select";
-
 import SubmitButton from "../../UIkit/SubmitButton";
-
 import algorithmParameters from "./algorithms";
 import { FaAngleDown, FaAngleUp } from "react-icons/fa";
 
@@ -24,9 +21,9 @@ class DefineResultForm extends React.Component {
     }
 
     toggle = () => {
-        this.setState({
-            collapse: !this.state.collapse
-        });
+        this.setState(prevState => ({
+            collapse: !prevState.collapse
+        }));
     };
 
     addFeatureToLogic = e => {
@@ -39,9 +36,9 @@ class DefineResultForm extends React.Component {
             text += "." + subField.value;
         }
 
-        this.setState({
-            logic: this.state.logic + text
-        });
+        this.setState(prevState => ({
+            logic: prevState.logic + text
+        }));
     };
 
     handleInputChange = event => {
@@ -52,6 +49,7 @@ class DefineResultForm extends React.Component {
 
         if (options) {
             value = [];
+
             for (let i = 0, l = options.length; i < l; i++) {
                 if (options[i].selected) {
                     value.push(options[i].value);

@@ -1,16 +1,15 @@
 import React, { Component } from "react";
 import ReactJson from "react-json-view";
 import { Link } from "react-router-dom";
-
 export default class RunResponse extends Component {
     componentDidMount() {
-        let htmlClasses = document.getElementsByTagName("html")[0].classList;
+        const htmlClasses = document.getElementsByTagName("html")[0].classList;
 
         htmlClasses.add("is-clipped");
     }
 
     componentWillUnmount() {
-        let htmlClasses = document.getElementsByTagName("html")[0].classList;
+        const htmlClasses = document.getElementsByTagName("html")[0].classList;
 
         htmlClasses.remove("is-clipped");
     }
@@ -21,9 +20,9 @@ export default class RunResponse extends Component {
         return (
             <div className={"modal is-active"}>
                 <div className="modal-background" />
-                <div class="modal-card">
-                    <header class="modal-card-head">
-                        <p class="modal-card-title">
+                <div className="modal-card">
+                    <header className="modal-card-head">
+                        <p className="modal-card-title">
                             {" "}
                             Your NLPQL is&nbsp;
                             {valid ? (
@@ -34,12 +33,12 @@ export default class RunResponse extends Component {
                             :
                         </p>
                         <button
-                            class="delete"
+                            className="delete"
                             aria-label="close"
                             onClick={toggle}
                         />
                     </header>
-                    <section class="modal-card-body">
+                    <section className="modal-card-body">
                         <div className="response-json">
                             <ReactJson
                                 src={data}
@@ -48,7 +47,7 @@ export default class RunResponse extends Component {
                             />
                         </div>
                     </section>
-                    <footer class="modal-card-foot">
+                    <footer className="modal-card-foot">
                         <a className="card-footer-item" onClick={clear}>
                             Start Over
                         </a>

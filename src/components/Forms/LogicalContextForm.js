@@ -1,10 +1,7 @@
 /* eslint react/no-multi-comp: 0, react/prop-types: 0 */
-
 import React from "react";
 import Select from "react-select";
-
 import SubmitButton from "../../UIkit/SubmitButton";
-
 import { FaAngleDown, FaAngleUp } from "react-icons/fa";
 
 const initialState = {
@@ -24,9 +21,9 @@ class LogicalContextForm extends React.Component {
     }
 
     toggle = () => {
-        this.setState({
-            collapse: !this.state.collapse
-        });
+        this.setState(prevState => ({
+            collapse: !prevState.collapse
+        }));
     };
 
     handleInputChange(value) {
@@ -40,7 +37,7 @@ class LogicalContextForm extends React.Component {
 
         const { logicalContext } = this.state;
 
-        let text = "context " + logicalContext.value + ";\n\n";
+        const text = "context " + logicalContext.value + ";\n\n";
 
         this.props.updateNLPQL(text);
         this.toggle();

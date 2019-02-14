@@ -1,10 +1,7 @@
 /* eslint react/no-multi-comp: 0, react/prop-types: 0 */
-
 import React from "react";
 import Select from "react-select";
-
 import SubmitButton from "../../UIkit/SubmitButton";
-
 import { FaAngleDown, FaAngleUp } from "react-icons/fa";
 
 const initialState = {
@@ -41,68 +38,58 @@ class DefineFeatureForm extends React.Component {
     constructor(props) {
         super(props);
 
-        this.toggle = this.toggle.bind(this);
-        this.handleInputChange = this.handleInputChange.bind(this);
-        this.handleAlgorithmChange = this.handleAlgorithmChange.bind(this);
-        this.handleTermSetSelect = this.handleTermSetSelect.bind(this);
-        this.handleTermSet2Select = this.handleTermSet2Select.bind(this);
-        this.handleDocumentSetSelect = this.handleDocumentSetSelect.bind(this);
-        this.handleCohortSelect = this.handleCohortSelect.bind(this);
-        this.handleSubmit = this.handleSubmit.bind(this);
-
         this.state = initialState;
     }
 
-    toggle() {
-        this.setState({
-            collapse: !this.state.collapse
-        });
-    }
+    toggle = () => {
+        this.setState(prevState => ({
+            collapse: !prevState.collapse
+        }));
+    };
 
-    handleInputChange(event) {
+    handleInputChange = event => {
         const target = event.target;
-        let value = target.type === "checkbox" ? target.checked : target.value;
+        const value =
+            target.type === "checkbox" ? target.checked : target.value;
         const name = target.name;
 
         this.setState({
             [name]: value
         });
-    }
+    };
 
-    handleAlgorithmChange(value) {
+    handleAlgorithmChange = value => {
         this.setState({
             featureAlgorithm: value
         });
-    }
+    };
 
-    handleTermSetSelect(value) {
+    handleTermSetSelect = value => {
         this.setState({
             customTermset: value
         });
-    }
+    };
 
-    handleTermSet2Select(value) {
+    handleTermSet2Select = value => {
         this.setState({
             customTermset2: value
         });
-    }
+    };
 
-    handleDocumentSetSelect(value) {
+    handleDocumentSetSelect = value => {
         this.setState({
             customDocumentset: value
         });
-    }
+    };
 
-    handleCohortSelect(value) {
+    handleCohortSelect = value => {
         this.setState({
             customCohort: value
         });
-    }
-
-    updateOptions(arr) {}
+    };
 
     buildArrayStringWithQuotes = s => {
-        let arr = s.split(",");
+        const arr = s.split(",");
 
         let tmp = "[";
         for (let i = 0; i < arr.length; i++) {
@@ -129,15 +116,15 @@ class DefineFeatureForm extends React.Component {
         return tmp;
     };
 
-    renderFeatureCount() {
-        let count = this.props.features.length;
+    renderFeatureCount = () => {
+        const count = this.props.features.length;
 
         if (count > 0) {
             return <span className="tag">{count}</span>;
         }
 
         return null;
-    }
+    };
 
     handleSubmit = event => {
         event.preventDefault();
@@ -171,9 +158,9 @@ class DefineFeatureForm extends React.Component {
             isFinal
         } = this.state;
 
-        let payload = [];
+        const payload = [];
 
-        let algorithm = featureAlgorithm.value;
+        const algorithm = featureAlgorithm.value;
 
         if (algorithm === "") {
             return;
@@ -728,7 +715,7 @@ class DefineFeatureForm extends React.Component {
             </div>
         );
 
-        let algorithm = featureAlgorithm.value;
+        const algorithm = featureAlgorithm.value;
 
         if (algorithm === "") {
             return;

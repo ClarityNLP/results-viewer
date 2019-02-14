@@ -1,8 +1,6 @@
 import React, { Component } from "react";
-
 import RunResponse from "./RunResponse";
 import TestResponse from "./TestResponse";
-
 import LimitForm from "./Forms/LimitForm";
 import PhenotypeForm from "./Forms/PhenotypeForm";
 import DocumentSetForm from "./Forms/DocumentSetForm";
@@ -16,12 +14,12 @@ const initialState = {
     editing: false,
     editText: "Edit",
     phenotypeModal: "is-active",
+    response_view: null,
+    limitModal: null,
     termSets: [],
     documentSets: [],
     cohorts: [],
-    features: [],
-    response_view: null,
-    limitModal: null
+    features: []
 };
 
 class JobRunner extends Component {
@@ -44,65 +42,58 @@ class JobRunner extends Component {
         );
     };
 
-    getNamesArray = arr => {
-        return arr.map(value => {
-            return value.name;
-        });
-    };
-
-    getFeaturesArray = arr => {
-        return arr.map(value => {
-            return {
-                name: value.name,
-                algorithm: value.funct
-            };
-        });
-    };
-
     setArraysFromJSON = () => {
-        if (!this.props.runner.nlpql_JSON) return;
+        const { nlpql } = this.props.runner;
+        const _this = this;
+        let tmp_termSets = [];
+        let tmp_documentSets = [];
+        let tmp_cohorts = [];
+        let tmp_features = [];
 
-        let termSets = [];
-        let documentSets = [];
-        let cohorts = [];
-        let features = [];
+        this.props.postToClarityAPI("nlpql_tester", nlpql).then(() => {
+            const { nlpql_JSON } = _this.props.runner;
 
-        this.props
-            .postToClarityAPI("nlpql_tester", this.props.runner.nlpql)
-            .then(() => {
-                if (this.props.runner.nlpql_JSON.term_sets) {
-                    termSets = this.getNamesArray(
-                        this.props.runner.nlpql_JSON.term_sets
-                    );
-                }
-                if (this.props.runner.nlpql_JSON.document_sets) {
-                    documentSets = this.getNamesArray(
-                        this.props.runner.nlpql_JSON.document_sets
-                    );
-                }
-                if (this.props.runner.nlpql_JSON.cohorts) {
-                    cohorts = this.getNamesArray(
-                        this.props.runner.nlpql_JSON.cohorts
-                    );
-                }
-                if (this.props.runner.nlpql_JSON.data_entities) {
-                    features = this.getFeaturesArray(
-                        this.props.runner.nlpql_JSON.data_entities
-                    );
+            if (nlpql_JSON) {
+                if (nlpql_JSON.term_sets) {
+                    tmp_termSets = nlpql_JSON.term_sets.map(value => {
+                        return value.name;
+                    });
                 }
 
-                this.setState({
-                    termSets: termSets,
-                    documentSets: documentSets,
-                    cohorts: cohorts,
-                    features: features
-                });
+                if (nlpql_JSON.document_sets) {
+                    tmp_documentSets = nlpql_JSON.document_sets.map(value => {
+                        return value.name;
+                    });
+                }
+
+                if (nlpql_JSON.cohorts) {
+                    tmp_cohorts = nlpql_JSON.cohorts.map(value => {
+                        return value.name;
+                    });
+                }
+
+                if (nlpql_JSON.data_entities) {
+                    tmp_features = nlpql_JSON.data_entities.map(value => {
+                        return {
+                            name: value.name,
+                            algorithm: value.funct
+                        };
+                    });
+                }
+            }
+
+            this.setState({
+                termSets: tmp_termSets,
+                documentSets: tmp_documentSets,
+                cohorts: tmp_cohorts,
+                features: tmp_features
             });
+        });
     };
 
     componentWillMount() {
         this.props.setNLPQL("");
-        let htmlClasses = document.getElementsByTagName("html")[0].classList;
+        const htmlClasses = document.getElementsByTagName("html")[0].classList;
 
         htmlClasses.add("is-clipped");
     }
@@ -113,7 +104,6 @@ class JobRunner extends Component {
 
         if (editing) {
             this.setArraysFromJSON();
-
             text = "Edit";
         } else {
             text = "Save";
@@ -127,7 +117,7 @@ class JobRunner extends Component {
 
     handleInputChange = event => {
         const target = event.target;
-        let value = target.value;
+        const value = target.value;
 
         this.props.setNLPQL(value);
     };
@@ -144,7 +134,7 @@ class JobRunner extends Component {
     };
 
     clear = () => {
-        let htmlClasses = document.getElementsByTagName("html")[0].classList;
+        const htmlClasses = document.getElementsByTagName("html")[0].classList;
 
         htmlClasses.add("is-clipped");
 
@@ -179,7 +169,7 @@ class JobRunner extends Component {
     };
 
     disablePhenotypeModal = () => {
-        let htmlClasses = document.getElementsByTagName("html")[0].classList;
+        const htmlClasses = document.getElementsByTagName("html")[0].classList;
 
         htmlClasses.remove("is-clipped");
 
@@ -189,21 +179,24 @@ class JobRunner extends Component {
     };
 
     testNLPQL = () => {
-        if (this.props.runner.nlpql) {
-            this.props
-                .postToClarityAPI("nlpql_tester", this.props.runner.nlpql)
-                .then(() => {
-                    this.setState({
-                        response_view: (
-                            <TestResponse
-                                valid={this.props.runner.nlpql_JSON.valid}
-                                data={this.props.runner.nlpql_JSON}
-                                toggle={this.toggleResponse}
-                                toggleLimitModal={this.toggleLimitModal}
-                            />
-                        )
-                    });
+        const { nlpql } = this.props.runner;
+        const _this = this;
+
+        if (nlpql) {
+            this.props.postToClarityAPI("nlpql_tester", nlpql).then(() => {
+                const { nlpql_JSON } = _this.props.runner;
+
+                this.setState({
+                    response_view: (
+                        <TestResponse
+                            valid={nlpql_JSON.valid}
+                            data={nlpql_JSON}
+                            toggle={this.toggleResponse}
+                            toggleLimitModal={this.toggleLimitModal}
+                        />
+                    )
                 });
+            });
         } else {
             this.setState({
                 response_view: this.response_ERROR()
@@ -212,15 +205,22 @@ class JobRunner extends Component {
     };
 
     handleExpandClick = () => {
-        this.props.postToClarityAPI("nlpql_expander", this.props.runner.nlpql);
+        const { nlpql } = this.props.runner;
+
+        this.props.postToClarityAPI("nlpql_expander", nlpql);
     };
 
     handleRunClick = () => {
-        if (this.props.runner.nlpql) {
+        const { nlpql } = this.props.runner;
+        const _this = this;
+
+        if (nlpql) {
             this.props
-                .postToClarityAPI("nlpql", this.props.runner.nlpql)
+                .postToClarityAPI("nlpql", nlpql)
                 .then(() => {
-                    if (!this.props.runner.nlpql_JSON) {
+                    const { nlpql_JSON } = _this.props.runner;
+
+                    if (!nlpql_JSON) {
                         this.setState({
                             response_view: this.response_ERROR()
                         });
@@ -229,11 +229,8 @@ class JobRunner extends Component {
                     this.setState({
                         response_view: (
                             <RunResponse
-                                valid={
-                                    this.props.runner.nlpql_JSON.success !==
-                                    false
-                                }
-                                data={this.props.runner.nlpql_JSON}
+                                valid={nlpql_JSON.success !== false}
+                                data={nlpql_JSON}
                                 clear={this.clear}
                                 toggle={this.toggleResponse}
                             />

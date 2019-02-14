@@ -1,9 +1,6 @@
 /* eslint react/no-multi-comp: 0, react/prop-types: 0 */
-
 import React from "react";
-
 import SubmitButton from "../../UIkit/SubmitButton";
-
 import { FaAngleDown, FaAngleUp } from "react-icons/fa";
 
 const initialState = {
@@ -28,13 +25,13 @@ class DocumentSetForm extends React.Component {
     }
 
     toggle = () => {
-        this.setState({
-            collapse: !this.state.collapse
-        });
+        this.setState(prevState => ({
+            collapse: !prevState.collapse
+        }));
     };
 
     buildArrayStringWithQuotes = s => {
-        let arr = s.split(",");
+        const arr = s.split(",");
 
         let tmp = "[";
         for (let i = 0; i < arr.length; i++) {
@@ -71,7 +68,7 @@ class DocumentSetForm extends React.Component {
     };
 
     renderDocumentSetCount() {
-        let count = this.props.documentSets.length;
+        const count = this.props.documentSets.length;
 
         if (count === 0) {
             return null;
@@ -81,6 +78,7 @@ class DocumentSetForm extends React.Component {
     }
 
     handleSubmit = event => {
+        event.stopPropagation();
         event.preventDefault();
 
         const {
@@ -92,11 +90,11 @@ class DocumentSetForm extends React.Component {
             query
         } = this.state;
 
-        let hasTypes = reportTypes.length > 0 && reportTypes[0].length > 0;
-        let hasTags = reportTags.length > 0 && reportTags[0].length > 0;
-        let hasSource = sources.length > 0 && sources[0].length > 0;
-        let hasFilterQuery = filterQuery.length > 0;
-        let hasQuery = query.length > 0;
+        const hasTypes = reportTypes.length > 0 && reportTypes[0].length > 0;
+        const hasTags = reportTags.length > 0 && reportTags[0].length > 0;
+        const hasSource = sources.length > 0 && sources[0].length > 0;
+        const hasFilterQuery = filterQuery.length > 0;
+        const hasQuery = query.length > 0;
 
         let text = "documentset " + name + ":\n\t";
 
@@ -123,7 +121,7 @@ class DocumentSetForm extends React.Component {
                 this.buildArrayStringWithQuotes(reportTags) +
                 ");\n\n";
         } else {
-            let payloadKeys = [];
+            const payloadKeys = [];
 
             if (hasTypes) {
                 payloadKeys.push(

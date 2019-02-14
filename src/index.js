@@ -6,7 +6,6 @@ import { loadUser } from "redux-oidc";
 import userManager from "./utils/userManager";
 import configureStore from "./redux/store/store";
 import { createBrowserHistory } from "history";
-
 import App from "./App";
 import "./style/style.scss";
 

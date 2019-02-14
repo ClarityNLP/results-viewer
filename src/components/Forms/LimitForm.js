@@ -1,5 +1,4 @@
 /* eslint react/no-multi-comp: 0, react/prop-types: 0 */
-
 import React from "react";
 
 const initialState = { limit: "" };
@@ -16,20 +15,20 @@ class LimitForm extends React.Component {
     }
 
     componentDidMount() {
-        let htmlClasses = document.getElementsByTagName("html")[0].classList;
+        const htmlClasses = document.getElementsByTagName("html")[0].classList;
 
         htmlClasses.add("is-clipped");
     }
 
     componentWillUnmount() {
-        let htmlClasses = document.getElementsByTagName("html")[0].classList;
+        const htmlClasses = document.getElementsByTagName("html")[0].classList;
 
         htmlClasses.remove("is-clipped");
     }
 
     handleInputChange(event) {
         const target = event.target;
-        let value = target.value;
+        const value = target.value;
         const name = target.name;
 
         this.setState({
@@ -40,8 +39,8 @@ class LimitForm extends React.Component {
     handleSubmit(event) {
         event.preventDefault();
 
-        let { limit } = this.state;
-        let text = "limit " + limit + ";\n\n";
+        const { limit } = this.state;
+        const text = "limit " + limit + ";\n\n";
 
         this.props.updateNLPQL(text);
         this.props.toggle();
@@ -65,18 +64,18 @@ class LimitForm extends React.Component {
             <React.Fragment>
                 <div className="modal is-active">
                     <div className="modal-background" />
-                    <div class="modal-card">
-                        <header class="modal-card-head">
-                            <p class="modal-card-title">
+                    <div className="modal-card">
+                        <header className="modal-card-head">
+                            <p className="modal-card-title">
                                 Would you like to limit the number of results?
                             </p>
                             <button
-                                class="delete"
+                                className="delete"
                                 aria-label="close"
                                 onClick={toggle}
                             />
                         </header>
-                        <section class="modal-card-body">
+                        <section className="modal-card-body">
                             <form>
                                 <div className="field">
                                     <label className="label">
@@ -92,7 +91,7 @@ class LimitForm extends React.Component {
                                 </div>
                             </form>
                         </section>
-                        <footer class="modal-card-foot level cloumns">
+                        <footer className="modal-card-foot level cloumns">
                             <div className="column">
                                 <button
                                     className="button is-large is-secondary"
