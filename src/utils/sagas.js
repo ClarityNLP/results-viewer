@@ -1,8 +1,5 @@
-import {
-  USER_EXPIRED,
-  USER_SIGNED_OUT
- } from "redux-oidc";
-import { take } from 'redux-saga/effects';
+import { USER_EXPIRED, USER_SIGNED_OUT } from "redux-oidc";
+import { take } from "redux-saga/effects";
 import userManager from "./userManager";
 
 export function* redirectToODICSaga() {

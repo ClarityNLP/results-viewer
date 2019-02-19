@@ -1,23 +1,19 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import Root from './components/Root';
-import "./style/style.scss";
-import axios from 'axios';
-import { loadUser } from "redux-oidc";
+import React from "react";
+import { Provider } from "react-redux";
 import userManager from "./utils/userManager";
-import configureStore from './store/store';
-import { createBrowserHistory } from 'history'
-const history = createBrowserHistory()
-const initialState = {}
-const apiClient = axios.create({
-  baseURL:'http://localhost:5003',
-  responseType: 'json',
-  withCredentials: true
-});
-const store = configureStore(initialState, apiClient, history);
-loadUser(store, userManager);
+import { OidcProvider } from "redux-oidc";
+import { Route } from "react-router-dom";
+import { ConnectedRouter } from "connected-react-router";
+import ViewerApp from "./containers/viewer_container";
 
-ReactDOM.render(
-  <Root store={store} history={history} />,
-  document.getElementById('root')
+const App = ({ store, history }) => (
+    <Provider store={store}>
+        <OidcProvider store={store} userManager={userManager}>
+            <ConnectedRouter history={history}>
+                <Route path="/" component={ViewerApp} />
+            </ConnectedRouter>
+        </OidcProvider>
+    </Provider>
 );
+
+export default App;
