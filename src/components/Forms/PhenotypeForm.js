@@ -16,14 +16,15 @@ class PhenotypeForm extends React.Component {
     }
 
     componentDidMount() {
-        let htmlClasses = document.getElementsByTagName("html")[0].classList;
+        const htmlClasses = document.getElementsByTagName("html")[0].classList;
 
         htmlClasses.add("is-clipped");
     }
 
     handleInputChange = event => {
         const target = event.target;
-        let value = target.type === "checkbox" ? target.checked : target.value;
+        const value =
+            target.type === "checkbox" ? target.checked : target.value;
         const name = target.name;
 
         this.setState({
@@ -35,9 +36,7 @@ class PhenotypeForm extends React.Component {
         event.preventDefault();
 
         const { name, version, clarityLibrary, OHDSILibrary } = this.state;
-        let text = "";
-
-        text += 'phenotype "' + name + '" version "' + version + '";\n\n';
+        let text = 'phenotype "' + name + '" version "' + version + '";\n\n';
 
         if (clarityLibrary) {
             text += 'include ClarityCore version "1.0" called Clarity;\n';
@@ -71,8 +70,8 @@ class PhenotypeForm extends React.Component {
                                 onClick={this.props.toggle}
                             />
                         </header>
-                        <section className="modal-card-body">
-                            <form>
+                        <form>
+                            <section className="modal-card-body">
                                 {/* NAME INPUT */}
                                 <div className="field">
                                     <label className="label">
@@ -124,18 +123,18 @@ class PhenotypeForm extends React.Component {
                                         Include OHDSI Library
                                     </label>
                                 </div>
-                            </form>
-                        </section>
-                        <footer className="modal-card-foot">
-                            <div className="column is-5 is-offset-7">
-                                <button
-                                    className="button is-large is-primary"
-                                    onClick={this.handleSubmit}
-                                >
-                                    Build Query
-                                </button>
-                            </div>
-                        </footer>
+                            </section>
+                            <footer className="modal-card-foot">
+                                <div className="column is-5 is-offset-7">
+                                    <button
+                                        className="button is-large is-primary"
+                                        onClick={this.handleSubmit}
+                                    >
+                                        Build Query
+                                    </button>
+                                </div>
+                            </footer>
+                        </form>
                     </div>
                 </div>
             </React.Fragment>

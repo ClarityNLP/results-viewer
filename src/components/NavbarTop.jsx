@@ -10,12 +10,14 @@ class NavbarTop extends Component {
     };
 
     render() {
+        const { slideout } = this.props;
+
         return (
             <nav className="navbar-sso navbar" aria-label="main navigation">
                 <div className="navbar-brand">
                     <a
                         role="button"
-                        onClick={() => window.slideout.toggle()}
+                        onClick={() => slideout.toggle()}
                         className="hamburger navbar-item"
                     >
                         <FontAwesomeIcon icon="bars" className="sso-bars" />

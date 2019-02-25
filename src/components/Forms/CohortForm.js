@@ -1,9 +1,6 @@
 /* eslint react/no-multi-comp: 0, react/prop-types: 0 */
-
 import React from "react";
-
 import SubmitButton from "../../UIkit/SubmitButton";
-
 import { FaAngleDown, FaAngleUp } from "react-icons/fa";
 
 const initialState = {
@@ -16,51 +13,46 @@ class CohortForm extends React.Component {
     constructor(props) {
         super(props);
 
-        this.toggle = this.toggle.bind(this);
-        this.handleInputChange = this.handleInputChange.bind(this);
-        this.handleSubmit = this.handleSubmit.bind(this);
-        this.renderCohortCount = this.renderCohortCount.bind(this);
-
         this.state = initialState;
     }
 
     toggle = () => {
-        this.setState({
-            collapse: !this.state.collapse
-        });
+        this.setState(prevState => ({
+            collapse: !prevState.collapse
+        }));
     };
 
-    handleInputChange(event) {
+    handleInputChange = event => {
         const target = event.target;
-        let value = target.value;
+        const value = target.value;
         const name = target.name;
 
         this.setState({
             [name]: value
         });
-    }
+    };
 
-    handleSubmit(event) {
+    handleSubmit = event => {
         event.preventDefault();
 
         const { name, id } = this.state;
 
-        let text = "cohort " + name + ": OHDSI.getCohort(" + id + ");\n\n";
+        const text = "cohort " + name + ": OHDSI.getCohort(" + id + ");\n\n";
 
         this.props.updateNLPQL(text);
         this.toggle();
         this.setState(initialState);
-    }
+    };
 
-    renderCohortCount() {
-        let count = this.props.cohorts.length;
+    renderCohortCount = () => {
+        const count = this.props.cohorts.length;
 
         if (count === 0) {
             return <span className="optional-text"> - Optional</span>;
         }
 
         return <span className="tag">{count}</span>;
-    }
+    };
 
     render() {
         const { collapse, name, id } = this.state;

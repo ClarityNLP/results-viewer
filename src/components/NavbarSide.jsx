@@ -1,16 +1,6 @@
 import React, { Component } from "react";
-import Slideout from "slideout";
 
 export default class NavbarSide extends Component {
-    componentDidMount() {
-        window.slideout = new Slideout({
-            panel: document.getElementById("viewer"),
-            menu: document.getElementById("menu"),
-            padding: 256,
-            tolerance: 70
-        });
-    }
-
     render() {
         return (
             <nav id="menu">

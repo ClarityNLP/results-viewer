@@ -1,16 +1,15 @@
 import React, { Component } from "react";
 import ReactJson from "react-json-view";
 import { Link } from "react-router-dom";
-
 export default class RunResponse extends Component {
     componentDidMount() {
-        let htmlClasses = document.getElementsByTagName("html")[0].classList;
+        const htmlClasses = document.getElementsByTagName("html")[0].classList;
 
         htmlClasses.add("is-clipped");
     }
 
     componentWillUnmount() {
-        let htmlClasses = document.getElementsByTagName("html")[0].classList;
+        const htmlClasses = document.getElementsByTagName("html")[0].classList;
 
         htmlClasses.remove("is-clipped");
     }

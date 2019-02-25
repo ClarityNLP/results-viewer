@@ -1,10 +1,7 @@
 /* eslint react/no-multi-comp: 0, react/prop-types: 0 */
-
 import React from "react";
 import Select from "react-select";
-
 import SubmitButton from "../../UIkit/SubmitButton";
-
 import { FaAngleDown, FaAngleUp } from "react-icons/fa";
 
 const initialState = {
@@ -41,68 +38,58 @@ class DefineFeatureForm extends React.Component {
     constructor(props) {
         super(props);
 
-        this.toggle = this.toggle.bind(this);
-        this.handleInputChange = this.handleInputChange.bind(this);
-        this.handleAlgorithmChange = this.handleAlgorithmChange.bind(this);
-        this.handleTermSetSelect = this.handleTermSetSelect.bind(this);
-        this.handleTermSet2Select = this.handleTermSet2Select.bind(this);
-        this.handleDocumentSetSelect = this.handleDocumentSetSelect.bind(this);
-        this.handleCohortSelect = this.handleCohortSelect.bind(this);
-        this.handleSubmit = this.handleSubmit.bind(this);
-
         this.state = initialState;
     }
 
-    toggle() {
-        this.setState({
-            collapse: !this.state.collapse
-        });
-    }
+    toggle = () => {
+        this.setState(prevState => ({
+            collapse: !prevState.collapse
+        }));
+    };
 
-    handleInputChange(event) {
+    handleInputChange = event => {
         const target = event.target;
-        let value = target.type === "checkbox" ? target.checked : target.value;
+        const value =
+            target.type === "checkbox" ? target.checked : target.value;
         const name = target.name;
 
         this.setState({
             [name]: value
         });
-    }
+    };
 
-    handleAlgorithmChange(value) {
+    handleAlgorithmChange = value => {
         this.setState({
             featureAlgorithm: value
         });
-    }
+    };
 
-    handleTermSetSelect(value) {
+    handleTermSetSelect = value => {
         this.setState({
             customTermset: value
         });
-    }
+    };
 
-    handleTermSet2Select(value) {
+    handleTermSet2Select = value => {
         this.setState({
             customTermset2: value
         });
-    }
+    };
 
-    handleDocumentSetSelect(value) {
+    handleDocumentSetSelect = value => {
         this.setState({
             customDocumentset: value
         });
-    }
+    };
 
-    handleCohortSelect(value) {
+    handleCohortSelect = value => {
         this.setState({
             customCohort: value
         });
-    }
-
-    updateOptions(arr) {}
+    };
 
     buildArrayStringWithQuotes = s => {
-        let arr = s.split(",");
+        const arr = s.split(",");
 
         let tmp = "[";
         for (let i = 0; i < arr.length; i++) {
@@ -129,15 +116,15 @@ class DefineFeatureForm extends React.Component {
         return tmp;
     };
 
-    renderFeatureCount() {
-        let count = this.props.features.length;
+    renderFeatureCount = () => {
+        const count = this.props.features.length;
 
         if (count > 0) {
             return <span className="tag">{count}</span>;
         }
 
         return null;
-    }
+    };
 
     handleSubmit = event => {
         event.preventDefault();
@@ -171,9 +158,9 @@ class DefineFeatureForm extends React.Component {
             isFinal
         } = this.state;
 
-        let payload = [];
+        const payload = [];
 
-        let algorithm = featureAlgorithm.value;
+        const algorithm = featureAlgorithm.value;
 
         if (algorithm === "") {
             return;
@@ -387,7 +374,7 @@ class DefineFeatureForm extends React.Component {
         } = this.state;
         const { termSets, documentSets, cohorts } = this.props;
 
-        let customTermsetDiv = (
+        const customTermsetDiv = (
             <div className="field">
                 <label className="label">Term Set</label>
                 <Select
@@ -404,7 +391,7 @@ class DefineFeatureForm extends React.Component {
             </div>
         );
 
-        let customTermset2Div = (
+        const customTermset2Div = (
             <div className="field">
                 <label className="label">Term Set 2</label>
                 <Select
@@ -421,7 +408,7 @@ class DefineFeatureForm extends React.Component {
             </div>
         );
 
-        let customDocumentsetDiv = (
+        const customDocumentsetDiv = (
             <div className="field">
                 <label className="label">Document Set</label>
                 <Select
@@ -438,7 +425,7 @@ class DefineFeatureForm extends React.Component {
             </div>
         );
 
-        let customSectionsDiv = (
+        const customSectionsDiv = (
             <div className="field">
                 <label className="label">Sections</label>
                 <input
@@ -452,7 +439,7 @@ class DefineFeatureForm extends React.Component {
             </div>
         );
 
-        let customEnumListDiv = (
+        const customEnumListDiv = (
             <div className="field">
                 <label className="label">Enum List</label>
                 <input
@@ -466,7 +453,7 @@ class DefineFeatureForm extends React.Component {
             </div>
         );
 
-        let customCohortDiv = (
+        const customCohortDiv = (
             <div className="field">
                 <label className="label">Cohort</label>
                 <Select
@@ -483,7 +470,7 @@ class DefineFeatureForm extends React.Component {
             </div>
         );
 
-        let customGroupbyDiv = (
+        const customGroupbyDiv = (
             <div className="field">
                 <label className="label">Group By</label>
                 <input
@@ -496,7 +483,7 @@ class DefineFeatureForm extends React.Component {
             </div>
         );
 
-        let customNgramNDiv = (
+        const customNgramNDiv = (
             <div className="field">
                 <label className="label">n</label>
                 <input
@@ -509,7 +496,7 @@ class DefineFeatureForm extends React.Component {
             </div>
         );
 
-        let customMinFreqDiv = (
+        const customMinFreqDiv = (
             <div className="field">
                 <label className="label">Minimum Frequency</label>
                 <input
@@ -522,7 +509,7 @@ class DefineFeatureForm extends React.Component {
             </div>
         );
 
-        let customVocabularyDiv = (
+        const customVocabularyDiv = (
             <div className="field">
                 <label className="label">Vocabulary</label>
                 <input
@@ -535,7 +522,7 @@ class DefineFeatureForm extends React.Component {
             </div>
         );
 
-        let customWordDistDiv = (
+        const customWordDistDiv = (
             <div className="field">
                 <label className="label">Word Distance</label>
                 <input
@@ -548,7 +535,7 @@ class DefineFeatureForm extends React.Component {
             </div>
         );
 
-        let customMinValDiv = (
+        const customMinValDiv = (
             <div className="field">
                 <label className="label">Minimum Value</label>
                 <input
@@ -561,7 +548,7 @@ class DefineFeatureForm extends React.Component {
             </div>
         );
 
-        let customMaxValDiv = (
+        const customMaxValDiv = (
             <div className="field">
                 <label className="label">Maximum Value</label>
                 <input
@@ -574,7 +561,7 @@ class DefineFeatureForm extends React.Component {
             </div>
         );
 
-        let customAnyOrderDiv = (
+        const customAnyOrderDiv = (
             <div className="field">
                 <label className="checkbox">
                     <input
@@ -588,7 +575,7 @@ class DefineFeatureForm extends React.Component {
             </div>
         );
 
-        let customFilterNumsDiv = (
+        const customFilterNumsDiv = (
             <div className="field">
                 <label className="checkbox">
                     <input
@@ -602,7 +589,7 @@ class DefineFeatureForm extends React.Component {
             </div>
         );
 
-        let customFilterStopsDiv = (
+        const customFilterStopsDiv = (
             <div className="field">
                 <label className="checkbox">
                     <input
@@ -616,7 +603,7 @@ class DefineFeatureForm extends React.Component {
             </div>
         );
 
-        let customFilterPunctDiv = (
+        const customFilterPunctDiv = (
             <div className="field">
                 <label className="checkbox">
                     <input
@@ -630,7 +617,7 @@ class DefineFeatureForm extends React.Component {
             </div>
         );
 
-        let customLemmasDiv = (
+        const customLemmasDiv = (
             <div className="field">
                 <label className="checkbox">
                     <input
@@ -644,7 +631,7 @@ class DefineFeatureForm extends React.Component {
             </div>
         );
 
-        let customLimitTermsetDiv = (
+        const customLimitTermsetDiv = (
             <div className="field">
                 <label className="checkbox">
                     <input
@@ -658,7 +645,7 @@ class DefineFeatureForm extends React.Component {
             </div>
         );
 
-        let customSynonymsDiv = (
+        const customSynonymsDiv = (
             <div className="field">
                 <label className="checkbox">
                     <input
@@ -672,7 +659,7 @@ class DefineFeatureForm extends React.Component {
             </div>
         );
 
-        let customDescendantsDiv = (
+        const customDescendantsDiv = (
             <div className="field">
                 <label className="checkbox" check>
                     <input
@@ -686,7 +673,7 @@ class DefineFeatureForm extends React.Component {
             </div>
         );
 
-        let customAncestorsDiv = (
+        const customAncestorsDiv = (
             <div className="field">
                 <label className="checkbox">
                     <input
@@ -700,7 +687,7 @@ class DefineFeatureForm extends React.Component {
             </div>
         );
 
-        let customCaseSensitiveDiv = (
+        const customCaseSensitiveDiv = (
             <div className="field">
                 <label className="checkbox">
                     <input
@@ -714,7 +701,7 @@ class DefineFeatureForm extends React.Component {
             </div>
         );
 
-        let isFinalDiv = (
+        const isFinalDiv = (
             <div className="field">
                 <label className="checkbox is-large">
                     <input
@@ -728,7 +715,7 @@ class DefineFeatureForm extends React.Component {
             </div>
         );
 
-        let algorithm = featureAlgorithm.value;
+        const algorithm = featureAlgorithm.value;
 
         if (algorithm === "") {
             return;

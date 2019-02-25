@@ -1,9 +1,6 @@
 /* eslint react/no-multi-comp: 0, react/prop-types: 0 */
-
 import React from "react";
-
 import SubmitButton from "../../UIkit/SubmitButton";
-
 import { FaAngleDown, FaAngleUp } from "react-icons/fa";
 
 const initialState = {
@@ -23,13 +20,13 @@ class TermsetForm extends React.Component {
     }
 
     toggle = () => {
-        this.setState({
-            collapse: !this.state.collapse
-        });
+        this.setState(prevState => ({
+            collapse: !prevState.collapse
+        }));
     };
 
     buildArrayStringWithQuotes = s => {
-        let arr = s.split(",");
+        const arr = s.split(",");
 
         let tmp = "[";
         for (let i = 0; i < arr.length; i++) {
@@ -66,7 +63,7 @@ class TermsetForm extends React.Component {
     };
 
     renderTermSetCount() {
-        let count = this.props.termSets.length;
+        const count = this.props.termSets.length;
 
         if (count === 0) {
             return null;
@@ -113,7 +110,7 @@ class TermsetForm extends React.Component {
                 .then(response => {
                     return response.text().then(data => {
                         data = data.replace(":", ":\n\t");
-                        let text = data + "\n\n";
+                        const text = data + "\n\n";
 
                         this.props.updateNLPQL(text);
                     });

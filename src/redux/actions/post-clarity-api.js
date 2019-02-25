@@ -10,7 +10,9 @@ export function postToClarityAPI(action, nlpql) {
                     method: "post",
                     responseType: "text",
                     data: nlpql,
-                    headers: { "Content-Type": "text/plain" }
+                    headers: {
+                        "Content-Type": "text/plain"
+                    }
                 }
             }
         };
@@ -23,7 +25,9 @@ export function postToClarityAPI(action, nlpql) {
                 url: action,
                 method: "post",
                 data: nlpql,
-                headers: { "Content-Type": "text/plain" }
+                headers: {
+                    "Content-Type": "text/plain"
+                }
             }
         }
     };

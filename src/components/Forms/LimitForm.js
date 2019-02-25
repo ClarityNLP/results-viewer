@@ -1,5 +1,4 @@
 /* eslint react/no-multi-comp: 0, react/prop-types: 0 */
-
 import React from "react";
 
 const initialState = { limit: "" };
@@ -16,20 +15,20 @@ class LimitForm extends React.Component {
     }
 
     componentDidMount() {
-        let htmlClasses = document.getElementsByTagName("html")[0].classList;
+        const htmlClasses = document.getElementsByTagName("html")[0].classList;
 
         htmlClasses.add("is-clipped");
     }
 
     componentWillUnmount() {
-        let htmlClasses = document.getElementsByTagName("html")[0].classList;
+        const htmlClasses = document.getElementsByTagName("html")[0].classList;
 
         htmlClasses.remove("is-clipped");
     }
 
     handleInputChange(event) {
         const target = event.target;
-        let value = target.value;
+        const value = target.value;
         const name = target.name;
 
         this.setState({
@@ -40,8 +39,8 @@ class LimitForm extends React.Component {
     handleSubmit(event) {
         event.preventDefault();
 
-        let { limit } = this.state;
-        let text = "limit " + limit + ";\n\n";
+        const { limit } = this.state;
+        const text = "limit " + limit + ";\n\n";
 
         this.props.updateNLPQL(text);
         this.props.toggle();
