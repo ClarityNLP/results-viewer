@@ -301,7 +301,7 @@ class RawResultsView extends Component {
             <React.Fragment>
                 {this.state.ResultData.getSize() > 0 ? (
                     <div className="RawResultsTable column is-full">
-                        <table className="table is-striped">
+                        <table className="table is-striped is-bordered">
                             <thead>{this.getHeadings()}</thead>
                             <tbody>{this.getRows()}</tbody>
                         </table>
