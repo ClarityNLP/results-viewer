@@ -32,9 +32,6 @@ class NavbarTop extends Component {
                         <Link className="navbar-item" to="/runner">
                             NLPQL Runner
                         </Link>
-                        <Link to="results" className="navbar-item">
-                            Results Viewer
-                        </Link>
                         {this.props.oidc.user && (
                             <div className="navbar-item has-dropdown is-hoverable">
                                 <a className="navbar-link">

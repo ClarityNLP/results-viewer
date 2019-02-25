@@ -1,14 +1,15 @@
 import React from "react";
-import { Route } from "react-router-dom";
+import { Route, Switch } from "react-router-dom";
 
 import JobList from "../components/JobList";
 import JobRunnerContainer from "../containers/runner_container";
 
 const AppRouter = () => (
-    <React.Fragment>
+    <Switch>
         <Route path="/results" component={JobList} />
         <Route path="/runner" component={JobRunnerContainer} />
-    </React.Fragment>
+        <Route path="" component={JobList} />
+    </Switch>
 );
 
 export default AppRouter;
