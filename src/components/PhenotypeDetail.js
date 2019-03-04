@@ -2,14 +2,6 @@ import React, { Component } from "react";
 import axios from "axios";
 import EntityFrame from "./EntityFrame";
 import { FaCheck, FaTimes, FaStickyNote } from "react-icons/fa";
-import {
-    Button,
-    Modal,
-    ModalHeader,
-    ModalBody,
-    ModalFooter,
-    Alert
-} from "reactstrap";
 
 const suffixes = ["_x", "_y"];
 
@@ -192,110 +184,120 @@ class PhenotypeDetail extends Component {
         });
 
         return (
-            <div>
+            <React.Fragment>
                 {selected_result_index > -1 ? (
                     <div className="PhenotypeDetailMain">
-                        <div>
-                            <span className="h4">
-                                {" "}
-                                {selected_result.nlpql_feature}{" "}
-                            </span>
-                            {selected_result.raw_definition_text &&
-                            selected_result.raw_definition_text.length > 0 ? (
-                                <small>
-                                    {" "}
-                                    ({selected_result.raw_definition_text})
-                                </small>
-                            ) : (
-                                <span />
-                            )}
-                            <span className="float-lg-right">
-                                <Button
-                                    outline
-                                    size="sm"
-                                    color="success"
-                                    onClick={() => {
-                                        this.writeFeedback(1);
-                                    }}
-                                >
-                                    <FaCheck />
-                                </Button>{" "}
-                                <Button
-                                    outline
-                                    size="sm"
-                                    color="danger"
-                                    onClick={() => {
-                                        this.writeFeedback(2);
-                                    }}
-                                >
-                                    <FaTimes />
-                                </Button>{" "}
-                                <Button
-                                    outline
-                                    size="sm"
-                                    color="info"
-                                    onClick={() => {
-                                        this.toggle();
-                                    }}
-                                >
-                                    <FaStickyNote />
-                                </Button>{" "}
-                            </span>
+                        <div className="columns">
+                            <div className="column">
+                                <h4 className="has-text-weight-semibold">
+                                    {selected_result.nlpql_feature}
+                                </h4>
+                                {selected_result.raw_definition_text &&
+                                selected_result.raw_definition_text.length >
+                                    0 ? (
+                                    <h4>
+                                        ({selected_result.raw_definition_text})
+                                    </h4>
+                                ) : null}
+                            </div>
+                            <div className="column">
+                                <div className="field has-addons has-addons-right">
+                                    <div className="control">
+                                        <button
+                                            className="button"
+                                            onClick={() => {
+                                                this.writeFeedback(1);
+                                            }}
+                                        >
+                                            <FaCheck />
+                                        </button>
+                                    </div>
+                                    <div className="control">
+                                        <button
+                                            className="button"
+                                            onClick={() => {
+                                                this.writeFeedback(2);
+                                            }}
+                                        >
+                                            <FaTimes />
+                                        </button>
+                                    </div>
+                                    <div className="control">
+                                        <button
+                                            className="button"
+                                            onClick={() => {
+                                                this.toggle();
+                                            }}
+                                        >
+                                            <FaStickyNote />
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                         {results_view}
                         {this.state.successAlert === true ? (
-                            <Alert color="success" toggle={this.onDismiss}>
-                                <font size="3">
-                                    Thank you for submitting feedback.
-                                </font>
-                            </Alert>
-                        ) : (
-                            <span />
-                        )}
+                            <div className="notification is-success">
+                                <button
+                                    className="delete"
+                                    onClick={this.onDismiss}
+                                />
+                                Thank you for submitting feedback.
+                            </div>
+                        ) : null}
                         {this.state.failureAlert === true ? (
-                            <Alert color="danger" toggle={this.onDismiss}>
-                                <font size="3">
-                                    Could not submit feedback. Contact Admin.
-                                </font>
-                            </Alert>
-                        ) : (
-                            <span />
-                        )}
+                            <div className="notification is-danger">
+                                <button
+                                    className="delete"
+                                    onClick={this.onDismiss}
+                                />
+                                Could not submit feedback. Contact Admin.
+                            </div>
+                        ) : null}
                     </div>
-                ) : (
-                    <span />
-                )}
+                ) : null}
 
                 <div id="commentsModal">
-                    <Modal
-                        isOpen={this.state.modal}
-                        toggle={this.toggle}
-                        className={this.props.className}
+                    <div
+                        className={
+                            this.state.modal ? "modal is-active" : "modal"
+                        }
                     >
-                        <ModalHeader toggle={this.toggle}>
-                            Enter Comment
-                        </ModalHeader>
-                        <ModalBody>
-                            <input
-                                type="textarea"
-                                name="comments"
-                                id="feedbackComments"
-                                defaultValue={this.user_comments}
-                            />
-                        </ModalBody>
-                        <ModalFooter>
-                            <Button
-                                color="primary"
-                                onClick={() => {
-                                    this.saveComments();
-                                }}
-                            >
-                                Save Comment
-                            </Button>{" "}
-                        </ModalFooter>
-                    </Modal>
+                        <div className="modal-background" />
+                        <div className="modal-card">
+                            <header className="modal-card-head">
+                                <p className="modal-card-title">
+                                    Enter Comment
+                                </p>
+                                <button
+                                    className="delete"
+                                    aria-label="close"
+                                    onClick={this.toggle}
+                                />
+                            </header>
+                            <section className="modal-card-body">
+                                <input
+                                    className="input"
+                                    type="textarea"
+                                    name="comments"
+                                    id="feedbackComments"
+                                    defaultValue={this.user_comments}
+                                />
+                            </section>
+                            <footer className="modal-card-foot">
+                                <div className="column is-5 is-offset-7">
+                                    <button
+                                        className="button is-primary"
+                                        onClick={this.saveComments}
+                                    >
+                                        Save Comment
+                                    </button>
+                                </div>
+                            </footer>
+                        </div>
+                    </div>
                 </div>
-            </div>
+            </React.Fragment>
         );
     }
 }

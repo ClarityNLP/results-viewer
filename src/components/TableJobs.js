@@ -1,12 +1,4 @@
 import React, { Component } from "react";
-import {
-    Table,
-    Modal,
-    ModalHeader,
-    ModalBody,
-    ModalFooter,
-    Button
-} from "reactstrap";
 import Moment from "react-moment";
 import "moment-timezone";
 import { FaCode, FaFileAlt, FaStop, FaTrash } from "react-icons/fa";
@@ -278,61 +270,79 @@ class TableJobs extends Component {
                         </div>
                     </div>
                 </div>
-                <Table striped className="JobTable">
+                <table className="JobTable table is-striped">
                     <thead>
                         <tr>{header_items}</tr>
                     </thead>
                     <tbody>{job_items}</tbody>
-                </Table>
-                <Modal
-                    isOpen={this.state.modal}
-                    toggle={this.toggle}
-                    className="ReportModal"
-                >
-                    <ModalHeader toggle={this.toggle}>
-                        {this.state.modal_title}
-                    </ModalHeader>
-                    <ModalBody>
-                        {this.state.modal_type === "NLPQL" ? (
-                            <div className="ReportTextPreview">
-                                {this.state.nlpql}
-                            </div>
-                        ) : (
-                            <ReactJson
-                                src={this.state.config}
-                                displayObjectSize={false}
-                                displayDataTypes={false}
+                </table>
+                <div className={this.state.modal ? "modal is-active" : "modal"}>
+                    <div className="modal-background" />
+                    <div className="modal-card">
+                        <header className="modal-card-head">
+                            <p className="modal-card-title">
+                                {this.state.modal_title}
+                            </p>
+                            <button
+                                className="delete"
+                                aria-label="close"
+                                onClick={this.toggle}
                             />
-                        )}
-                    </ModalBody>
-                    <ModalFooter>
-                        <Button color="secondary" onClick={this.toggle}>
-                            Close
-                        </Button>
-                    </ModalFooter>
-                </Modal>
-                <Modal
-                    isOpen={this.state.job_modal}
-                    toggle={this.jobToggle}
-                    className="JobModal"
+                        </header>
+                        <section className="modal-card-body">
+                            {this.state.modal_type === "NLPQL" ? (
+                                <div className="ReportTextPreview">
+                                    {this.state.nlpql}
+                                </div>
+                            ) : (
+                                <ReactJson
+                                    src={this.state.config}
+                                    displayObjectSize={false}
+                                    displayDataTypes={false}
+                                />
+                            )}
+                        </section>
+                        <footer className="modal-card-foot" />
+                    </div>
+                </div>
+                <div
+                    className={
+                        this.state.job_modal ? "modal is-active" : "modal"
+                    }
                 >
-                    <ModalHeader toggle={this.jobToggle}>
-                        {this.state.job_modal_title}
-                    </ModalHeader>
-                    <ModalBody>
-                        {"Are you sure you want to " +
-                            this.state.job_modal_type.toLowerCase() +
-                            " this job?"}
-                    </ModalBody>
-                    <ModalFooter>
-                        <Button color="danger" onClick={this.takeSeriousAction}>
-                            Continue
-                        </Button>
-                        <Button color="secondary" onClick={this.jobToggle}>
-                            Cancel
-                        </Button>
-                    </ModalFooter>
-                </Modal>
+                    <div className="modal-background" />
+                    <div className="modal-card">
+                        <header className="modal-card-head">
+                            <p className="modal-card-title">
+                                {this.state.job_modal_title}
+                            </p>
+                            <button
+                                className="delete"
+                                aria-label="close"
+                                onClick={this.jobToggle}
+                            />
+                        </header>
+                        <section className="modal-card-body">
+                            {"Are you sure you want to " +
+                                this.state.job_modal_type.toLowerCase() +
+                                " this job?"}
+                        </section>
+                        <footer className="modal-card-foot">
+                            <button
+                                className="button is-text"
+                                onClick={this.takeSeriousAction}
+                            >
+                                Continue
+                            </button>
+                            <button
+                                className="button is-primary"
+                                onClick={this.jobToggle}
+                            >
+                                Cancel
+                            </button>
+                        </footer>
+                    </div>
+                </div>
             </div>
         );
     }

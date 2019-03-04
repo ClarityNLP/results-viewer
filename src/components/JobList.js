@@ -90,6 +90,7 @@ class JobList extends Component {
         if (this.state.job_param !== null) {
             let url = base_url + "phenotype_job_by_id/" + this.state.job_param;
             console.log(this.state.job_param);
+
             axios.get(url).then(response => {
                 this.setState(prevState => ({
                     job: response.data,
