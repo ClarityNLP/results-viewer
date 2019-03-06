@@ -9,4 +9,3 @@ _build/
 _templates/
 node_modules/
 build/
-package-lock.json
