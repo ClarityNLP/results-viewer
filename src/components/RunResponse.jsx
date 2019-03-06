@@ -18,12 +18,11 @@ export default class RunResponse extends Component {
         const { data, toggle, valid, clear } = this.props;
 
         return (
-            <div className={"modal is-active"}>
+            <div className="modal is-active">
                 <div className="modal-background" />
                 <div className="modal-card">
                     <header className="modal-card-head">
                         <p className="modal-card-title">
-                            {" "}
                             Your NLPQL is&nbsp;
                             {valid ? (
                                 <span className="has-text-success">VALID</span>
