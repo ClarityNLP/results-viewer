@@ -9,6 +9,7 @@ import CohortForm from "./Forms/CohortForm";
 import DefineFeatureForm from "./Forms/DefineFeatureForm";
 import LogicalContextForm from "./Forms/LogicalContextForm";
 import DefineResultForm from "./Forms/DefineResultForm";
+import ResponseModal from "./ResponseModal";
 
 const initialState = {
     editing: false,
@@ -213,7 +214,29 @@ class JobRunner extends Component {
     handeSaveClick = () => {
         const { nlpql } = this.props.runner;
 
-        this.props.saveNLPQL(nlpql);
+        this.props.saveNLPQL(nlpql).then(() => {
+            const { nlpql_id } = this.props.runner;
+
+            let display = (
+                <ResponseModal
+                    content="Query Saved!"
+                    toggle={this.toggleResponse}
+                />
+            );
+
+            if (nlpql_id < 0 || nlpql_id === null) {
+                display = (
+                    <ResponseModal
+                        content="Save failed, please try again."
+                        toggle={this.toggleResponse}
+                    />
+                );
+            }
+
+            this.setState({
+                response_view: display
+            });
+        });
     };
 
     handleRunClick = () => {

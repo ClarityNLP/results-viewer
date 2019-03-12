@@ -5,7 +5,9 @@ const initialState = {
     nlpql_JSON: null,
     nlpql_Error: null,
     posting: false,
-    saving_nlqpl: false
+    saving_nlqpl: false,
+    nlpql_id: -1,
+    saving_nlpql_erorr: null
 };
 
 const reducer = (state = initialState, action) => {
@@ -62,12 +64,14 @@ const reducer = (state = initialState, action) => {
         case types.SAVING_NLPQL_SUCCESS:
             return {
                 ...state,
-                saving_nlqpl: false
+                saving_nlqpl: false,
+                nlpql_id: action.payload.data
             };
         case types.SAVING_NLPQL_FAIL:
             return {
                 ...state,
-                saving_nlqpl: false
+                saving_nlqpl: false,
+                saving_nlpql_erorr: action.payload
             };
         default:
             return state;
