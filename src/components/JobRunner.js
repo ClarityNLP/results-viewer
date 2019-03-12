@@ -210,6 +210,12 @@ class JobRunner extends Component {
         this.props.postToClarityAPI("nlpql_expander", nlpql);
     };
 
+    handeSaveClick = () => {
+        const { nlpql } = this.props.runner;
+
+        this.props.saveNLPQL(nlpql);
+    };
+
     handleRunClick = () => {
         const { nlpql } = this.props.runner;
         const _this = this;
@@ -272,6 +278,14 @@ class JobRunner extends Component {
                     <div className="NLPQLAreaHeader columns">
                         <div className="column is-5 level">
                             <div className="columns level-right">
+                                <div className="column is-one-third">
+                                    <button
+                                        className="button is-large"
+                                        onClick={this.handeSaveClick}
+                                    >
+                                        Save
+                                    </button>
+                                </div>
                                 <div className="column is-one-third">
                                     <button
                                         className="button is-large"
