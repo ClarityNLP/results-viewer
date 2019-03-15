@@ -4,7 +4,10 @@ const initialState = {
     nlpql: "",
     nlpql_JSON: null,
     nlpql_Error: null,
-    posting: null
+    posting: false,
+    saving_nlqpl: false,
+    nlpql_id: -1,
+    saving_nlpql_erorr: null
 };
 
 const reducer = (state = initialState, action) => {
@@ -41,7 +44,6 @@ const reducer = (state = initialState, action) => {
                 ...state,
                 posting: true
             };
-
         case types.SETTING_NLPQL_JSON_SUCCESS:
             return {
                 ...state,
@@ -53,6 +55,23 @@ const reducer = (state = initialState, action) => {
                 ...state,
                 posting: false,
                 nlpql_Error: action.error
+            };
+        case types.SAVING_NLPQL:
+            return {
+                ...state,
+                saving_nlqpl: true
+            };
+        case types.SAVING_NLPQL_SUCCESS:
+            return {
+                ...state,
+                saving_nlqpl: false,
+                nlpql_id: action.payload.data
+            };
+        case types.SAVING_NLPQL_FAIL:
+            return {
+                ...state,
+                saving_nlqpl: false,
+                saving_nlpql_erorr: action.payload
             };
         default:
             return state;

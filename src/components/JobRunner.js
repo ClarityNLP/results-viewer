@@ -9,6 +9,7 @@ import CohortForm from "./Forms/CohortForm";
 import DefineFeatureForm from "./Forms/DefineFeatureForm";
 import LogicalContextForm from "./Forms/LogicalContextForm";
 import DefineResultForm from "./Forms/DefineResultForm";
+import ResponseModal from "./ResponseModal";
 
 const initialState = {
     editing: false,
@@ -210,6 +211,34 @@ class JobRunner extends Component {
         this.props.postToClarityAPI("nlpql_expander", nlpql);
     };
 
+    handeSaveClick = () => {
+        const { nlpql } = this.props.runner;
+
+        this.props.saveNLPQL(nlpql).then(() => {
+            const { nlpql_id } = this.props.runner;
+
+            let display = (
+                <ResponseModal
+                    content="Query Saved!"
+                    toggle={this.toggleResponse}
+                />
+            );
+
+            if (nlpql_id < 0 || nlpql_id === null) {
+                display = (
+                    <ResponseModal
+                        content="Save failed, please try again."
+                        toggle={this.toggleResponse}
+                    />
+                );
+            }
+
+            this.setState({
+                response_view: display
+            });
+        });
+    };
+
     handleRunClick = () => {
         const { nlpql } = this.props.runner;
         const _this = this;
@@ -272,6 +301,14 @@ class JobRunner extends Component {
                     <div className="NLPQLAreaHeader columns">
                         <div className="column is-5 level">
                             <div className="columns level-right">
+                                <div className="column is-one-third">
+                                    <button
+                                        className="button is-large"
+                                        onClick={this.handeSaveClick}
+                                    >
+                                        Save
+                                    </button>
+                                </div>
                                 <div className="column is-one-third">
                                     <button
                                         className="button is-large"
