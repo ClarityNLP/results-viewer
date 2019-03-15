@@ -5,7 +5,7 @@ export function saveNLPQL(nlpql) {
         type: SAVING_NLPQL,
         payload: {
             request: {
-                url: "/add_query",
+                url: "add_query",
                 method: "post",
                 data: nlpql,
                 headers: {
