@@ -107,7 +107,7 @@ class JobRunner extends Component {
             this.setArraysFromJSON();
             text = "Edit";
         } else {
-            text = "Save";
+            text = "Done";
         }
 
         this.setState({
@@ -307,22 +307,6 @@ class JobRunner extends Component {
                                         onClick={this.handeSaveClick}
                                     >
                                         Save
-                                    </button>
-                                </div>
-                                <div className="column is-one-third">
-                                    <button
-                                        className="button is-large"
-                                        onClick={this.handleExpandClick}
-                                    >
-                                        Expand
-                                    </button>
-                                </div>
-                                <div className="column is-one-third">
-                                    <button
-                                        className="button is-large"
-                                        onClick={this.testNLPQL}
-                                    >
-                                        Test
                                     </button>
                                 </div>
                             </div>
