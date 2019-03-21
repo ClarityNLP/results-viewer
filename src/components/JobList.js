@@ -3,7 +3,7 @@ import axios from "axios";
 import ResultViewer from "./ResultViewer";
 import TableJobs from "./TableJobs";
 
-const base_url = process.env.REACT_APP_CLARITY_NLP_URL;
+const base_url = `http://${window._env_.REACT_APP_API_HOST}/api/nlp`;
 const luigi = process.env.REACT_APP_LUIGI_URL;
 
 // https://html-online.com/articles/get-url-parameters-javascript/
@@ -71,7 +71,7 @@ class JobList extends Component {
             jobs: [],
             show_list: true
         }));
-        let url = base_url + "phenotype_jobs/ALL";
+        let url = base_url + "/phenotype_jobs/ALL";
 
         axios.get(url).then(response => {
             let filtered_jobs = response.data.filter(f => {
@@ -88,7 +88,7 @@ class JobList extends Component {
     componentDidMount() {
         this.getAllJobs();
         if (this.state.job_param !== null) {
-            let url = base_url + "phenotype_job_by_id/" + this.state.job_param;
+            let url = base_url + "/phenotype_job_by_id/" + this.state.job_param;
             console.log(this.state.job_param);
 
             axios.get(url).then(response => {
