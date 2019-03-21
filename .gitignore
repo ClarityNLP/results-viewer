@@ -1,5 +1,4 @@
 .cache/
-.env
 prod.env
 .bak
 .idea/codeStyles/Project.xml
@@ -9,3 +8,7 @@ _build/
 _templates/
 node_modules/
 build/
+
+# Temporary env files
+/public/env-config.js
+env-config.js
