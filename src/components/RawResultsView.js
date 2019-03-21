@@ -143,7 +143,7 @@ class RawResultsView extends Component {
     checkExportApiHealth() {
         let __this = this;
         axios
-            .get(process.env.REACT_APP_EXPORT_URL)
+            .get(`http://${window._env_.REACT_APP_API_HOST}/export_ohdsi`)
             .then(function(response) {
                 __this.setState({
                     exportApiHealth: true
@@ -224,7 +224,7 @@ class RawResultsView extends Component {
         });
 
         axios
-            .post(process.env.REACT_APP_EXPORT_URL, data, {
+            .post(`http://${window._env_.REACT_APP_API_HOST}/export_ohdsi`, data, {
                 headers: {
                     "Content-Type": "application/json"
                 }
