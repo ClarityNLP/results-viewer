@@ -9,7 +9,6 @@ _build/
 _templates/
 node_modules/
 build/
-package-lock.json
 
 # Temporary env files
 /public/env-config.js
