@@ -1,4 +1,8 @@
-import { applyMiddleware, compose, createStore } from "redux";
+import {
+  applyMiddleware,
+  compose,
+  createStore
+} from "redux";
 
 import { routerMiddleware } from "connected-react-router";
 import createRootReducer from "../reducers/root_reducer";
@@ -12,6 +16,18 @@ import { redirectToODICSaga } from "../../utils/sagas";
 
 const logger = createLogger();
 const sagaMiddleware = createSagaMiddleware();
+const axiosMiddlewareOptions = {
+  interceptors: {
+    request: [
+      (state, config) => {
+        if (state.getState().oidc.user) {
+          config.headers['Authorization'] = 'Bearer ' + state.getState().oidc.user.access_token
+        }
+        return config
+      }
+    ]
+  }
+}
 
 export default function configureStore(initialState, apiClient, history) {
     const store = createStore(
@@ -22,7 +38,7 @@ export default function configureStore(initialState, apiClient, history) {
                 sagaMiddleware,
                 routerMiddleware(history),
                 thunk,
-                axiosMiddleware(apiClient),
+                axiosMiddleware(apiClient, axiosMiddlewareOptions),
                 logger
             )
         )
