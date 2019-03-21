@@ -2,7 +2,7 @@
 @import "util/normalize";
 
 // Set ClarityNLP brand colors
-$purple: #79589F;
+$purple: #79589f;
 
 // Update Bulma's global variables
 $primary: $purple;
@@ -16,3 +16,4 @@ $link: $purple;
 @import "elements/transient";
 
 @import "main";
+@import "../components/Navbar/navbar";
