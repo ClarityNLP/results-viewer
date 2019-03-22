@@ -1,3 +1,7 @@
+html, body, #root {
+  height: 100%;
+}
+
 button {
     width: 100%;
 }
@@ -7,7 +11,7 @@ button {
 }
 
 .JobList {
-    padding-top: 60px;
+    padding-top: 20px;
 }
 
 .JobListIcons {
@@ -244,7 +248,7 @@ pre,
 
 .JobRunner {
     &.container {
-        margin-top: 100px;
+        margin-top: 20px;
     }
 }
 
@@ -256,4 +260,15 @@ pre,
     margin-left: 10px;
     font-style: italic;
     font-weight: 100;
+}
+
+#root {
+  display: flex;
+  flex-direction: row;
+  flex: 1;
+  overflow: hidden;
+  #viewer {
+    flex: 1;
+    overflow-y: scroll;
+  }
 }

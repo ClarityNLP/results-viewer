@@ -73,7 +73,9 @@ class JobList extends Component {
         }));
         let url = base_url + "/phenotype_jobs/ALL";
 
-        axios.get(url).then(response => {
+        axios.get(url, {
+          headers: {'Authorization': 'Bearer ' + this.props.oidc.user.access_token}
+        }).then(response => {
             let filtered_jobs = response.data.filter(f => {
                 let name = f.phenotype_name.toLowerCase();
                 return name.indexOf(this.state.filter) >= 0;
