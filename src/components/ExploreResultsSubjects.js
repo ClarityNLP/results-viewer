@@ -25,15 +25,16 @@ class ExploreResultsSubjects extends Component {
 
         let url =
             this.props.url +
-            "phenotype_subject_results/" +
+            "/phenotype_subject_results/" +
             job_id +
             "/" +
             phenotype_final +
             "/" +
             subject._id;
 
-        axios.get(url).then(response => {
-            //console.log(response.data);
+        axios.get(url, {
+          headers: {'Authorization': 'Bearer ' + this.props.accessToken}
+        }).then(response => {
             this.setState(prevState => ({
                 selected_subject: subject,
                 selected_index: subject["index"],
@@ -73,12 +74,14 @@ class ExploreResultsSubjects extends Component {
 
         let url =
             this.props.url +
-            "phenotype_subjects/" +
+            "/phenotype_subjects/" +
             job_id +
             "/" +
             phenotype_final;
 
-        axios.get(url).then(response => {
+        axios.get(url, {
+          headers: {'Authorization': 'Bearer ' + this.props.accessToken}
+        }).then(response => {
             let s_list = response.data;
             for (let i = 0; i < s_list.length; i++) {
                 s_list[i]["index"] = i;
