@@ -1,13 +1,13 @@
 import { createUserManager } from "redux-oidc";
 
 const userManagerConfig = {
-  authority: "http://localhost:5000",
+  authority: "http://idp.clarity.localhost",
   client_id: "viewer",
   redirect_uri: `${window.location.protocol}//${window.location.hostname}${
     window.location.port ? `:${window.location.port}` : ""
   }/callback.html`,
   response_type: "code",
-  scope: "openid profile api1",
+  scope: "openid profile nlp_api",
   silent_redirect_uri: `${window.location.protocol}//${
     window.location.hostname
   }${window.location.port ? `:${window.location.port}` : ""}/silent_renew.html`,
