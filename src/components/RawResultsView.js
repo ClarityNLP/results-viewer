@@ -9,7 +9,7 @@ const ALL = 4;
 const page_size = 100;
 
 class ResultData {
-    constructor(callback, job, get_url) {
+    constructor(callback, job, get_url, accessToken) {
         this._dataList = [];
         this._end = page_size;
         this._pending = false;
@@ -21,13 +21,16 @@ class ResultData {
         this.size = page_size;
         this.no_more = false;
         this.columns = [];
+        this.accessToken = accessToken;
 
-        this.getDataStore(job, get_url, true);
+        this.getDataStore(job, get_url, true, null, accessToken);
     }
 
-    getDataStore(job, get_url, first, resolve) {
+    getDataStore(job, get_url, first, resolve, accessToken) {
         if (first) {
-            axios.get(get_url).then(response => {
+            axios.get(get_url, {
+              headers: {'Authorization': 'Bearer ' + accessToken}
+            }).then(response => {
                 if (response.data.success) {
                     let results = response.data.results;
                     this.new_last_id = response.data.new_last_id;
@@ -40,7 +43,9 @@ class ResultData {
             });
         } else {
             axios
-                .get(get_url + "?last_id=" + this.new_last_id)
+                .get(get_url + "?last_id=" + this.new_last_id, {
+                  headers: {'Authorization': 'Bearer ' + accessToken}
+                })
                 .then(response => {
                     if (response.data.success) {
                         let results = response.data.results;
@@ -115,13 +120,13 @@ class RawResultsView extends Component {
         let job_id = props.job.nlp_job_id;
         let get_url =
             this.props.url +
-            "phenotype_paged_results/" +
+            "/phenotype_paged_results/" +
             job_id +
             "/" +
             final_results;
 
         this.state = {
-            ResultData: new ResultData(this.updateData, props.job, get_url),
+            ResultData: new ResultData(this.updateData, props.job, get_url, this.props.accessToken),
             end: 0,
             mode: props.mode,
             modal: false,
@@ -143,7 +148,9 @@ class RawResultsView extends Component {
     checkExportApiHealth() {
         let __this = this;
         axios
-            .get(`http://${window._env_.REACT_APP_API_HOST}/export_ohdsi`)
+            .get(`http://${window._env_.REACT_APP_API_HOST}/api/nlp/export_ohdsi`, {
+              headers: {'Authorization': 'Bearer ' + this.props.accessToken}
+            })
             .then(function(response) {
                 __this.setState({
                     exportApiHealth: true
@@ -162,7 +169,7 @@ class RawResultsView extends Component {
             let job_id = this.props.job.nlp_job_id;
             let get_url =
                 this.props.url +
-                "phenotype_paged_results/" +
+                "/phenotype_paged_results/" +
                 job_id +
                 "/" +
                 final_results;
@@ -171,7 +178,8 @@ class RawResultsView extends Component {
                 ResultData: new ResultData(
                     this.updateData,
                     this.props.job,
-                    get_url
+                    get_url,
+                    this.props.accessToken
                 ),
                 mode: this.props.mode
             });
@@ -224,9 +232,10 @@ class RawResultsView extends Component {
         });
 
         axios
-            .post(`http://${window._env_.REACT_APP_API_HOST}/export_ohdsi`, data, {
+            .post(`http://${window._env_.REACT_APP_API_HOST}/api/nlp/export_ohdsi`, data, {
                 headers: {
-                    "Content-Type": "application/json"
+                    "Content-Type": "application/json",
+                    "Authorization": "Bearer " + this.props.accessToken
                 }
             })
 
