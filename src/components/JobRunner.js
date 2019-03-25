@@ -51,7 +51,7 @@ class JobRunner extends Component {
         let tmp_cohorts = [];
         let tmp_features = [];
 
-        this.props.postToClarityAPI("nlpql_tester", nlpql).then(() => {
+        this.props.postToClarityAPI("api/nlp/nlpql_tester", nlpql).then(() => {
             const { nlpql_JSON } = _this.props.runner;
 
             if (nlpql_JSON) {
@@ -184,7 +184,7 @@ class JobRunner extends Component {
         const _this = this;
 
         if (nlpql) {
-            this.props.postToClarityAPI("nlpql_tester", nlpql).then(() => {
+            this.props.postToClarityAPI("api/nlp/nlpql_tester", nlpql).then(() => {
                 const { nlpql_JSON } = _this.props.runner;
 
                 this.setState({
@@ -245,7 +245,7 @@ class JobRunner extends Component {
 
         if (nlpql) {
             this.props
-                .postToClarityAPI("nlpql", nlpql)
+                .postToClarityAPI("api/nlp/nlpql", nlpql)
                 .then(() => {
                     const { nlpql_JSON } = _this.props.runner;
 
