@@ -93,12 +93,14 @@ class ResultViewer extends Component {
                         <ExploreResultsSubjects
                             job={this.props.job}
                             url={this.props.url}
+                            accessToken={this.props.accessToken}
                         />
                     ) : (
                         <RawResultsView
                             job={this.props.job}
                             mode={this.state.mode_selected}
                             url={this.props.url}
+                            accessToken={this.props.accessToken}
                         />
                     )}
                 </div>
