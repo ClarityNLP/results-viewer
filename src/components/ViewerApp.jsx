@@ -2,7 +2,6 @@ import React, { Component } from "react";
 import Transient from "./Transient";
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { faBars, faSpinner } from "@fortawesome/free-solid-svg-icons";
-import AppRouter from "../routes/AppRouter";
 import { Route, Switch } from "react-router-dom";
 import JobListContainer from "../containers/job_list_container";
 import JobRunnerContainer from "../containers/runner_container";

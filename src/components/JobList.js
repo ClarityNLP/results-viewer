@@ -91,9 +91,9 @@ class JobList extends Component {
         this.getAllJobs();
         if (this.state.job_param !== null) {
             let url = base_url + "/phenotype_job_by_id/" + this.state.job_param;
-            console.log(this.state.job_param);
-
-            axios.get(url).then(response => {
+            axios.get(url, {
+              headers: {'Authorization': 'Bearer ' + this.props.oidc.user.access_token}
+            }).then(response => {
                 this.setState(prevState => ({
                     job: response.data,
                     show_list: false
@@ -137,6 +137,7 @@ class JobList extends Component {
                         resetJobsList={this.resetJobsList}
                         job={this.state.job}
                         url={base_url}
+                        accessToken={this.props.oidc.user.access_token}
                     />
                 )}
             </div>

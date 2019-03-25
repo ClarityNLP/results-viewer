@@ -199,7 +199,7 @@ class TableJobs extends Component {
                         <a
                             href={
                                 this.props.url +
-                                "job_results/" +
+                                "/job_results/" +
                                 p.nlp_job_id +
                                 "/phenotype_intermediate"
                             }
@@ -210,7 +210,7 @@ class TableJobs extends Component {
                         <a
                             href={
                                 this.props.url +
-                                "job_results/" +
+                                "/job_results/" +
                                 p.nlp_job_id +
                                 "/phenotype"
                             }
