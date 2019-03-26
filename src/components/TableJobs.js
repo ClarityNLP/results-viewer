@@ -195,7 +195,7 @@ class TableJobs extends Component {
                             {p.date_started}
                         </Moment>
                     </td>
-                    <td>
+                    <td className="has-text-centered">
                         <a
                             href={
                                 this.props.url +
@@ -216,6 +216,17 @@ class TableJobs extends Component {
                             }
                         >
                             Cohort
+                        </a>
+                        <br />
+                        <a
+                            href={
+                                this.props.url +
+                                "job_results/" +
+                                p.nlp_job_id +
+                                "/annotations"
+                            }
+                        >
+                            Annotations
                         </a>
                     </td>
                     <td style={{ minWidth: "100px" }}>
