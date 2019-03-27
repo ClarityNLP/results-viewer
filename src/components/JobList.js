@@ -4,7 +4,7 @@ import ResultViewer from "./ResultViewer";
 import TableJobs from "./TableJobs";
 
 const base_url = `http://${window._env_.REACT_APP_API_HOST}/api/nlp`;
-const luigi = process.env.REACT_APP_LUIGI_URL;
+const luigi = `http://${window._env_.REACT_APP_LUIGI_URL}`;
 
 // https://html-online.com/articles/get-url-parameters-javascript/
 function getUrlVars() {
@@ -73,32 +73,41 @@ class JobList extends Component {
         }));
         let url = base_url + "/phenotype_jobs/ALL";
 
-        axios.get(url, {
-          headers: {'Authorization': 'Bearer ' + this.props.oidc.user.access_token}
-        }).then(response => {
-            let filtered_jobs = response.data.filter(f => {
-                let name = f.phenotype_name.toLowerCase();
-                return name.indexOf(this.state.filter) >= 0;
+        axios
+            .get(url, {
+                headers: {
+                    Authorization: "Bearer " + this.props.oidc.user.access_token
+                }
+            })
+            .then(response => {
+                let filtered_jobs = response.data.filter(f => {
+                    let name = f.phenotype_name.toLowerCase();
+                    return name.indexOf(this.state.filter) >= 0;
+                });
+                this.setState(prevState => ({
+                    jobs: response.data,
+                    filtered_jobs: filtered_jobs
+                }));
             });
-            this.setState(prevState => ({
-                jobs: response.data,
-                filtered_jobs: filtered_jobs
-            }));
-        });
     }
 
     componentDidMount() {
         this.getAllJobs();
         if (this.state.job_param !== null) {
             let url = base_url + "/phenotype_job_by_id/" + this.state.job_param;
-            axios.get(url, {
-              headers: {'Authorization': 'Bearer ' + this.props.oidc.user.access_token}
-            }).then(response => {
-                this.setState(prevState => ({
-                    job: response.data,
-                    show_list: false
-                }));
-            });
+            axios
+                .get(url, {
+                    headers: {
+                        Authorization:
+                            "Bearer " + this.props.oidc.user.access_token
+                    }
+                })
+                .then(response => {
+                    this.setState(prevState => ({
+                        job: response.data,
+                        show_list: false
+                    }));
+                });
         }
     }
 
