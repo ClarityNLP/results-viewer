@@ -142,10 +142,15 @@ class PhenotypeDetail extends Component {
 
     componentDidMount() {
         let get_url = this.url + "/phenotype_results_by_id/" + this.id_string;
-        axios.get(get_url).then(response => {
-            this.detailed_results = response.data;
-            this.resetViewAll(response.data);
-        });
+
+        axios
+            .get(get_url, {
+                headers: { Authorization: "Bearer " + this.props.accessToken }
+            })
+            .then(response => {
+                this.detailed_results = response.data;
+                this.resetViewAll(response.data);
+            });
     }
 
     componentDidUpdate(prevProps) {

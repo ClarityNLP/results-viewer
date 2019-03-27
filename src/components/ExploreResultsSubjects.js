@@ -32,16 +32,18 @@ class ExploreResultsSubjects extends Component {
             "/" +
             subject._id;
 
-        axios.get(url, {
-          headers: {'Authorization': 'Bearer ' + this.props.accessToken}
-        }).then(response => {
-            this.setState(prevState => ({
-                selected_subject: subject,
-                selected_index: subject["index"],
-                current_results: response.data,
-                show_subject_list: false
-            }));
-        });
+        axios
+            .get(url, {
+                headers: { Authorization: "Bearer " + this.props.accessToken }
+            })
+            .then(response => {
+                this.setState(prevState => ({
+                    selected_subject: subject,
+                    selected_index: subject["index"],
+                    current_results: response.data,
+                    show_subject_list: false
+                }));
+            });
     }
 
     navigateSubject(direction, event) {
@@ -79,18 +81,20 @@ class ExploreResultsSubjects extends Component {
             "/" +
             phenotype_final;
 
-        axios.get(url, {
-          headers: {'Authorization': 'Bearer ' + this.props.accessToken}
-        }).then(response => {
-            let s_list = response.data;
-            for (let i = 0; i < s_list.length; i++) {
-                s_list[i]["index"] = i;
-                s_list[i]["subject"] = s_list[i]["_id"];
-            }
-            this.setState(prevState => ({
-                subjects: s_list
-            }));
-        });
+        axios
+            .get(url, {
+                headers: { Authorization: "Bearer " + this.props.accessToken }
+            })
+            .then(response => {
+                let s_list = response.data;
+                for (let i = 0; i < s_list.length; i++) {
+                    s_list[i]["index"] = i;
+                    s_list[i]["subject"] = s_list[i]["_id"];
+                }
+                this.setState(prevState => ({
+                    subjects: s_list
+                }));
+            });
         this.setState(prevState => ({
             config: JSON.parse(this.props.job.config)
         }));
@@ -128,6 +132,7 @@ class ExploreResultsSubjects extends Component {
                         </table>
                     ) : (
                         <SubjectResultDetail
+                            accessToken={this.props.accessToken}
                             url={this.props.url}
                             phenotype_id={phenotype_id}
                             job={this.props.job}
