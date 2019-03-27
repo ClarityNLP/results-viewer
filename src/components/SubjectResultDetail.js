@@ -34,15 +34,19 @@ class SubjectResultDetail extends Component {
 
     componentDidMount() {
         let get_url =
-            this.props.url + "phenotype_structure/" + this.state.phenotype_id;
+            this.props.url + "/phenotype_structure/" + this.state.phenotype_id;
 
-        axios.get(get_url).then(response => {
-            this.setState({
-                finals: response.data["finals"],
-                ops: response.data["operations"],
-                entities: response.data["data_entities"]
+        axios
+            .get(get_url, {
+                headers: { Authorization: "Bearer " + this.props.accessToken }
+            })
+            .then(response => {
+                this.setState({
+                    finals: response.data["finals"],
+                    ops: response.data["operations"],
+                    entities: response.data["data_entities"]
+                });
             });
-        });
     }
 
     componentDidUpdate(prevProps) {
@@ -192,6 +196,7 @@ class SubjectResultDetail extends Component {
         let phenotype_results_detail = results.map((r, index) => {
             return (
                 <PhenotypeDetail
+                    accessToken={this.props.accessToken}
                     url={this.props.url}
                     key={r._id}
                     selected_result={r}

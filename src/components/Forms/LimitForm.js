@@ -9,7 +9,6 @@ class LimitForm extends React.Component {
 
         this.handleInputChange = this.handleInputChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
-        this.noLimit = this.noLimit.bind(this);
 
         this.state = initialState;
     }
@@ -26,7 +25,7 @@ class LimitForm extends React.Component {
         htmlClasses.remove("is-clipped");
     }
 
-    handleInputChange(event) {
+    handleInputChange = event => {
         const target = event.target;
         const value = target.value;
         const name = target.name;
@@ -34,27 +33,26 @@ class LimitForm extends React.Component {
         this.setState({
             [name]: value
         });
-    }
+    };
 
-    handleSubmit(event) {
+    handleSubmit = event => {
         event.preventDefault();
 
         const { limit } = this.state;
-        const text = "limit " + limit + ";\n\n";
 
-        this.props.updateNLPQL(text);
+        if (limit.trim() !== "") {
+            const text = "\n\nlimit " + limit + ";";
+
+            this.props.updateNLPQL(text).then(() => {
+                this.props.handleSubmit();
+            });
+        } else {
+            this.props.handleSubmit();
+        }
+
         this.props.toggle();
-        this.props.handleSubmit();
         this.setState(initialState);
-    }
-
-    noLimit(event) {
-        event.preventDefault();
-
-        this.props.toggle();
-        this.props.handleSubmit();
-        this.setState(initialState);
-    }
+    };
 
     render() {
         const { toggle } = this.props;
@@ -67,7 +65,10 @@ class LimitForm extends React.Component {
                     <div className="modal-card">
                         <header className="modal-card-head">
                             <p className="modal-card-title">
-                                Would you like to limit the number of results?
+                                Limit Results{" "}
+                                <span className="optional-text">
+                                    - Optional
+                                </span>
                             </p>
                             <button
                                 className="delete"
@@ -79,7 +80,7 @@ class LimitForm extends React.Component {
                             <form>
                                 <div className="field">
                                     <label className="label">
-                                        Limit Results
+                                        Number of Results
                                     </label>
                                     <input
                                         className="input"
@@ -92,20 +93,12 @@ class LimitForm extends React.Component {
                             </form>
                         </section>
                         <footer className="modal-card-foot level cloumns">
-                            <div className="column">
-                                <button
-                                    className="button is-large is-secondary"
-                                    onClick={this.noLimit}
-                                >
-                                    No, Thanks
-                                </button>
-                            </div>
-                            <div className="column">
+                            <div className="column is-4">
                                 <button
                                     className="button is-large is-primary"
                                     onClick={this.handleSubmit}
                                 >
-                                    Build Query
+                                    Run
                                 </button>
                             </div>
                         </footer>

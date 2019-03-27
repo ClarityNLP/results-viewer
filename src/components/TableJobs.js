@@ -159,9 +159,7 @@ class TableJobs extends Component {
 
     render() {
         const header_items = [
-            "Job ID",
             "Name",
-            "Phenotype ID",
             "Status",
             "Date",
             "Download CSV",
@@ -172,17 +170,11 @@ class TableJobs extends Component {
         let job_items = this.state.jobs.map(p => {
             return (
                 <tr className="JobRow" key={p.nlp_job_id}>
-                    <td onClick={e => this.props.selectJob(p, e)}>
-                        {p.nlp_job_id}
-                    </td>
                     <td
                         onClick={e => this.props.selectJob(p, e)}
                         className="PhenotypeName"
                     >
                         <span>{p.phenotype_name}</span>
-                    </td>
-                    <td onClick={e => this.props.selectJob(p, e)}>
-                        {p.phenotype_id}
                     </td>
                     <td onClick={e => this.props.selectJob(p, e)}>
                         {this.getStatus(p)}

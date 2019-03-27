@@ -3,7 +3,7 @@ import axios from "axios";
 import EntityFrame from "./EntityFrame";
 import { FaCheck, FaTimes, FaStickyNote } from "react-icons/fa";
 
-const suffixes = ["_x", "_y"];
+const suffixes = ["_1", "_2"];
 
 class PhenotypeDetail extends Component {
     constructor(props) {
@@ -31,12 +31,12 @@ class PhenotypeDetail extends Component {
         this.ids = [];
         if ("_id" in props.selected_result)
             this.ids.push(props.selected_result["_id"]);
-        if ("_id_x" in props.selected_result)
-            this.ids.push(props.selected_result["_id_x"]);
-        if ("_id_y" in props.selected_result)
-            this.ids.push(props.selected_result["_id_y"]);
-        if ("_id_z" in props.selected_result)
-            this.ids.push(props.selected_result["_id_z"]);
+        if ("_id_1" in props.selected_result)
+            this.ids.push(props.selected_result["_id_1"]);
+        if ("_id_2" in props.selected_result)
+            this.ids.push(props.selected_result["_id_2"]);
+        if ("_id_3" in props.selected_result)
+            this.ids.push(props.selected_result["_id_3"]);
         this.id_string = this.ids.join();
     }
 
@@ -105,7 +105,7 @@ class PhenotypeDetail extends Component {
         }
         let { selected_result } = this.state;
         let results = [];
-        if ("sentence_x" in selected_result) {
+        if ("sentence_1" in selected_result) {
             results = suffixes.map((s, index) => {
                 let id = selected_result["_id" + s];
                 let detail = {};
@@ -141,11 +141,16 @@ class PhenotypeDetail extends Component {
     }
 
     componentDidMount() {
-        let get_url = this.url + "phenotype_results_by_id/" + this.id_string;
-        axios.get(get_url).then(response => {
-            this.detailed_results = response.data;
-            this.resetViewAll(response.data);
-        });
+        let get_url = this.url + "/phenotype_results_by_id/" + this.id_string;
+
+        axios
+            .get(get_url, {
+                headers: { Authorization: "Bearer " + this.props.accessToken }
+            })
+            .then(response => {
+                this.detailed_results = response.data;
+                this.resetViewAll(response.data);
+            });
     }
 
     componentDidUpdate(prevProps) {
