@@ -34,7 +34,7 @@ class SubjectResultDetail extends Component {
 
     componentDidMount() {
         let get_url =
-            this.props.url + "phenotype_structure/" + this.state.phenotype_id;
+            this.props.url + "/phenotype_structure/" + this.state.phenotype_id;
 
         axios.get(get_url).then(response => {
             this.setState({

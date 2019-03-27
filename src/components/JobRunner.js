@@ -146,7 +146,7 @@ class JobRunner extends Component {
     updateNLPQL = value => {
         const { nlpql } = this.props.runner;
 
-        this.props.setNLPQL(nlpql + value).then(() => {
+        return this.props.setNLPQL(nlpql + value).then(() => {
             this.setArraysFromJSON();
         });
     };
@@ -184,20 +184,22 @@ class JobRunner extends Component {
         const _this = this;
 
         if (nlpql) {
-            this.props.postToClarityAPI("api/nlp/nlpql_tester", nlpql).then(() => {
-                const { nlpql_JSON } = _this.props.runner;
+            this.props
+                .postToClarityAPI("api/nlp/nlpql_tester", nlpql)
+                .then(() => {
+                    const { nlpql_JSON } = _this.props.runner;
 
-                this.setState({
-                    response_view: (
-                        <TestResponse
-                            valid={nlpql_JSON.valid}
-                            data={nlpql_JSON}
-                            toggle={this.toggleResponse}
-                            toggleLimitModal={this.toggleLimitModal}
-                        />
-                    )
+                    this.setState({
+                        response_view: (
+                            <TestResponse
+                                valid={nlpql_JSON.valid}
+                                data={nlpql_JSON}
+                                toggle={this.toggleResponse}
+                                toggleLimitModal={this.toggleLimitModal}
+                            />
+                        )
+                    });
                 });
-            });
         } else {
             this.setState({
                 response_view: this.response_ERROR()
