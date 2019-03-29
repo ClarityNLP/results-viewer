@@ -147,14 +147,9 @@ class TableJobs extends Component {
         headers: { Authorization: 'Bearer ' + this.props.accessToken }
       })
       .then(response => {
-        this.setState(
-          {
-            stats: response.data
-          },
-          () => {
-            console.log(this.state.stats);
-          }
-        );
+        this.setState({
+          stats: response.data
+        });
       })
       .catch(err => {
         console.error(err);
@@ -169,14 +164,9 @@ class TableJobs extends Component {
         headers: { Authorization: 'Bearer ' + this.props.accessToken }
       })
       .then(response => {
-        this.setState(
-          {
-            performance: response.data
-          },
-          () => {
-            console.log(this.state.performance);
-          }
-        );
+        this.setState({
+          performance: response.data
+        });
       })
       .catch(err => {
         console.error(err);
@@ -222,6 +212,8 @@ class TableJobs extends Component {
   }
 
   render() {
+    const { stats, performance } = this.state;
+
     const header_items = [
       'Name',
       'Date',
@@ -235,6 +227,17 @@ class TableJobs extends Component {
     });
 
     let job_items = this.state.jobs.map(p => {
+      let cohort_size = null;
+      let accuracy = null;
+
+      if (stats[p.nlp_job_id]) {
+        cohort_size = stats[p.nlp_job_id].final_subjects;
+      }
+
+      if (performance[p.nlp_job_id]) {
+        accuracy = performance[p.nlp_job_id].accuracy_score;
+      }
+
       return (
         <tr className='JobRow' key={p.nlp_job_id}>
           <td
@@ -250,8 +253,8 @@ class TableJobs extends Component {
             <Moment format='MMM D, YYYY h:mm a'>{p.date_started}</Moment>
           </td>
           <td onClick={e => this.props.selectJob(p, e)}>{this.getStatus(p)}</td>
-          <td>stats[id].final_subjects</td>
-          <td>performance[id].accuracy_score</td>
+          <td>{cohort_size}</td>
+          <td>{accuracy}</td>
           <td className='has-text-centered'>
             <a
               href={
