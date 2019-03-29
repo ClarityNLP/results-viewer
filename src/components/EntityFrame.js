@@ -50,7 +50,7 @@ class EntityFrame extends Component {
   }
 
   showDocument(data) {
-    const get_url = this.url + 'document/' + data['report_id'];
+    const get_url = this.url + '/document/' + data['report_id'];
 
     axios
       .get(get_url, {
