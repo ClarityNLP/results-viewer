@@ -57,7 +57,7 @@ class TableJobs extends Component {
     this.setState({
       modal: true,
       config: JSON.parse(job.config),
-      modal_title: 'JSON (' + job.phenotype_name + ')',
+      modal_title: 'JSON: ',
       modal_type: 'JSON',
       nlpql: ''
     });
@@ -67,7 +67,7 @@ class TableJobs extends Component {
     this.setState({
       modal: true,
       config: {},
-      modal_title: 'NLPQL (' + job.phenotype_name + ')',
+      modal_title: 'NLPQL: ',
       modal_type: 'NLPQL',
       nlpql: job.nlpql
     });
