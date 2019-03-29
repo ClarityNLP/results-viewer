@@ -1,310 +1,294 @@
-import React, { Component } from "react";
-import axios from "axios";
-import EntityFrame from "./EntityFrame";
-import { FaCheck, FaTimes, FaStickyNote } from "react-icons/fa";
+import React, { Component } from 'react';
+import axios from 'axios';
+import EntityFrame from './EntityFrame';
+import { FaCheck, FaTimes, FaStickyNote } from 'react-icons/fa';
 
-const suffixes = ["_1", "_2"];
+const suffixes = ['_1', '_2'];
 
 class PhenotypeDetail extends Component {
-    constructor(props) {
-        super(props);
-        this.resetViewAll = this.resetViewAll.bind(this);
-        this.writeFeedback = this.writeFeedback.bind(this);
-        this.saveComments = this.saveComments.bind(this);
-        this.toggle = this.toggle.bind(this);
-        this.toggleAlert = this.toggleAlert.bind(this);
-        this.onDismiss = this.onDismiss.bind(this);
-        this.state = {
-            view_mode: "all",
-            selected_result_index: props.selected_result_index,
-            selected_result: props.selected_result,
-            results: [],
-            successAlert: false,
-            failureAlert: false
+  constructor(props) {
+    super(props);
+    this.resetViewAll = this.resetViewAll.bind(this);
+    this.writeFeedback = this.writeFeedback.bind(this);
+    this.saveComments = this.saveComments.bind(this);
+    this.toggle = this.toggle.bind(this);
+    this.toggleAlert = this.toggleAlert.bind(this);
+    this.onDismiss = this.onDismiss.bind(this);
+    this.state = {
+      view_mode: 'all',
+      selected_result_index: props.selected_result_index,
+      selected_result: props.selected_result,
+      results: [],
+      successAlert: false,
+      failureAlert: false
+    };
+    this.url = props.url;
+    this.detailed_results = {};
+    this.user_comments = '';
+    // this.successful_export = false;
+    // this.failed_export = false;
+
+    this.ids = [];
+    if ('_id' in props.selected_result)
+      this.ids.push(props.selected_result['_id']);
+    if ('_id_1' in props.selected_result)
+      this.ids.push(props.selected_result['_id_1']);
+    if ('_id_2' in props.selected_result)
+      this.ids.push(props.selected_result['_id_2']);
+    if ('_id_3' in props.selected_result)
+      this.ids.push(props.selected_result['_id_3']);
+    this.id_string = this.ids.join();
+  }
+
+  // Function to save the comment entered by the user
+  saveComments() {
+    let comment = document.getElementById('feedbackComments').value;
+    this.user_comments = comment;
+    this.toggle();
+  }
+
+  onDismiss() {
+    this.setState({
+      successAlert: false,
+      failureAlert: false
+    });
+  }
+
+  // Function to toggle between success and failure alerts
+  toggleAlert(response) {
+    if (response === true) {
+      this.setState({
+        successAlert: true,
+        failureAlert: false
+      });
+    } else {
+      this.setState({
+        successAlert: false,
+        failureAlert: true
+      });
+    }
+  }
+
+  // Function to write nlpql feedback back to mongoDB
+  writeFeedback(option) {
+    let data = {};
+    data['job_id'] = this.props.job_id;
+    data['patient_id'] = Number(this.props.patient_id);
+    data['comments'] = this.user_comments;
+    if (option === 1) {
+      data['is_correct'] = 'true';
+    } else {
+      data['is_correct'] = 'false';
+    }
+
+    let payload = JSON.stringify(data);
+    let request_url = this.url + '/write_nlpql_feedback';
+    let __this = this;
+
+    axios
+      .post(request_url, payload, {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: 'Bearer ' + this.props.accessToken
+        }
+      })
+      .then(function(response) {
+        __this.toggleAlert(true);
+      })
+      .catch(function(error) {
+        __this.toggleAlert(false);
+      });
+  }
+
+  resetViewAll(detail_results) {
+    if (!detail_results) {
+      detail_results = this.detailed_results;
+    }
+    let { selected_result } = this.state;
+    let results = [];
+    if ('sentence_1' in selected_result) {
+      results = suffixes.map((s, index) => {
+        let id = selected_result['_id' + s];
+        let detail = {};
+        if (id in detail_results['indexes']) {
+          let detail_idx = detail_results['indexes'][id];
+          detail = detail_results['results'][detail_idx];
+        }
+        return {
+          index: index,
+          feature: selected_result['nlpql_feature' + s],
+          report_date: selected_result['report_date' + s],
+          text: selected_result['sentence' + s],
+          id: id,
+          detail: detail,
+          report_id: selected_result['report_id' + s]
         };
-        this.url = props.url;
-        this.detailed_results = {};
-        this.user_comments = "";
-        // this.successful_export = false;
-        // this.failed_export = false;
-
-        this.ids = [];
-        if ("_id" in props.selected_result)
-            this.ids.push(props.selected_result["_id"]);
-        if ("_id_1" in props.selected_result)
-            this.ids.push(props.selected_result["_id_1"]);
-        if ("_id_2" in props.selected_result)
-            this.ids.push(props.selected_result["_id_2"]);
-        if ("_id_3" in props.selected_result)
-            this.ids.push(props.selected_result["_id_3"]);
-        this.id_string = this.ids.join();
+      });
+    } else {
+      results.push({
+        index: 0,
+        feature: selected_result['nlpql_feature'],
+        report_date: selected_result['report_date'],
+        text: selected_result['sentence'],
+        id: selected_result['_id'],
+        detail: selected_result,
+        report_id: selected_result['report_id']
+      });
     }
 
-    // Function to save the comment entered by the user
-    saveComments() {
-        let comment = document.getElementById("feedbackComments").value;
-        this.user_comments = comment;
-        this.toggle();
+    this.setState({
+      results: results
+    });
+  }
+
+  componentDidMount() {
+    let get_url = this.url + '/phenotype_results_by_id/' + this.id_string;
+
+    axios
+      .get(get_url, {
+        headers: { Authorization: 'Bearer ' + this.props.accessToken }
+      })
+      .then(response => {
+        this.detailed_results = response.data;
+        this.resetViewAll(response.data);
+      });
+  }
+
+  componentDidUpdate(prevProps) {
+    if (this.props.selected_result_index !== this.state.selected_result_index) {
+      this.setState(
+        {
+          selected_result_index: this.props.selected_result_index,
+          selected_result: this.props.selected_result
+        },
+        this.resetViewAll
+      );
     }
+  }
 
-    onDismiss() {
-        this.setState({
-            successAlert: false,
-            failureAlert: false
-        });
-    }
+  toggle() {
+    this.setState({
+      modal: !this.state.modal
+    });
+  }
 
-    // Function to toggle between success and failure alerts
-    toggleAlert(response) {
-        if (response === true) {
-            this.setState({
-                successAlert: true,
-                failureAlert: false
-            });
-        } else {
-            this.setState({
-                successAlert: false,
-                failureAlert: true
-            });
-        }
-    }
+  render() {
+    let { selected_result, selected_result_index, results } = this.state;
+    let results_view = results.map(d => {
+      return (
+        <EntityFrame
+          accessToken={this.props.accessToken}
+          key={d['index']}
+          data={d}
+          url={this.url}
+          showPhenotypeTypDetail={this.props.showPhenotypeTypDetail}
+          nlpql_feature={selected_result.nlpql_feature}
+        />
+      );
+    });
 
-    // Function to write nlpql feedback back to mongoDB
-    writeFeedback(option) {
-        let data = {};
-        data["job_id"] = this.props.job_id;
-        data["patient_id"] = Number(this.props.patient_id);
-        data["comments"] = this.user_comments;
-        if (option === 1) {
-            data["is_correct"] = "true";
-        } else {
-            data["is_correct"] = "false";
-        }
-
-        let payload = JSON.stringify(data);
-        let request_url = this.url + "write_nlpql_feedback";
-        let __this = this;
-
-        axios
-            .post(request_url, payload, {
-                headers: {
-                    "Content-Type": "application/json"
-                }
-            })
-            .then(function(response) {
-                __this.toggleAlert(true);
-            })
-            .catch(function(error) {
-                __this.toggleAlert(false);
-            });
-    }
-
-    resetViewAll(detail_results) {
-        if (!detail_results) {
-            detail_results = this.detailed_results;
-        }
-        let { selected_result } = this.state;
-        let results = [];
-        if ("sentence_1" in selected_result) {
-            results = suffixes.map((s, index) => {
-                let id = selected_result["_id" + s];
-                let detail = {};
-                if (id in detail_results["indexes"]) {
-                    let detail_idx = detail_results["indexes"][id];
-                    detail = detail_results["results"][detail_idx];
-                }
-                return {
-                    index: index,
-                    feature: selected_result["nlpql_feature" + s],
-                    report_date: selected_result["report_date" + s],
-                    text: selected_result["sentence" + s],
-                    id: id,
-                    detail: detail,
-                    report_id: selected_result["report_id" + s]
-                };
-            });
-        } else {
-            results.push({
-                index: 0,
-                feature: selected_result["nlpql_feature"],
-                report_date: selected_result["report_date"],
-                text: selected_result["sentence"],
-                id: selected_result["_id"],
-                detail: selected_result,
-                report_id: selected_result["report_id"]
-            });
-        }
-
-        this.setState({
-            results: results
-        });
-    }
-
-    componentDidMount() {
-        let get_url = this.url + "/phenotype_results_by_id/" + this.id_string;
-
-        axios
-            .get(get_url, {
-                headers: { Authorization: "Bearer " + this.props.accessToken }
-            })
-            .then(response => {
-                this.detailed_results = response.data;
-                this.resetViewAll(response.data);
-            });
-    }
-
-    componentDidUpdate(prevProps) {
-        if (
-            this.props.selected_result_index !==
-            this.state.selected_result_index
-        ) {
-            this.setState(
-                {
-                    selected_result_index: this.props.selected_result_index,
-                    selected_result: this.props.selected_result
-                },
-                this.resetViewAll
-            );
-        }
-    }
-
-    toggle() {
-        this.setState({
-            modal: !this.state.modal
-        });
-    }
-
-    render() {
-        let { selected_result, selected_result_index, results } = this.state;
-        let results_view = results.map(d => {
-            return (
-                <EntityFrame
-                    key={d["index"]}
-                    data={d}
-                    url={this.url}
-                    showPhenotypeTypDetail={this.props.showPhenotypeTypDetail}
-                    nlpql_feature={selected_result.nlpql_feature}
-                />
-            );
-        });
-
-        return (
-            <React.Fragment>
-                {selected_result_index > -1 ? (
-                    <div className="PhenotypeDetailMain">
-                        <div className="columns">
-                            <div className="column">
-                                <h4 className="has-text-weight-semibold">
-                                    {selected_result.nlpql_feature}
-                                </h4>
-                                {selected_result.raw_definition_text &&
-                                selected_result.raw_definition_text.length >
-                                    0 ? (
-                                    <h4>
-                                        ({selected_result.raw_definition_text})
-                                    </h4>
-                                ) : null}
-                            </div>
-                            <div className="column">
-                                <div className="field has-addons has-addons-right">
-                                    <div className="control">
-                                        <button
-                                            className="button"
-                                            onClick={() => {
-                                                this.writeFeedback(1);
-                                            }}
-                                        >
-                                            <FaCheck />
-                                        </button>
-                                    </div>
-                                    <div className="control">
-                                        <button
-                                            className="button"
-                                            onClick={() => {
-                                                this.writeFeedback(2);
-                                            }}
-                                        >
-                                            <FaTimes />
-                                        </button>
-                                    </div>
-                                    <div className="control">
-                                        <button
-                                            className="button"
-                                            onClick={() => {
-                                                this.toggle();
-                                            }}
-                                        >
-                                            <FaStickyNote />
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        {results_view}
-                        {this.state.successAlert === true ? (
-                            <div className="notification is-success">
-                                <button
-                                    className="delete"
-                                    onClick={this.onDismiss}
-                                />
-                                Thank you for submitting feedback.
-                            </div>
-                        ) : null}
-                        {this.state.failureAlert === true ? (
-                            <div className="notification is-danger">
-                                <button
-                                    className="delete"
-                                    onClick={this.onDismiss}
-                                />
-                                Could not submit feedback. Contact Admin.
-                            </div>
-                        ) : null}
-                    </div>
+    return (
+      <React.Fragment>
+        {selected_result_index > -1 ? (
+          <div className='PhenotypeDetailMain'>
+            <div className='columns'>
+              <div className='column'>
+                <h4 className='has-text-weight-semibold'>
+                  {selected_result.nlpql_feature}
+                </h4>
+                {selected_result.raw_definition_text &&
+                selected_result.raw_definition_text.length > 0 ? (
+                  <h4>({selected_result.raw_definition_text})</h4>
                 ) : null}
-
-                <div id="commentsModal">
-                    <div
-                        className={
-                            this.state.modal ? "modal is-active" : "modal"
-                        }
+              </div>
+              <div className='column'>
+                <div className='field has-addons has-addons-right'>
+                  <div className='control'>
+                    <button
+                      className='button'
+                      onClick={() => {
+                        this.writeFeedback(1);
+                      }}
                     >
-                        <div className="modal-background" />
-                        <div className="modal-card">
-                            <header className="modal-card-head">
-                                <p className="modal-card-title">
-                                    Enter Comment
-                                </p>
-                                <button
-                                    className="delete"
-                                    aria-label="close"
-                                    onClick={this.toggle}
-                                />
-                            </header>
-                            <section className="modal-card-body">
-                                <input
-                                    className="input"
-                                    type="textarea"
-                                    name="comments"
-                                    id="feedbackComments"
-                                    defaultValue={this.user_comments}
-                                />
-                            </section>
-                            <footer className="modal-card-foot">
-                                <div className="column is-5 is-offset-7">
-                                    <button
-                                        className="button is-primary"
-                                        onClick={this.saveComments}
-                                    >
-                                        Save Comment
-                                    </button>
-                                </div>
-                            </footer>
-                        </div>
-                    </div>
+                      <FaCheck />
+                    </button>
+                  </div>
+                  <div className='control'>
+                    <button
+                      className='button'
+                      onClick={() => {
+                        this.writeFeedback(2);
+                      }}
+                    >
+                      <FaTimes />
+                    </button>
+                  </div>
+                  <div className='control'>
+                    <button
+                      className='button'
+                      onClick={() => {
+                        this.toggle();
+                      }}
+                    >
+                      <FaStickyNote />
+                    </button>
+                  </div>
                 </div>
-            </React.Fragment>
-        );
-    }
+              </div>
+            </div>
+            {results_view}
+            {this.state.successAlert === true ? (
+              <div className='notification is-success'>
+                <button className='delete' onClick={this.onDismiss} />
+                Thank you for submitting feedback.
+              </div>
+            ) : null}
+            {this.state.failureAlert === true ? (
+              <div className='notification is-danger'>
+                <button className='delete' onClick={this.onDismiss} />
+                Could not submit feedback. Contact Admin.
+              </div>
+            ) : null}
+          </div>
+        ) : null}
+
+        <div id='commentsModal'>
+          <div className={this.state.modal ? 'modal is-active' : 'modal'}>
+            <div className='modal-background' />
+            <div className='modal-card'>
+              <header className='modal-card-head'>
+                <p className='modal-card-title'>Enter Comment</p>
+                <button
+                  className='delete'
+                  aria-label='close'
+                  onClick={this.toggle}
+                />
+              </header>
+              <section className='modal-card-body'>
+                <input
+                  className='input'
+                  type='textarea'
+                  name='comments'
+                  id='feedbackComments'
+                  defaultValue={this.user_comments}
+                />
+              </section>
+              <footer className='modal-card-foot'>
+                <div className='column is-5 is-offset-7'>
+                  <button
+                    className='button is-primary'
+                    onClick={this.saveComments}
+                  >
+                    Save Comment
+                  </button>
+                </div>
+              </footer>
+            </div>
+          </div>
+        </div>
+      </React.Fragment>
+    );
+  }
 }
 
 export default PhenotypeDetail;
