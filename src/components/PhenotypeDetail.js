@@ -246,7 +246,8 @@ class PhenotypeDetail extends Component {
             {this.state.failureAlert === true ? (
               <div className='notification is-danger'>
                 <button className='delete' onClick={this.onDismiss} />
-                Could not submit feedback. Contact Admin.
+                Oops! We ran into an issue while submitting feedback. Please try
+                again later.
               </div>
             ) : null}
           </div>
