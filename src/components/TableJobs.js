@@ -206,9 +206,18 @@ class TableJobs extends Component {
   }
 
   componentDidMount() {
+    const { jobs } = this.props;
+
     if (this.state.filter !== '') {
       document.getElementById('jobs_filter').value = this.state.filter;
     }
+
+    const IDs = jobs.map(job => {
+      return job.nlp_job_id;
+    });
+
+    this.getJobPerformance(IDs);
+    this.getJobStats(IDs);
   }
 
   render() {
