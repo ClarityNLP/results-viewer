@@ -17,6 +17,7 @@ class TableJobs extends Component {
     this.jobToggle = this.jobToggle.bind(this);
     this.deleteJob = this.deleteJob.bind(this);
     this.takeSeriousAction = this.takeSeriousAction.bind(this);
+    this.downloadLink = React.createRef();
 
     if (props.filter !== '') {
       props.getFilter(props.filter);
@@ -39,6 +40,27 @@ class TableJobs extends Component {
       can_continue_action: true,
       filter: props.filter
     };
+  }
+
+  download = (url, fileName) => {
+    const { current: node } = this.downloadLink;
+    axios
+      .get(url, {
+        headers: { Authorization: 'Bearer ' + this.props.accessToken }
+      })
+      .then(response => {
+        var binaryData = [];
+        binaryData.push(response.data);
+        var windowUrl = window.URL || window.webkitURL;
+        var url = windowUrl.createObjectURL(new Blob(binaryData, {type: "text/csv"}))
+        node.href = url;
+        node.download = `${fileName}.csv`;
+        node.click();
+        windowUrl.revokeObjectURL(url);
+      })
+      .catch(err => {
+        console.error(err);
+      });
   }
 
   toggle() {
@@ -257,28 +279,19 @@ class TableJobs extends Component {
           <td>{accuracy}</td>
           <td className='has-text-centered'>
             <a
-              href={
-                this.props.url +
-                '/job_results/' +
-                p.nlp_job_id +
-                '/phenotype_intermediate'
-              }
+              onClick={() => this.download(`${this.props.url}/job_results/${p.nlp_job_id}/phenotype_intermediate`, 'phenotype_intermediate')}
             >
               Features
             </a>
             <span> | </span>
             <a
-              href={
-                this.props.url + '/job_results/' + p.nlp_job_id + '/phenotype'
-              }
+              onClick={() => this.download(`${this.props.url}/job_results/${p.nlp_job_id}/phenotype`, 'phenotype')}
             >
               Cohort
             </a>
             <br />
             <a
-              href={
-                this.props.url + 'job_results/' + p.nlp_job_id + '/annotations'
-              }
+              onClick={() => this.download(`${this.props.url}/job_results/${p.nlp_job_id}/annotations`, 'annotations')}
             >
               Annotations
             </a>
@@ -389,6 +402,7 @@ class TableJobs extends Component {
             </footer>
           </div>
         </div>
+        <a className="download-link" ref={this.downloadLink}></a>
       </div>
     );
   }
