@@ -47,7 +47,7 @@ export default class Menu extends Component {
                 <nav id="menu" className={this.props.isMenuOpen ? "open" : ""}>
                     <div className="nav-links">
                         <a
-                            href={`http://${REACT_APP_DASHBOARD_URL}`}
+                            href={`https://${REACT_APP_DASHBOARD_URL}`}
                             className="nav-link has-text-centered"
                         >
                             <span className="link-icon is-size-4">
@@ -56,7 +56,7 @@ export default class Menu extends Component {
                             Dashboard
                         </a>
                         <a
-                            href={`http://${REACT_APP_INGEST_URL}`}
+                            href={`https://${REACT_APP_INGEST_URL}`}
                             className="nav-link has-text-centered"
                         >
                             <span className="link-icon is-size-4">

@@ -148,7 +148,7 @@ class RawResultsView extends Component {
     checkExportApiHealth() {
         let __this = this;
         axios
-            .get(`http://${window._env_.REACT_APP_API_HOST}/api/nlp/export_ohdsi`, {
+            .get(`https://${window._env_.REACT_APP_API_HOST}/nlp/export_ohdsi`, {
               headers: {'Authorization': 'Bearer ' + this.props.accessToken}
             })
             .then(function(response) {
@@ -232,7 +232,7 @@ class RawResultsView extends Component {
         });
 
         axios
-            .post(`http://${window._env_.REACT_APP_API_HOST}/api/nlp/export_ohdsi`, data, {
+            .post(`https://${window._env_.REACT_APP_API_HOST}/nlp/export_ohdsi`, data, {
                 headers: {
                     "Content-Type": "application/json",
                     "Authorization": "Bearer " + this.props.accessToken

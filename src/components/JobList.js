@@ -3,8 +3,8 @@ import axios from 'axios';
 import ResultViewer from './ResultViewer';
 import TableJobs from './TableJobs';
 
-const base_url = `http://${window._env_.REACT_APP_API_HOST}/api/nlp`;
-const luigi = `http://${window._env_.REACT_APP_LUIGI_URL}`;
+const base_url = `https://${window._env_.REACT_APP_API_HOST}/nlp`;
+const luigi = `https://${window._env_.REACT_APP_LUIGI_URL}`;
 
 // https://html-online.com/articles/get-url-parameters-javascript/
 function getUrlVars() {
