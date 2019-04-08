@@ -16,7 +16,7 @@ const history = createBrowserHistory();
 const initialState = {};
 
 const apiClient = axios.create({
-  baseURL: `http://${window._env_.REACT_APP_API_HOST}`,
+  baseURL: `https://${window._env_.REACT_APP_API_HOST}`,
   responseType: 'json',
   withCredentials: true
 });
