@@ -8,15 +8,7 @@ import axios from 'axios';
 class TableJobs extends Component {
   constructor(props) {
     super(props);
-    this.getStatus = this.getStatus.bind(this);
-    this.keyUpHandler = this.keyUpHandler.bind(this);
-    this.toggle = this.toggle.bind(this);
-    this.showJSON = this.showJSON.bind(this);
-    this.showNLPQL = this.showNLPQL.bind(this);
-    this.killJob = this.killJob.bind(this);
-    this.jobToggle = this.jobToggle.bind(this);
-    this.deleteJob = this.deleteJob.bind(this);
-    this.takeSeriousAction = this.takeSeriousAction.bind(this);
+
     this.downloadLink = React.createRef();
 
     if (props.filter !== '') {
@@ -25,6 +17,7 @@ class TableJobs extends Component {
 
     this.state = {
       jobs: props.jobs,
+      current_jobs: [],
       stats: {},
       performance: {},
       modal: false,
@@ -32,18 +25,23 @@ class TableJobs extends Component {
       modal_type: 'NLPQL',
       nlpql: '',
       config: {},
+      job_items: [],
       job_modal: false,
       job_modal_title: 'Kill Job',
       job_modal_type: 'KILL',
       job_id: '-1',
       job_danger_status: '',
       can_continue_action: true,
-      filter: props.filter
+      filter: props.filter,
+      page_limit: 20,
+      page: 1,
+      num_pages: 0
     };
   }
 
   download = (url, fileName) => {
     const { current: node } = this.downloadLink;
+
     axios
       .get(url, {
         headers: { Authorization: 'Bearer ' + this.props.accessToken }
@@ -52,7 +50,9 @@ class TableJobs extends Component {
         var binaryData = [];
         binaryData.push(response.data);
         var windowUrl = window.URL || window.webkitURL;
-        var url = windowUrl.createObjectURL(new Blob(binaryData, {type: "text/csv"}))
+        var url = windowUrl.createObjectURL(
+          new Blob(binaryData, { type: 'text/csv' })
+        );
         node.href = url;
         node.download = `${fileName}.csv`;
         node.click();
@@ -61,21 +61,21 @@ class TableJobs extends Component {
       .catch(err => {
         console.error(err);
       });
-  }
+  };
 
-  toggle() {
-    this.setState({
-      modal: !this.state.modal
-    });
-  }
+  toggle = () => {
+    this.setState(prevState => ({
+      modal: !prevState.modal
+    }));
+  };
 
-  jobToggle() {
-    this.setState({
-      job_modal: !this.state.job_modal
-    });
-  }
+  jobToggle = () => {
+    this.setState(prevState => ({
+      job_modal: !prevState.job_modal
+    }));
+  };
 
-  showJSON(job, event) {
+  showJSON = job => {
     this.setState({
       modal: true,
       config: JSON.parse(job.config),
@@ -83,9 +83,9 @@ class TableJobs extends Component {
       modal_type: 'JSON',
       nlpql: ''
     });
-  }
+  };
 
-  showNLPQL(job, event) {
+  showNLPQL = job => {
     this.setState({
       modal: true,
       config: {},
@@ -93,9 +93,9 @@ class TableJobs extends Component {
       modal_type: 'NLPQL',
       nlpql: job.nlpql
     });
-  }
+  };
 
-  killJob(jobId) {
+  killJob = jobId => {
     this.setState({
       job_modal: true,
       job_modal_title: 'Kill job ' + jobId,
@@ -103,9 +103,9 @@ class TableJobs extends Component {
       job_id: jobId,
       job_danger_status: ''
     });
-  }
+  };
 
-  deleteJob(jobId) {
+  deleteJob = jobId => {
     this.setState({
       job_modal: true,
       job_modal_title: 'Delete job ' + jobId,
@@ -113,15 +113,19 @@ class TableJobs extends Component {
       job_id: jobId,
       job_danger_status: ''
     });
-  }
+  };
 
-  takeSeriousAction() {
+  takeSeriousAction = () => {
+    const { job_id, job_modal_type } = this.state;
+
     this.setState({
       can_continue_action: false
     });
-    let action_url = this.props.url + '/delete_job/' + this.state.job_id;
-    if (this.state.job_modal_type === 'KILL') {
-      action_url = this.props.url + '/kill_job/' + this.state.job_id;
+
+    let action_url = this.props.url + '/delete_job/' + job_id;
+
+    if (job_modal_type === 'KILL') {
+      action_url = this.props.url + '/kill_job/' + job_id;
     }
 
     axios
@@ -141,9 +145,9 @@ class TableJobs extends Component {
           });
         }, 100);
       });
-  }
+  };
 
-  getStatus(row) {
+  getStatus = row => {
     if (row.status !== 'IN_PROGRESS') {
       return <span>{row.status}</span>;
     } else {
@@ -159,7 +163,7 @@ class TableJobs extends Component {
         </span>
       );
     }
-  }
+  };
 
   getJobStats = IDs => {
     const url = this.props.url + `/stats/${IDs}`;
@@ -195,69 +199,77 @@ class TableJobs extends Component {
       });
   };
 
-  keyUpHandler() {
+  keyUpHandler = () => {
     let txt = document.getElementById('jobs_filter').value.toLowerCase();
     this.props.getFilter(txt);
-  }
+  };
 
   componentDidUpdate(prevProps) {
-    if (this.props.jobs.length !== prevProps.jobs.length) {
-      const { jobs } = this.props;
+    const { jobs, filter } = this.props;
+    const { page_limit } = this.state;
 
+    const tmp_num_pages = Math.ceil(jobs.length / page_limit);
+
+    if (jobs.length !== prevProps.jobs.length) {
       this.setState(
         {
-          jobs: jobs
+          jobs: jobs,
+          num_pages: tmp_num_pages
         },
-        () => {
-          const IDs = jobs.map(job => {
-            return job.nlp_job_id;
-          });
-
-          this.getJobPerformance(IDs);
-          this.getJobStats(IDs);
-        }
+        this.setCurrentJobs
       );
     }
 
-    if (this.props.filter !== this.state.filter) {
+    if (filter !== this.state.filter) {
       this.setState({
         filter: this.props.filter
       });
-      // this.props.getFilter(this.props.filter);
     }
   }
 
   componentDidMount() {
     const { jobs } = this.props;
+    const { filter, page_limit } = this.state;
 
-    if (this.state.filter !== '') {
-      document.getElementById('jobs_filter').value = this.state.filter;
+    const tmp_num_pages = Math.ceil(jobs.length / page_limit);
+
+    if (filter !== '') {
+      document.getElementById('jobs_filter').value = filter;
     }
 
-    const IDs = jobs.map(job => {
+    this.setState(
+      {
+        num_pages: tmp_num_pages
+      },
+      this.setCurrentJobs
+    );
+  }
+
+  setCurrentJobs = () => {
+    const { jobs, page, page_limit } = this.state;
+
+    this.setState(
+      {
+        current_jobs: jobs.slice((page - 1) * page_limit, page * page_limit)
+      },
+      this.setJobItems
+    );
+  };
+
+  setJobItems = () => {
+    const { current_jobs, stats, performance } = this.state;
+
+    const IDs = current_jobs.map(job => {
       return job.nlp_job_id;
     });
 
     this.getJobPerformance(IDs);
     this.getJobStats(IDs);
-  }
 
-  render() {
-    const { stats, performance } = this.state;
+    const tmp_jobItems = [];
 
-    const header_items = [
-      'Name',
-      'Date',
-      'Status',
-      'N',
-      'Accuracy',
-      'Download CSV',
-      'Actions'
-    ].map(h => {
-      return <th key={h}>{h}</th>;
-    });
-
-    let job_items = this.state.jobs.map(p => {
+    for (let i = 0; i < current_jobs.length; i++) {
+      let p = current_jobs[i];
       let cohort_size = null;
       let accuracy = null;
 
@@ -269,7 +281,7 @@ class TableJobs extends Component {
         accuracy = performance[p.nlp_job_id].accuracy_score;
       }
 
-      return (
+      tmp_jobItems.push(
         <tr className='JobRow' key={p.nlp_job_id}>
           <td
             onClick={e => this.props.selectJob(p, e)}
@@ -288,19 +300,36 @@ class TableJobs extends Component {
           <td>{accuracy}</td>
           <td className='has-text-centered'>
             <a
-              onClick={() => this.download(`${this.props.url}/job_results/${p.nlp_job_id}/phenotype_intermediate`, 'phenotype_intermediate')}
+              onClick={() =>
+                this.download(
+                  `${this.props.url}/job_results/${
+                    p.nlp_job_id
+                  }/phenotype_intermediate`,
+                  'phenotype_intermediate'
+                )
+              }
             >
               Features
             </a>
             <span> | </span>
             <a
-              onClick={() => this.download(`${this.props.url}/job_results/${p.nlp_job_id}/phenotype`, 'phenotype')}
+              onClick={() =>
+                this.download(
+                  `${this.props.url}/job_results/${p.nlp_job_id}/phenotype`,
+                  'phenotype'
+                )
+              }
             >
               Cohort
             </a>
             <br />
             <a
-              onClick={() => this.download(`${this.props.url}/job_results/${p.nlp_job_id}/annotations`, 'annotations')}
+              onClick={() =>
+                this.download(
+                  `${this.props.url}/job_results/${p.nlp_job_id}/annotations`,
+                  'annotations'
+                )
+              }
             >
               Annotations
             </a>
@@ -332,7 +361,61 @@ class TableJobs extends Component {
           </td>
         </tr>
       );
+    }
+
+    this.setState({
+      job_items: tmp_jobItems
     });
+  };
+
+  nextPage = () => {
+    const { page, num_pages } = this.state;
+    const next_page = page + 1;
+
+    if (next_page > num_pages) {
+      return;
+    }
+
+    this.setState(
+      {
+        page: next_page
+      },
+      this.setCurrentJobs()
+    );
+  };
+
+  prevPage = () => {
+    const { page } = this.state;
+    const prev_page = page - 1;
+
+    if (prev_page < 1) {
+      return;
+    }
+
+    console.log(prev_page);
+
+    this.setState(
+      {
+        page: prev_page
+      },
+      this.setCurrentJobs()
+    );
+  };
+
+  render() {
+    const {
+      job_items,
+      job_modal,
+      job_modal_type,
+      job_modal_title,
+      modal_type,
+      modal,
+      modal_title,
+      nlpql,
+      config,
+      page,
+      num_pages
+    } = this.state;
 
     return (
       <div>
@@ -351,17 +434,44 @@ class TableJobs extends Component {
             </div>
           </div>
         </div>
+        <nav className='pagination' aria-label='pagination'>
+          <a className='pagination-previous' onClick={this.prevPage}>
+            Previous
+          </a>
+          <a className='pagination-next' onClick={this.nextPage}>
+            Next
+          </a>
+          <ul className='pagination-list'>
+            <li>
+              <span className='pagination-ellipsis'>{page}</span>
+            </li>
+            <li>
+              <span className='pagination-ellipsis'>of</span>
+            </li>
+            <li>
+              <span className='pagination-ellipsis'>{num_pages}</span>
+            </li>
+          </ul>
+        </nav>
         <table className='JobTable table is-striped'>
           <thead>
-            <tr>{header_items}</tr>
+            <tr>
+              <th>Name</th>
+              <th>Date</th>
+              <th>Status</th>
+              <th>N</th>
+              <th>Accuracy</th>
+              <th>Download CSV</th>
+              <th>Actions</th>
+            </tr>
           </thead>
           <tbody>{job_items}</tbody>
         </table>
-        <div className={this.state.modal ? 'modal is-active' : 'modal'}>
+        <div className={modal ? 'modal is-active' : 'modal'}>
           <div className='modal-background' />
           <div className='modal-card'>
             <header className='modal-card-head'>
-              <p className='modal-card-title'>{this.state.modal_title}</p>
+              <p className='modal-card-title'>{modal_title}</p>
               <button
                 className='delete'
                 aria-label='close'
@@ -369,11 +479,11 @@ class TableJobs extends Component {
               />
             </header>
             <section className='modal-card-body'>
-              {this.state.modal_type === 'NLPQL' ? (
-                <div className='ReportTextPreview'>{this.state.nlpql}</div>
+              {modal_type === 'NLPQL' ? (
+                <div className='ReportTextPreview'>{nlpql}</div>
               ) : (
                 <ReactJson
-                  src={this.state.config}
+                  src={config}
                   displayObjectSize={false}
                   displayDataTypes={false}
                 />
@@ -382,11 +492,11 @@ class TableJobs extends Component {
             <footer className='modal-card-foot' />
           </div>
         </div>
-        <div className={this.state.job_modal ? 'modal is-active' : 'modal'}>
+        <div className={job_modal ? 'modal is-active' : 'modal'}>
           <div className='modal-background' />
           <div className='modal-card'>
             <header className='modal-card-head'>
-              <p className='modal-card-title'>{this.state.job_modal_title}</p>
+              <p className='modal-card-title'>{job_modal_title}</p>
               <button
                 className='delete'
                 aria-label='close'
@@ -395,7 +505,7 @@ class TableJobs extends Component {
             </header>
             <section className='modal-card-body'>
               {'Are you sure you want to ' +
-                this.state.job_modal_type.toLowerCase() +
+                job_modal_type.toLowerCase() +
                 ' this job?'}
             </section>
             <footer className='modal-card-foot'>
@@ -411,7 +521,7 @@ class TableJobs extends Component {
             </footer>
           </div>
         </div>
-        <a className="download-link" ref={this.downloadLink}></a>
+        <a className='download-link' ref={this.downloadLink} />
       </div>
     );
   }

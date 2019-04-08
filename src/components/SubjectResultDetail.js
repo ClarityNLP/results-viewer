@@ -240,7 +240,7 @@ class SubjectResultDetail extends Component {
                   </span>
                 </li>
                 <li>
-                  <span className='pagination-ellipsis'>&hellip;</span>
+                  <span className='pagination-ellipsis'>of</span>
                 </li>
                 <li>
                   <span className='pagination-ellipsis'>{total}</span>
