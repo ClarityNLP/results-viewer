@@ -358,6 +358,7 @@ class JobRunner extends Component {
                 <TermsetForm
                   termSets={termSets}
                   updateNLPQL={this.updateNLPQL}
+                  access_token={this.props.oidc.user.access_token}
                 />
                 <CohortForm cohorts={cohorts} updateNLPQL={this.updateNLPQL} />
                 <DefineFeatureForm
