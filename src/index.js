@@ -9,7 +9,7 @@ import { createBrowserHistory } from 'history';
 import App from './App';
 import './style/style.scss';
 
-registerServiceWorker();
+// registerServiceWorker();
 
 const history = createBrowserHistory();
 
