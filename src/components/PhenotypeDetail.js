@@ -104,16 +104,20 @@ class PhenotypeDetail extends Component {
     if (!detail_results) {
       detail_results = this.detailed_results;
     }
+
     let { selected_result } = this.state;
     let results = [];
+
     if ('sentence_1' in selected_result) {
       results = suffixes.map((s, index) => {
         let id = selected_result['_id' + s];
         let detail = {};
+
         if (id in detail_results['indexes']) {
           let detail_idx = detail_results['indexes'][id];
           detail = detail_results['results'][detail_idx];
         }
+
         return {
           index: index,
           feature: selected_result['nlpql_feature' + s],
@@ -129,7 +133,9 @@ class PhenotypeDetail extends Component {
         index: 0,
         feature: selected_result['nlpql_feature'],
         report_date: selected_result['report_date'],
-        text: selected_result['sentence'],
+        text: selected_result['sentence']
+          ? selected_result['sentence']
+          : selected_result['text'],
         id: selected_result['_id'],
         detail: selected_result,
         report_id: selected_result['report_id']

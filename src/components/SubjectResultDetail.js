@@ -91,7 +91,7 @@ class SubjectResultDetail extends Component {
       () => {
         let get_url =
           this.props.url +
-          'phenotype_feature_results/' +
+          '/phenotype_feature_results/' +
           this.state.job_id +
           '/' +
           name +
@@ -240,7 +240,7 @@ class SubjectResultDetail extends Component {
                   </span>
                 </li>
                 <li>
-                  <span className='pagination-ellipsis'>&hellip;</span>
+                  <span className='pagination-ellipsis'>of</span>
                 </li>
                 <li>
                   <span className='pagination-ellipsis'>{total}</span>
