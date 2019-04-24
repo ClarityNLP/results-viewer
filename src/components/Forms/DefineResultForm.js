@@ -1,241 +1,229 @@
 /* eslint react/no-multi-comp: 0, react/prop-types: 0 */
-import React from "react";
-import Select from "react-select";
-import SubmitButton from "../../UIkit/SubmitButton";
-import algorithmParameters from "./algorithms";
-import { FaAngleDown, FaAngleUp } from "react-icons/fa";
+import React from 'react';
+import Select from 'react-select';
+import SubmitButton from '../../UIkit/SubmitButton';
+import algorithmParameters from './algorithms';
+import { FaAngleDown, FaAngleUp } from 'react-icons/fa';
 
 const initialState = {
-    collapse: true,
-    algorithm: "",
-    name: "",
-    feature: "",
-    subField: "",
-    isFinal: false,
-    logic: ""
+  collapse: true,
+  algorithm: '',
+  name: '',
+  feature: '',
+  subField: '',
+  isFinal: true,
+  logic: ''
 };
 class DefineResultForm extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = initialState;
+  constructor(props) {
+    super(props);
+    this.state = initialState;
+  }
+
+  toggle = () => {
+    this.setState(prevState => ({
+      collapse: !prevState.collapse
+    }));
+  };
+
+  addFeatureToLogic = e => {
+    // e.stopPropagation();
+    e.preventDefault();
+    const { feature, subField } = this.state;
+    let text = feature.value;
+
+    if (subField.value) {
+      text += '.' + subField.value;
     }
 
-    toggle = () => {
-        this.setState(prevState => ({
-            collapse: !prevState.collapse
-        }));
-    };
+    this.setState(prevState => ({
+      logic: prevState.logic + text
+    }));
+  };
 
-    addFeatureToLogic = e => {
-        // e.stopPropagation();
-        e.preventDefault();
-        const { feature, subField } = this.state;
-        let text = feature.value;
+  handleInputChange = event => {
+    const target = event.target;
+    const options = event.target.options;
+    let value = target.type === 'checkbox' ? target.checked : target.value;
+    const name = target.name;
 
-        if (subField.value) {
-            text += "." + subField.value;
+    if (options) {
+      value = [];
+
+      for (let i = 0, l = options.length; i < l; i++) {
+        if (options[i].selected) {
+          value.push(options[i].value);
         }
+      }
 
-        this.setState(prevState => ({
-            logic: prevState.logic + text
-        }));
-    };
+      value = value.toString();
+    }
 
-    handleInputChange = event => {
-        const target = event.target;
-        const options = event.target.options;
-        let value = target.type === "checkbox" ? target.checked : target.value;
-        const name = target.name;
+    this.setState({
+      [name]: value
+    });
+  };
 
-        if (options) {
-            value = [];
+  handleSubFieldChange = value => {
+    this.setState({
+      subField: value
+    });
+  };
 
-            for (let i = 0, l = options.length; i < l; i++) {
-                if (options[i].selected) {
-                    value.push(options[i].value);
-                }
-            }
+  handleFeatureInputChange = value => {
+    const { features } = this.props;
 
-            value = value.toString();
-        }
+    let algorithm = '';
 
-        this.setState({
-            [name]: value
-        });
-    };
+    for (let i = 0; i < features.length; i++) {
+      if (features[i].name === value.value) {
+        algorithm = features[i].algorithm;
+      }
+    }
 
-    handleSubFieldChange = value => {
-        this.setState({
-            subField: value
-        });
-    };
+    this.setState({
+      algorithm: algorithm,
+      feature: value
+    });
+  };
 
-    handleFeatureInputChange = value => {
-        const { features } = this.props;
+  getSubFields = () => {
+    const { algorithm } = this.state;
 
-        let algorithm = "";
+    return algorithmParameters[algorithm].map(value => {
+      return {
+        value: value,
+        label: value
+      };
+    });
+  };
 
-        for (let i = 0; i < features.length; i++) {
-            if (features[i].name === value.value) {
-                algorithm = features[i].algorithm;
-            }
-        }
+  getFeatureOptions = () => {
+    const { features } = this.props;
 
-        this.setState({
-            algorithm: algorithm,
-            feature: value
-        });
-    };
+    return features.map(value => {
+      return {
+        value: value.name,
+        label: value.name
+      };
+    });
+  };
 
-    getSubFields = () => {
-        const { algorithm } = this.state;
+  renderSubFieldSelect = () => {
+    const { algorithm, subField } = this.state;
 
-        return algorithmParameters[algorithm].map(value => {
-            return {
-                value: value,
-                label: value
-            };
-        });
-    };
+    if (algorithm !== '') {
+      return (
+        <Select
+          value={subField}
+          onChange={this.handleSubFieldChange}
+          options={this.getSubFields()}
+        />
+      );
+    }
 
-    getFeatureOptions = () => {
-        const { features } = this.props;
+    return null;
+  };
 
-        return features.map(value => {
-            return {
-                value: value.name,
-                label: value.name
-            };
-        });
-    };
+  handleSubmit = event => {
+    event.preventDefault();
 
-    renderSubFieldSelect = () => {
-        const { algorithm, subField } = this.state;
+    const { name, logic, isFinal } = this.state;
 
-        if (algorithm !== "") {
-            return (
-                <Select
-                    value={subField}
-                    onChange={this.handleSubFieldChange}
-                    options={this.getSubFields()}
-                />
-            );
-        }
+    const { logicalContext } = this.state;
 
-        return null;
-    };
+    let text = 'context ' + logicalContext + ';\n\n define ';
 
-    handleSubmit = event => {
-        event.preventDefault();
+    if (isFinal) {
+      text += 'final ';
+    }
 
-        const { name, logic, isFinal } = this.state;
+    text += name + ':\n\twhere ' + logic;
 
-        const { logicalContext } = this.state;
+    text += ';\n\n';
 
-        let text = "context " + logicalContext + ";\n\n define ";
+    this.props.updateNLPQL(text);
+    this.toggle();
+    this.setState(initialState);
+  };
 
-        if (isFinal) {
-            text += "final ";
-        }
+  render() {
+    const { collapse, name, feature, logic, isFinal } = this.state;
 
-        text += name + ":\n\twhere " + logic;
+    return (
+      <React.Fragment>
+        <header className='card-header' onClick={this.toggle}>
+          <p className='card-header-title'>Result</p>
+          <span className='card-header-icon' aria-label='more options'>
+            <span className='icon'>
+              {collapse ? <FaAngleDown /> : <FaAngleUp />}
+            </span>
+          </span>
+        </header>
+        <div className={collapse ? 'card-content hidden' : 'card-content'}>
+          <form>
+            <div className='field'>
+              <label className='label'>Name</label>
+              <input
+                className='input'
+                type='text'
+                name='name'
+                value={name}
+                onChange={this.handleInputChange}
+              />
+            </div>
 
-        text += ";\n\n";
-
-        this.props.updateNLPQL(text);
-        this.toggle();
-        this.setState(initialState);
-    };
-
-    render() {
-        const { collapse, name, feature, logic, isFinal } = this.state;
-
-        return (
-            <React.Fragment>
-                <header className="card-header" onClick={this.toggle}>
-                    <p className="card-header-title">Result</p>
-                    <span
-                        className="card-header-icon"
-                        aria-label="more options"
-                    >
-                        <span className="icon">
-                            {collapse ? <FaAngleDown /> : <FaAngleUp />}
-                        </span>
-                    </span>
-                </header>
-                <div
-                    className={
-                        collapse ? "card-content hidden" : "card-content"
-                    }
-                >
-                    <form>
-                        <div className="field">
-                            <label className="label">Name</label>
-                            <input
-                                className="input"
-                                type="text"
-                                name="name"
-                                value={name}
-                                onChange={this.handleInputChange}
-                            />
-                        </div>
-
-                        <div className="field">
-                            <label className="label">Feature</label>
-                            <div className="columns">
-                                <div className="column is-5">
-                                    <Select
-                                        value={feature}
-                                        onChange={this.handleFeatureInputChange}
-                                        options={this.getFeatureOptions()}
-                                    />
-                                </div>
-                                <div className="column is-5">
-                                    {this.renderSubFieldSelect()}
-                                </div>
-                                <div className="column is-2">
-                                    <button
-                                        type="button"
-                                        className="button is-primary"
-                                        onClick={this.addFeatureToLogic}
-                                    >
-                                        +
-                                    </button>
-                                </div>
-                            </div>
-                            <div>
-                                <label className="label">Logic</label>
-                                <input
-                                    className="input"
-                                    type="text"
-                                    name="logic"
-                                    value={logic}
-                                    onChange={this.handleInputChange}
-                                />
-                            </div>
-                        </div>
-
-                        <div className="field">
-                            <label className="checkbox">
-                                <input
-                                    type="checkbox"
-                                    name="isFinal"
-                                    checked={isFinal}
-                                    onChange={this.handleInputChange}
-                                />{" "}
-                                Include in Final Results
-                            </label>
-                        </div>
-
-                        <SubmitButton
-                            handleSubmit={this.handleSubmit}
-                            label="Add Result"
-                        />
-                    </form>
+            <div className='field'>
+              <label className='label'>Feature</label>
+              <div className='columns'>
+                <div className='column is-5'>
+                  <Select
+                    value={feature}
+                    onChange={this.handleFeatureInputChange}
+                    options={this.getFeatureOptions()}
+                  />
                 </div>
-            </React.Fragment>
-        );
-    }
+                <div className='column is-5'>{this.renderSubFieldSelect()}</div>
+                <div className='column is-2'>
+                  <button
+                    type='button'
+                    className='button is-primary'
+                    onClick={this.addFeatureToLogic}
+                  >
+                    +
+                  </button>
+                </div>
+              </div>
+              <div>
+                <label className='label'>Logic</label>
+                <input
+                  className='input'
+                  type='text'
+                  name='logic'
+                  value={logic}
+                  onChange={this.handleInputChange}
+                />
+              </div>
+            </div>
+
+            <div className='field'>
+              <label className='checkbox'>
+                <input
+                  type='checkbox'
+                  name='isFinal'
+                  checked={isFinal}
+                  onChange={this.handleInputChange}
+                />{' '}
+                Include in Final Results
+              </label>
+            </div>
+
+            <SubmitButton handleSubmit={this.handleSubmit} label='Add Result' />
+          </form>
+        </div>
+      </React.Fragment>
+    );
+  }
 }
 
 export default DefineResultForm;
