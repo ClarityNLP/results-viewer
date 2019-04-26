@@ -79,12 +79,16 @@ class JobRunner extends Component {
       });
     }
 
-    const url =
-      `https://${window._env_.NLP_SOLR_URL_TOP_LEVEL}/solr/sample` +
-      '/select?facet.field=source&facet=on&fl=facet_counts&indent=on&q=*:*&rows=1&wt=json';
+    const url = `https://${
+      process.env.REACT_APP_SOLR_URL
+    }/solr/sample/select?facet.field=source&facet=on&fl=facet_counts&indent=on&q=*:*&rows=1&wt=json`;
 
     return axios
-      .get(url)
+      .get(url, {
+        headers: {
+          Authorization: 'Bearer ' + this.props.oidc.user.access_token
+        }
+      })
       .then(data => {
         console.log(data);
       })
