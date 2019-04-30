@@ -1,160 +1,412 @@
 import React, { Component } from 'react';
-import { Button, Input } from 'reactstrap';
+import RunResponse from './RunResponse';
+import TestResponse from './TestResponse';
+import LimitForm from './Forms/LimitForm';
+import PhenotypeForm from './Forms/PhenotypeForm';
+import DocumentSetForm from './Forms/DocumentSetForm';
+import TermsetForm from './Forms/TermsetForm';
+import CohortForm from './Forms/CohortForm';
+import DefineFeatureForm from './Forms/DefineFeatureForm';
+import LogicalContextForm from './Forms/LogicalContextForm';
+import DefineResultForm from './Forms/DefineResultForm';
+import ResponseModal from './ResponseModal';
 import axios from 'axios';
-import _ from 'lodash';
-import ReactJson from 'react-json-view'
 
-const RunResponse = ({data, ...props}) => {
-    return (
-        <div >
-            <ReactJson src={data} displayObjectSize={false} displayDataTypes={false}/>
-        </div>
-    );
-};
+function getUrlVars() {
+  let vars = {};
+  window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(
+    m,
+    key,
+    value
+  ) {
+    vars[key] = value;
+  });
+  return vars;
+}
 
-const TestResponse = ({data, ...props}) => {
-    return (
-        <div >
-            <ReactJson src={data} displayObjectSize={false} displayDataTypes={false}/>
-        </div>
-    );
+const params = getUrlVars();
+
+let query_param = null;
+
+if ('query_id' in params) {
+  query_param = params['query_id'];
+}
+
+const initialState = {
+  editing: false,
+  editText: 'Edit',
+  phenotypeModal: '',
+  response_view: null,
+  limitModal: null,
+  termSets: [],
+  documentSets: [],
+  cohorts: [],
+  features: []
 };
 
 class JobRunner extends Component {
+  constructor(props) {
+    super(props);
 
+    this.state = initialState;
+  }
 
+  componentWillMount() {
+    if (query_param) {
+      const url =
+        'https://' +
+        window._env_.REACT_APP_API_HOST +
+        '/nlp/get_query/' +
+        query_param;
 
-    constructor(props) {
-        super(props);
-        this.base_url = props.url;
-
-        this.toggle = this.toggle.bind(this);
-        this.getNLPQLSample = this.getNLPQLSample.bind(this);
-        this.updateNLPQL = this.updateNLPQL.bind(this);
-        this.handleButtonAction = this.handleButtonAction.bind(this);
-        this.clear = this.clear.bind(this);
-
-        this.state = {
-            dropdownOpen: false,
-            nlpql: '',
-            test_response: {},
-            run_response: {}
-        };
-    }
-
-    toggle() {
-        this.setState({
-            dropdownOpen: !this.state.dropdownOpen
-        });
-    }
-
-    updateNLPQL(evt) {
-        this.setState({
-            nlpql: evt.target.value
-        });
-    }
-
-    clear() {
-        this.setState({
-            nlpql: ''
-        });
-    }
-
-    getNLPQLSample(nlpql_filename) {
-        let url = this.base_url + 'nlpql_text/' + nlpql_filename;
-        axios.get(url).then(response => {
-            this.setState(prevState => ({
-                nlpql: (prevState.nlpql + '\n' + response.data)
-            }));
-        });
-    }
-
-    componentDidMount() {
-    }
-
-    handleButtonAction(action) {
-        let url = this.base_url + action;
-        axios({
-            method: 'post',
-                url: url,
-            data: document.getElementById('nlpql_input').value,
-            headers: {'Content-Type': 'text/plain'}
+      axios
+        .get(url, {
+          headers: {
+            Authorization: 'Bearer ' + this.props.oidc.user.access_token
+          }
         })
-            .then((response) => {
-                console.log(response);
-               if (action === 'nlpql_expander') {
-                   this.setState(prevState => ({
-                       nlpql: response.data
-                   }), () => {
-                       document.getElementById('nlpql_input').value = response.data
-                   })
-               } else if (action === 'nlpql_tester') {
-                   console.log(response.data);
-                   this.setState({
-                       test_response: response.data,
-                       run_response: {}
-                   });
+        .then(response => {
+          const query = response.data;
 
-               } else {
-                   console.log(response.data);
-                   this.setState({
-                       test_response: {},
-                       run_response: response.data
-                   });
-               }
-
-            })
+          this.props.setNLPQL(query.nlpql_raw);
+          this.props.setNLPQLJSON(query.nlpql_json);
+          this.setArraysFromJSON();
+        });
+    } else {
+      this.props.setNLPQL('');
+      this.setState({
+        phenotypeModal: 'is-active'
+      });
     }
+  }
 
-    render() {
+  response_ERROR = () => {
+    return (
+      <TestResponse
+        valid={false}
+        data={{
+          ERROR: 'There was an error with the nlpql.'
+        }}
+        toggle={this.toggleResponse}
+        toggleLimitModal={this.toggleLimitModal}
+      />
+    );
+  };
 
-        let response_view = <div />;
-        if (!_.isEmpty(this.state.test_response)) {
-            response_view = <TestResponse data={this.state.test_response} />
-        } else if (!_.isEmpty(this.state.run_response)) {
-            response_view = <RunResponse data={this.state.run_response}/>
+  setArraysFromJSON = () => {
+    const { nlpql } = this.props.runner;
+    const _this = this;
+    let tmp_termSets = [];
+    let tmp_documentSets = [];
+    let tmp_cohorts = [];
+    let tmp_features = [];
+
+    this.props.postToClarityAPI('nlp/nlpql_tester', nlpql).then(() => {
+      const { nlpql_JSON } = _this.props.runner;
+
+      if (nlpql_JSON) {
+        if (nlpql_JSON.term_sets) {
+          tmp_termSets = nlpql_JSON.term_sets.map(value => {
+            return value.name;
+          });
         }
-        return (
-            <div className="JobRunner container-fluid">
-                <div className="row">
-                    <div className="col-6">
-                        <div className="NLPQLAreaHeader">
-                            <span className="h4 SubHeader">NLPQL Runner</span>{'  '}
-                            <a href="https://github.com/ClarityNLP/ClarityNLP/tree/master/nlpql" target="_blank" className="SampleLink">
-                                View Samples</a>
-                            <span className="float-lg-right">
-                                <Button onClick={() => this.clear()} color="link">Clear</Button>
-                            </span>
-                        </div>
-                        <Input className="NLPQLArea" type="textarea" name="text" id="nlpql_input" rows="15"
-                               value={this.state.nlpql} onChange={this.updateNLPQL} placeholder="Enter NLPQL here..."
-                        />
-                        <div>&nbsp;</div>
-                        <div>
-                            <Button color="info" onClick={() => this.handleButtonAction('nlpql_expander')}>Expand Terms</Button>
-                            {" "}
-                            <Button color="warning" onClick={() => this.handleButtonAction('nlpql_tester')}>Test NLPQL</Button>
-                            {" "}
-                            <span className="float-lg-right">
-                                <Button color="success" onClick={() => this.handleButtonAction('nlpql')}>Run NLPQL</Button>
-                            </span>
 
-                        </div>
-                    </div>
-                    <div className="col-6">
-                        <h5 className="SubHeader">Response</h5>
-                        <div>
-                            {response_view}
-                        </div>
-                    </div>
-                </div>
-                <div className="row">
-                    &nbsp;
-                </div>
+        if (nlpql_JSON.document_sets) {
+          tmp_documentSets = nlpql_JSON.document_sets.map(value => {
+            return value.name;
+          });
+        }
 
-            </div>
-        );
+        if (nlpql_JSON.cohorts) {
+          tmp_cohorts = nlpql_JSON.cohorts.map(value => {
+            return value.name;
+          });
+        }
+
+        if (nlpql_JSON.data_entities) {
+          tmp_features = nlpql_JSON.data_entities.map(value => {
+            return {
+              name: value.name,
+              algorithm: value.funct
+            };
+          });
+        }
+      }
+
+      this.setState({
+        termSets: tmp_termSets,
+        documentSets: tmp_documentSets,
+        cohorts: tmp_cohorts,
+        features: tmp_features
+      });
+    });
+  };
+
+  toggleEdit = () => {
+    const { editing } = this.state;
+    let text = null;
+
+    if (editing) {
+      this.setArraysFromJSON();
+      text = 'Edit';
+    } else {
+      text = 'Done';
     }
+
+    this.setState({
+      editing: !editing,
+      editText: text
+    });
+  };
+
+  handleInputChange = event => {
+    const target = event.target;
+    const value = target.value;
+
+    this.props.setNLPQL(value);
+  };
+
+  renderEditor = () => {
+    const { editing } = this.state;
+    const { nlpql } = this.props.runner;
+
+    if (editing) {
+      return <textarea value={nlpql} onChange={this.handleInputChange} />;
+    }
+
+    return <pre>{nlpql}</pre>;
+  };
+
+  clear = () => {
+    const htmlClasses = document.getElementsByTagName('html')[0].classList;
+
+    htmlClasses.add('is-clipped');
+
+    this.props.setNLPQL('');
+    this.setState(initialState);
+  };
+
+  updateNLPQL = value => {
+    const { nlpql } = this.props.runner;
+
+    return this.props.setNLPQL(nlpql + value).then(() => {
+      this.setArraysFromJSON();
+    });
+  };
+
+  toggleResponse = () => {
+    this.setState({
+      response_view: null
+    });
+  };
+
+  toggleLimitModal = () => {
+    this.setState({
+      response_view: (
+        <LimitForm
+          toggle={this.toggleResponse}
+          updateNLPQL={this.updateNLPQL}
+          handleSubmit={this.handleRunClick}
+        />
+      )
+    });
+  };
+
+  disablePhenotypeModal = () => {
+    const htmlClasses = document.getElementsByTagName('html')[0].classList;
+
+    htmlClasses.remove('is-clipped');
+
+    this.setState({
+      phenotypeModal: ''
+    });
+  };
+
+  testNLPQL = () => {
+    const { nlpql } = this.props.runner;
+    const _this = this;
+
+    if (nlpql) {
+      this.props.postToClarityAPI('nlp/nlpql_tester', nlpql).then(() => {
+        const { nlpql_JSON } = _this.props.runner;
+
+        this.setState({
+          response_view: (
+            <TestResponse
+              valid={nlpql_JSON.valid}
+              data={nlpql_JSON}
+              toggle={this.toggleResponse}
+              toggleLimitModal={this.toggleLimitModal}
+            />
+          )
+        });
+      });
+    } else {
+      this.setState({
+        response_view: this.response_ERROR()
+      });
+    }
+  };
+
+  handleExpandClick = () => {
+    const { nlpql } = this.props.runner;
+
+    this.props.postToClarityAPI('nlpql_expander', nlpql);
+  };
+
+  handeSaveClick = () => {
+    const { nlpql } = this.props.runner;
+
+    this.props.saveNLPQL(nlpql).then(() => {
+      const { nlpql_id } = this.props.runner;
+
+      let display = (
+        <ResponseModal content='Query Saved!' toggle={this.toggleResponse} />
+      );
+
+      if (nlpql_id < 0 || nlpql_id === null) {
+        display = (
+          <ResponseModal
+            content='Save failed, please try again.'
+            toggle={this.toggleResponse}
+          />
+        );
+      }
+
+      this.setState({
+        response_view: display
+      });
+    });
+  };
+
+  handleRunClick = () => {
+    const { nlpql } = this.props.runner;
+    const _this = this;
+
+    if (nlpql) {
+      this.props
+        .postToClarityAPI('nlp/nlpql', nlpql)
+        .then(() => {
+          const { nlpql_JSON } = _this.props.runner;
+
+          if (!nlpql_JSON) {
+            this.setState({
+              response_view: this.response_ERROR()
+            });
+          }
+
+          this.setState({
+            response_view: (
+              <RunResponse
+                valid={nlpql_JSON.success !== false}
+                data={nlpql_JSON}
+                clear={this.clear}
+                toggle={this.toggleResponse}
+              />
+            )
+          });
+        })
+        .catch(() => {
+          this.setState({
+            response_view: this.response_ERROR()
+          });
+        });
+    } else {
+      this.setState({
+        response_view: this.response_ERROR()
+      });
+    }
+  };
+
+  render() {
+    const {
+      response_view,
+      documentSets,
+      termSets,
+      cohorts,
+      features,
+      editText
+    } = this.state;
+
+    return (
+      <React.Fragment>
+        <PhenotypeForm
+          modal={this.state.phenotypeModal}
+          updateNLPQL={this.updateNLPQL}
+          toggle={this.disablePhenotypeModal}
+        />
+        <div className='JobRunner container'>
+          {response_view}
+
+          <div className='NLPQLAreaHeader columns'>
+            <div className='column is-5 level'>
+              <div className='columns level-right'>
+                <div className='column is-one-third'>
+                  <button
+                    className='button is-large'
+                    onClick={this.handeSaveClick}
+                  >
+                    Save
+                  </button>
+                </div>
+              </div>
+              <div className='card'>
+                <DocumentSetForm
+                  documentSets={documentSets}
+                  updateNLPQL={this.updateNLPQL}
+                />
+                <TermsetForm
+                  termSets={termSets}
+                  updateNLPQL={this.updateNLPQL}
+                  access_token={this.props.oidc.user.access_token}
+                />
+                <CohortForm cohorts={cohorts} updateNLPQL={this.updateNLPQL} />
+                <DefineFeatureForm
+                  features={features}
+                  termSets={termSets}
+                  documentSets={documentSets}
+                  cohorts={cohorts}
+                  updateNLPQL={this.updateNLPQL}
+                />
+                <LogicalContextForm updateNLPQL={this.updateNLPQL} />
+                <DefineResultForm
+                  features={features}
+                  updateNLPQL={this.updateNLPQL}
+                />
+              </div>
+            </div>
+            <div className='column is-7 level'>
+              <div className='columns level-right'>
+                <div className='column is-4'>
+                  <button
+                    className='button is-large is-primary'
+                    onClick={this.toggleLimitModal}
+                  >
+                    Run
+                  </button>
+                </div>
+              </div>
+              <div id='editor'>
+                {this.renderEditor()}
+                <div className='level'>
+                  <div className='column is-one-quarter'>
+                    <button className='button' onClick={this.clear}>
+                      Clear
+                    </button>
+                  </div>
+                  <div className='column is-one-quarter level-right'>
+                    <button className='button' onClick={this.toggleEdit}>
+                      {editText}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </React.Fragment>
+    );
+  }
 }
 
 export default JobRunner;

@@ -1,76 +1,42 @@
-.App {
- /* text-align: center; */
-}
-
-.App-logo {
-  /* animation: App-logo-spin infinite 20s linear; */
-  height: 30px;
-  margin-top: 22px
-}
-
-.App-header {
-  background-color: #2980B9;
+html, body, #root {
   height: 100%;
-  padding-left: 10px;
-  color: white;
 }
 
-.App-title {
-  font-size: 1.5em;
+button {
+    width: 100%;
 }
 
-.App-intro {
-  font-size: large;
-}
-
-.App-name {
-  font-size: 110%;
-  font-weight: bold;
-  display: inline-block;
-    vertical-align: top;
-    padding: 25px 20px 20px;
+.slideout-panel {
+    will-change: unset !important;
 }
 
 .JobList {
-    padding: 20px;
+    padding-top: 20px;
 }
 
 .JobListIcons {
     margin-right: 5px;
 }
 
-
 .PatientCount {
     font-size: 50%;
     color: gray;
 }
 
-.JobRow, .SubjectRow {
+.JobRow,
+.SubjectRow {
     cursor: pointer;
     font-size: 11pt;
     font-weight: normal;
 }
 
-
-.JobRow td:nth-child(2){
-    width: 420px;
-}
-
-.JobRow td:nth-child(5){
-    width: 180px;
+.JobRow td {
+    max-width: 400px;
 }
 
 .JobRow:hover {
     text-decoration: underline;
 }
-
-.DetailCountHeader {
-    font-size: medium;
-    padding-top: 10px;
-    padding-left: 12px;
-}
-
-
 
 .PhenotypeName {
     font-weight: bold;
@@ -104,26 +70,27 @@
     margin-top: 20px;
 }
 
-table {
+.JobTable {
     font-size: 12pt;
+    width: 100%;
 }
 
 .public_fixedDataTableCell_cellContent {
     font-size: 11pt;
 }
 
-.RawResultsTable, .SubjectTable {
+.RawResultsTable,
+.SubjectTable {
     margin-top: 20px;
 }
 
-.SubjectDetailNavigation {
-    min-width: 70%;
-
+.RawResultsTable {
+    height: 500px;
+    overflow: scroll;
 }
 
-.SubjectDetailHeader {
-    min-width: 30%;
-    text-align: right;
+.SubjectDetailNavigation {
+    width: 85%;
 }
 
 .SubjectNavigationPosition {
@@ -140,10 +107,6 @@ table {
     font-size: 8pt;
     text-align: left;
     margin: 3px;
-
-}
-
-.PhenotypeSubDetailButtons {
 }
 
 .EntitySpacer {
@@ -156,7 +119,7 @@ table {
     padding: 10px;
 }
 
-.EntityFrame:hover{
+.EntityFrame:hover {
     box-shadow: 2px 2px 3px 2px grey;
     cursor: pointer;
 }
@@ -177,36 +140,34 @@ table {
     margin-bottom: 20px;
 }
 
-
-
-
-pre, .ReportTextPreview {
+pre,
+.ReportTextPreview {
     font-size: 12pt;
     line-height: 1.618em;
     word-break: keep-all;
     white-space: -moz-pre-wrap; /* Firefox 1.0-2.0 */
-    white-space: pre-wrap;      /* current browsers */
-    font-family: 'droid_sans_monoregular','Anonymous Pro', monospace;
+    white-space: pre-wrap; /* current browsers */
+    font-family: "droid_sans_monoregular", "Anonymous Pro", monospace;
     text-indent: 0px;
     color: #565656;
     background-color: #f8f9fa;
 }
 
 .full-highlighting {
-    background-color: #FFFF99;
+    background-color: #ffff99;
     font-weight: bold;
     border-radius: 8px;
     padding: 2px 4px;
 }
 .min-highlighting {
-    background-color: #FFFF99;
+    background-color: #ffff99;
     font-weight: bold;
     border-radius: 8px;
 }
 
 .highlighting {
-    font-weight:bold;
-    text-decoration:underline;
+    font-weight: bold;
+    text-decoration: underline;
 }
 
 .NavLink {
@@ -224,8 +185,8 @@ pre, .ReportTextPreview {
     line-height: 1.618em;
     word-break: keep-all;
     white-space: -moz-pre-wrap; /* Firefox 1.0-2.0 */
-    white-space: pre-wrap;      /* current browsers */
-    font-family: 'droid_sans_monoregular','Anonymous Pro', monospace;
+    white-space: pre-wrap; /* current browsers */
+    font-family: "droid_sans_monoregular", "Anonymous Pro", monospace;
     text-indent: 0px;
     color: #565656;
 }
@@ -236,16 +197,78 @@ pre, .ReportTextPreview {
 }
 
 @keyframes App-logo-spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.card-header {
+    cursor: pointer;
 }
 
 .exportButton {
-  margin-top: 5%;
-  text-align: center;
+    margin-top: 5%;
+    text-align: center;
 }
 
 .emptyResults {
-  margin-top: 20%;
-  text-align: center;
+    margin-top: 20%;
+    text-align: center;
+}
+
+.card-content {
+    &.hidden {
+        height: 0;
+        padding-bottom: 0;
+        padding-top: 0;
+        margin: 0;
+        overflow: hidden;
+    }
+}
+
+#editor {
+    pre,
+    textarea {
+        padding: 1.25rem 1.5rem;
+        height: 450px;
+        overflow: scroll;
+    }
+
+    pre {
+        white-space: pre-wrap; /* Since CSS 2.1 */
+        white-space: -moz-pre-wrap; /* Mozilla, since 1999 */
+        white-space: -pre-wrap; /* Opera 4-6 */
+        white-space: -o-pre-wrap; /* Opera 7 */
+        word-wrap: break-word; /* Internet Explorer 5.5+ */
+    }
+}
+
+.JobRunner {
+    &.container {
+        margin-top: 20px;
+    }
+}
+
+.tag {
+    margin-left: 10px;
+}
+
+.optional-text {
+    margin-left: 10px;
+    font-style: italic;
+    font-weight: 100;
+}
+
+#root {
+  display: flex;
+  flex-direction: row;
+  flex: 1;
+  overflow: hidden;
+  #viewer {
+    flex: 1;
+    overflow-y: scroll;
+  }
 }
