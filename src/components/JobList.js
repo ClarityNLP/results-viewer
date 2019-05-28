@@ -128,6 +128,7 @@ class JobList extends Component {
   }
 
   render() {
+    console.log('ACCESS TOKEN:', this.props.oidc.user.access_token);
     return (
       <div className='JobList container'>
         {this.state.show_list ? (

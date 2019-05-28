@@ -106,9 +106,7 @@ class JobRunner extends Component {
 
       if (nlpql_JSON) {
         if (nlpql_JSON.term_sets) {
-          tmp_termSets = nlpql_JSON.term_sets.map(value => {
-            return value.name;
-          });
+          tmp_termSets = nlpql_JSON.term_sets;
         }
 
         if (nlpql_JSON.document_sets) {
@@ -186,10 +184,17 @@ class JobRunner extends Component {
     this.setState(initialState);
   };
 
-  updateNLPQL = value => {
+  updateNLPQL = (text, replaceText = null) => {
     const { nlpql } = this.props.runner;
+    let newNLPQL = '';
 
-    return this.props.setNLPQL(nlpql + value).then(() => {
+    if (replaceText) {
+      newNLPQL = nlpql.replace(replaceText, text);
+    } else {
+      newNLPQL = nlpql + text;
+    }
+
+    return this.props.setNLPQL(newNLPQL).then(() => {
       this.setArraysFromJSON();
     });
   };

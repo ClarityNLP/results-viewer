@@ -1,5 +1,6 @@
 /* eslint react/no-multi-comp: 0, react/prop-types: 0 */
 import React from 'react';
+import Select from 'react-select';
 import SubmitButton from '../../UIkit/SubmitButton';
 import { FaAngleDown, FaAngleUp } from 'react-icons/fa';
 import Axios from 'axios';
@@ -8,11 +9,13 @@ const initialState = {
   termExpanderUrl:
     'https://' + window._env_.REACT_APP_API_HOST + '/nlp/nlpql_expander',
   collapse: true,
+  termSet: null,
   termsetName: '',
   termsetTerms: '',
   termsetSynonyms: false,
   termsetPlurals: false,
-  termsetVerbInflections: false
+  termsetVerbInflections: false,
+  replaceText: null
 };
 
 class TermsetForm extends React.Component {
@@ -42,41 +45,42 @@ class TermsetForm extends React.Component {
     return tmp;
   };
 
+  handleTermSetChange = value => {
+    let tmp_name = '';
+    let tmp_terms = '';
+
+    if (value) {
+      const tmp_termSet = value.value;
+
+      tmp_name = tmp_termSet.name;
+      tmp_terms = tmp_termSet.values;
+    }
+
+    this.setState(
+      {
+        termSet: value,
+        termsetName: tmp_name,
+        termsetTerms: tmp_terms.toString()
+      },
+      () => {
+        this.setState({
+          replaceText: this.getSubmittableText()
+        });
+      }
+    );
+  };
+
   handleInputChange = event => {
     const target = event.target;
-    const options = event.target.options;
     let value = target.type === 'checkbox' ? target.checked : target.value;
     const name = target.name;
-
-    if (options) {
-      value = [];
-      for (let i = 0, l = options.length; i < l; i++) {
-        if (options[i].selected) {
-          value.push(options[i].value);
-        }
-      }
-
-      value = value.toString();
-    }
 
     this.setState({
       [name]: value
     });
   };
 
-  renderTermSetCount() {
-    const count = this.props.termSets.length;
-
-    if (count === 0) {
-      return null;
-    }
-
-    return <span className='tag'>{count}</span>;
-  }
-
-  handleSubmit = event => {
-    event.preventDefault();
-
+  getExpandedTermSet = () => {
     const {
       termExpanderUrl,
       termsetName,
@@ -86,54 +90,44 @@ class TermsetForm extends React.Component {
       termsetVerbInflections
     } = this.state;
 
-    if (termsetSynonyms || termsetPlurals || termsetVerbInflections) {
-      let payload = 'termset ' + termsetName + ': [';
+    let payload = 'termset ' + termsetName + ': [';
 
-      if (termsetSynonyms) {
-        payload += 'Clarity.Synonyms("' + termsetTerms + '"),';
-      }
-      if (termsetPlurals) {
-        payload += 'Clarity.Plurals("' + termsetTerms + '"),';
-      }
-      if (termsetVerbInflections) {
-        payload += 'Clarity.VerbInflections("' + termsetTerms + '"),';
-      }
-
-      payload = payload.slice(0, payload.length - 1); //removing the last extra ',' character
-      payload += '];';
-
-      Axios(termExpanderUrl, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'text/plain',
-          Authorization: 'Bearer ' + this.props.access_token
-        },
-        data: payload
-      })
-        .then(response => {
-          const data = response.data.replace(':', ':\n\t');
-          const text = data + '\n\n';
-
-          this.props.updateNLPQL(text);
-          return text;
-        })
-        .catch(err => {
-          alert('Term Expander Unavailable. Reason: ' + err.message);
-        });
-    } else {
-      let text = 'termset ' + termsetName + ':\n';
-      text += '\t' + this.buildArrayStringWithQuotes(termsetTerms) + ';\n\n';
-
-      this.props.updateNLPQL(text);
+    if (termsetSynonyms) {
+      payload += 'Clarity.Synonyms("' + termsetTerms + '"),';
     }
 
-    this.toggle();
-    this.setState(initialState);
+    if (termsetPlurals) {
+      payload += 'Clarity.Plurals("' + termsetTerms + '"),';
+    }
+
+    if (termsetVerbInflections) {
+      payload += 'Clarity.VerbInflections("' + termsetTerms + '"),';
+    }
+
+    payload = payload.slice(0, payload.length - 1); //removing the last extra ',' character
+    payload += '];';
+
+    return Axios(termExpanderUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'text/plain',
+        Authorization: 'Bearer ' + this.props.access_token
+      },
+      data: payload
+    })
+      .then(response => {
+        const data = response.data.replace(':', ':\n\t');
+        const text = data + '\n\n';
+
+        return text;
+      })
+      .catch(err => {
+        alert('Term Expander Unavailable. Reason: ' + err.message);
+      });
   };
 
-  render() {
+  getSubmittableText = () => {
     const {
-      collapse,
       termsetName,
       termsetTerms,
       termsetSynonyms,
@@ -141,11 +135,61 @@ class TermsetForm extends React.Component {
       termsetVerbInflections
     } = this.state;
 
+    let text = null;
+
+    if (termsetSynonyms || termsetPlurals || termsetVerbInflections) {
+      text = this.getExpandedTermSet().then(text => {
+        return text;
+      });
+    } else {
+      text =
+        'termset ' +
+        termsetName +
+        ':\n\t' +
+        this.buildArrayStringWithQuotes(termsetTerms) +
+        ';\n\n';
+    }
+
+    return text;
+  };
+
+  handleSubmit = event => {
+    event.preventDefault();
+
+    const { replaceText } = this.state;
+    const submitText = this.getSubmittableText();
+
+    if (typeof submitText !== 'string') {
+      submitText.then(text => {
+        this.props.updateNLPQL(text, replaceText);
+      });
+    } else {
+      this.props.updateNLPQL(submitText, replaceText);
+    }
+
+    this.toggle();
+    this.setState(initialState);
+  };
+
+  render() {
+    const { termSets } = this.props;
+    const {
+      collapse,
+      termSet,
+      termsetName,
+      termsetTerms,
+      termsetSynonyms,
+      termsetPlurals,
+      termsetVerbInflections
+    } = this.state;
+
+    const count = termSets.length;
+
     return (
       <React.Fragment>
         <header className='card-header' onClick={this.toggle}>
           <p className='card-header-title'>
-            Term Set {this.renderTermSetCount()}
+            Term Set {count > 0 ? <span className='tag'>{count}</span> : null}
           </p>
           <span className='card-header-icon' aria-label='more options'>
             <span className='icon'>
@@ -154,6 +198,19 @@ class TermsetForm extends React.Component {
           </span>
         </header>
         <div className={collapse ? 'card-content hidden' : 'card-content'}>
+          {count > 0 ? (
+            <div className='field'>
+              <Select
+                isClearable={true}
+                value={termSet}
+                onChange={this.handleTermSetChange}
+                options={termSets.map(termset => {
+                  return { value: termset, label: termset.name };
+                })}
+              />
+            </div>
+          ) : null}
+
           <form>
             <div className='field'>
               <label className='label'>Name</label>
