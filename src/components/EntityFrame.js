@@ -94,7 +94,7 @@ class EntityFrame extends Component {
                 <Moment format='MMM D, YYYY h:mm a'>
                   {data['report_date'] !== ''
                     ? data['report_date']
-                    : data.result_display.date}
+                    : detail.result_display.date}
                 </Moment>
               </span>
             </p>
@@ -102,7 +102,7 @@ class EntityFrame extends Component {
           <div className='EntitySpacer'>&nbsp;</div>
           {feature !== 'CQLExecutionTask'
             ? html
-            : data.result_display.result_content}
+            : detail.result_display.result_content}
         </div>
         <div className={this.state.report_modal ? 'modal is-active' : 'modal'}>
           <div className='modal-background' />
