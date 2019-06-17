@@ -12,9 +12,46 @@ export default class Menu extends Component {
     super(props);
 
     this.state = {
+      url: window.location.href,
       builderActive: false,
       resultsActive: false
     };
+  }
+
+  componentDidMount() {
+    const { url } = this.state;
+
+    if (url.indexOf('/runner') > 0) {
+      this.setState({
+        resultsActive: false,
+        builderActive: true
+      });
+    } else {
+      this.setState({
+        resultsActive: true,
+        builderActive: false
+      });
+    }
+  }
+
+  componentDidUpdate() {
+    if (this.state.url !== window.location.href) {
+      const tmpUrl = window.location.href;
+
+      if (tmpUrl.indexOf('/runner') > 0) {
+        this.setState({
+          url: tmpUrl,
+          resultsActive: false,
+          builderActive: true
+        });
+      } else {
+        this.setState({
+          url: tmpUrl,
+          resultsActive: true,
+          builderActive: false
+        });
+      }
+    }
   }
 
   render() {
@@ -50,14 +87,23 @@ export default class Menu extends Component {
             </a>
             <a
               href='/runner'
-              className='nav-link has-text-centered builder-link'
+
+              className={`nav-link has-text-centered ${
+                builderActive ? 'active' : ''
+              }`}
             >
               <span className='link-icon is-size-4'>
                 <FaCubes />
               </span>
               Query Builder
             </a>
-            <a href='/' className='nav-link has-text-centered results-link'>
+
+            <a
+              href='/'
+              className={`nav-link has-text-centered ${
+                resultsActive ? 'active' : ''
+              }`}
+            >
               <span className='link-icon is-size-4'>
                 <FaChartBar />
               </span>
