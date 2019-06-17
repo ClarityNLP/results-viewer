@@ -1,10 +1,9 @@
 import React, { Component } from 'react';
-import { CallbackComponent } from "redux-oidc";
-import userManager from "../src/utils/userManager";
-import Transient from '../src/components/Transient';
+import { CallbackComponent } from 'redux-oidc';
+import userManager from '../src/utils/userManager';
+import Transient from '../src/Main/Transient';
 
 export default class Callback extends Component {
-
   constructor(props) {
     super(props);
   }
@@ -13,15 +12,15 @@ export default class Callback extends Component {
     return (
       <CallbackComponent
         userManager={userManager}
-        successCallback={(user) => {
-          return window.location = user.state.redirectUrl;
+        successCallback={user => {
+          return (window.location = user.state.redirectUrl);
         }}
         errorCallback={error => {
           console.error(error);
-          return window.location = "/";
+          return (window.location = '/');
         }}
-        >
-        <Transient/>
+      >
+        <Transient />
       </CallbackComponent>
     );
   }
