@@ -73,7 +73,10 @@ class PhenotypeForm extends React.Component {
               <section className='modal-card-body'>
                 {/* NAME INPUT */}
                 <div className='field'>
-                  <label className='label'>Phenotype Name</label>
+                  <label className='label'>
+                    Phenotype Name{' '}
+                    <span className='optional-text'> - Required</span>
+                  </label>
                   <input
                     className='input'
                     type='text'
