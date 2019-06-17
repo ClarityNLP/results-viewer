@@ -78,6 +78,35 @@ class QueryBuilder extends Component {
         phenotypeModal: 'is-active'
       });
     }
+
+    const url = `https://${
+      process.env.REACT_APP_SOLR_URL
+    }/solr/sample/select?facet.field=source&facet=on&fl=facet_counts&indent=on&q=*:*&rows=1&wt=json`;
+
+    return axios
+      .get(url, {
+        headers: {
+          Authorization: 'Bearer ' + this.props.oidc.user.access_token
+        }
+      })
+      .then(data => {
+        console.log(data);
+      })
+      .catch(err => {
+        console.log(err);
+      });
+  }
+
+  componentDidMount() {
+    const url = window.location.href;
+
+    if (url.indexOf('/runner') > 0) {
+      document.querySelector('.builder-link').classList.add('active');
+      document.querySelector('.results-link').classList.remove('active');
+    } else {
+      document.querySelector('.results-link').classList.add('active');
+      document.querySelector('.builder-link').classList.remove('active');
+    }
   }
 
   response_ERROR = () => {
@@ -184,6 +213,10 @@ class QueryBuilder extends Component {
 
     this.props.setNLPQL('');
     this.setState(initialState);
+
+    this.setState({
+      phenotypeModal: 'is-active'
+    });
   };
 
   updateNLPQL = value => {
