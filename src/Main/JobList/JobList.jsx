@@ -109,16 +109,6 @@ class JobList extends Component {
           }));
         });
     }
-
-    const url = window.location.href;
-
-    if (url.indexOf('/runner') > 0) {
-      document.querySelector('.builder-link').classList.add('active');
-      document.querySelector('.results-link').classList.remove('active');
-    } else {
-      document.querySelector('.results-link').classList.add('active');
-      document.querySelector('.builder-link').classList.remove('active');
-    }
   }
 
   resetJobsList() {
