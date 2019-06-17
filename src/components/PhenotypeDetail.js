@@ -14,14 +14,18 @@ class PhenotypeDetail extends Component {
     this.toggle = this.toggle.bind(this);
     this.toggleAlert = this.toggleAlert.bind(this);
     this.onDismiss = this.onDismiss.bind(this);
+
     this.state = {
       view_mode: 'all',
       selected_result_index: props.selected_result_index,
       selected_result: props.selected_result,
       results: [],
       successAlert: false,
-      failureAlert: false
+      failureAlert: false,
+      correct_btn: 'button',
+      incorrect_btn: 'button'
     };
+
     this.url = props.url;
     this.detailed_results = {};
     this.user_comments = '';
@@ -75,29 +79,32 @@ class PhenotypeDetail extends Component {
     data['job_id'] = this.props.job_id;
     data['patient_id'] = Number(this.props.patient_id);
     data['comments'] = this.user_comments;
+
     if (option === 1) {
       data['is_correct'] = 'true';
+
+      this.setState({
+        correct_btn: 'button highlight-green',
+        incorrect_btn: 'button'
+      });
     } else {
       data['is_correct'] = 'false';
+
+      this.setState({
+        incorrect_btn: 'button highlight-red',
+        correct_btn: 'button'
+      });
     }
 
     let payload = JSON.stringify(data);
     let request_url = this.url + '/write_nlpql_feedback';
-    let __this = this;
 
-    axios
-      .post(request_url, payload, {
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: 'Bearer ' + this.props.accessToken
-        }
-      })
-      .then(function(response) {
-        __this.toggleAlert(true);
-      })
-      .catch(function(error) {
-        __this.toggleAlert(false);
-      });
+    axios.post(request_url, payload, {
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: 'Bearer ' + this.props.accessToken
+      }
+    });
   }
 
   resetViewAll(detail_results) {
@@ -179,6 +186,7 @@ class PhenotypeDetail extends Component {
   }
 
   render() {
+    const { correct_btn, incorrect_btn } = this.state;
     let { selected_result, selected_result_index, results } = this.state;
     let results_view = results.map(d => {
       return (
@@ -211,7 +219,7 @@ class PhenotypeDetail extends Component {
                 <div className='field has-addons has-addons-right'>
                   <div className='control'>
                     <button
-                      className='button'
+                      className={correct_btn}
                       onClick={() => {
                         this.writeFeedback(1);
                       }}
@@ -221,7 +229,7 @@ class PhenotypeDetail extends Component {
                   </div>
                   <div className='control'>
                     <button
-                      className='button'
+                      className={incorrect_btn}
                       onClick={() => {
                         this.writeFeedback(2);
                       }}

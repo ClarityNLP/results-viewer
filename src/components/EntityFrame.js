@@ -71,6 +71,7 @@ class EntityFrame extends Component {
     const start = detail['start'] || 0;
     const end = detail['end'] || 0;
     const text = data['text'];
+    const feature = data['pipeline_type'];
 
     const html = getHtmlMarkup(text, start, end);
 
@@ -91,13 +92,17 @@ class EntityFrame extends Component {
 
               <span className='is-size-7 has-text-weight-bold'>
                 <Moment format='MMM D, YYYY h:mm a'>
-                  {data['report_date']}
+                  {data['report_date'] !== ''
+                    ? data['report_date']
+                    : detail.result_display.date}
                 </Moment>
               </span>
             </p>
           </div>
           <div className='EntitySpacer'>&nbsp;</div>
-          {html}
+          {feature !== 'CQLExecutionTask'
+            ? html
+            : detail.result_display.result_content}
         </div>
         <div className={this.state.report_modal ? 'modal is-active' : 'modal'}>
           <div className='modal-background' />

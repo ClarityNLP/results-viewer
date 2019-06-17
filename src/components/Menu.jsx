@@ -87,6 +87,7 @@ export default class Menu extends Component {
             </a>
             <a
               href='/runner'
+
               className={`nav-link has-text-centered ${
                 builderActive ? 'active' : ''
               }`}
@@ -96,6 +97,7 @@ export default class Menu extends Component {
               </span>
               Query Builder
             </a>
+
             <a
               href='/'
               className={`nav-link has-text-centered ${
