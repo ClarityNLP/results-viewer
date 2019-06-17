@@ -37,6 +37,7 @@ class LimitForm extends React.Component {
 
   handleSubmit = event => {
     event.preventDefault();
+    event.stopPropagation();
 
     const { limit } = this.state;
 

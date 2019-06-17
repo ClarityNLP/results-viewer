@@ -3,30 +3,6 @@ import axios from 'axios';
 import Moment from 'react-moment';
 import 'moment-timezone';
 
-const getHtmlMatch = (text, start, end) => {
-  if (start === 0 && end === 0) {
-    return text;
-  }
-  return text.substr(start, end - start);
-};
-
-const getHtmlMarkup = (text, start, end) => {
-  if (start === 0 && end === 0) {
-    return text;
-  }
-  const keyword = getHtmlMatch(text, start, end);
-  const first = text.substr(0, start);
-  const last = text.substr(end, text.length - first.length - keyword.length);
-
-  return (
-    <p>
-      {first}
-      <span className='full-highlighting'>{keyword}</span>
-      {last}
-    </p>
-  );
-};
-
 class EntityFrame extends Component {
   constructor(props) {
     super(props);
@@ -65,20 +41,64 @@ class EntityFrame extends Component {
       });
   }
 
+  replacer = index => {
+    return index + ':REPLACETEXT';
+  };
+
+  getHighlightedText(text, highlights) {
+    if (!highlights) return text;
+
+    if (!text) return '';
+
+    if (text === '' || highlights.length <= 0) return text;
+
+    let s = text;
+    let foundText = /[0-9]\:REPLACETEXT/g;
+
+    for (let h in highlights) {
+      let highlight = highlights[h].toString();
+      if (highlight.trim() === '') break;
+
+      highlight = new RegExp(highlight, 'g');
+
+      s = s.replace(highlight, this.replacer(h));
+    }
+
+    const splitText = s.split(foundText);
+    const matches = s.match(foundText);
+
+    const highlightedText = splitText.reduce(
+      (arr, element, index) =>
+        matches[index]
+          ? [
+              ...arr,
+              element,
+              <span key={'highlight' + index} className='full-highlighting'>
+                {highlights[parseInt(matches[index], 10)]}
+              </span>
+            ]
+          : [...arr, element],
+      []
+    );
+
+    return highlightedText;
+  }
+
   render() {
+    const { report_text } = this.state;
     const { data } = this.props;
     const detail = data['detail'];
-    const start = detail['start'] || 0;
-    const end = detail['end'] || 0;
-    const text = data['text'];
-    const feature = data['pipeline_type'];
-
-    const html = getHtmlMarkup(text, start, end);
+    const {
+      result_content,
+      highlights,
+      sentence,
+      date
+    } = detail.result_display;
 
     return (
       <div key={data['id']} className='EntityFrame'>
         <div onClick={() => this.showDocument(data)}>
-          <div>
+          <div className='mb-10'>
             <p>
               {this.props.nlpql_feature === data['feature'] ? null : (
                 <span
@@ -91,18 +111,16 @@ class EntityFrame extends Component {
               )}
 
               <span className='is-size-7 has-text-weight-bold'>
-                <Moment format='MMM D, YYYY h:mm a'>
-                  {data['report_date'] !== ''
-                    ? data['report_date']
-                    : detail.result_display.date}
-                </Moment>
+                <Moment format='MMM D, YYYY h:mm a'>{date}</Moment>
               </span>
             </p>
           </div>
-          <div className='EntitySpacer'>&nbsp;</div>
-          {feature !== 'CQLExecutionTask'
-            ? html
-            : detail.result_display.result_content}
+          <div className='mb-10'>
+            <p>{this.getHighlightedText(result_content, highlights)}</p>
+          </div>
+          <div className='mb-10'>
+            <p>{this.getHighlightedText(sentence, highlights)}</p>
+          </div>
         </div>
         <div className={this.state.report_modal ? 'modal is-active' : 'modal'}>
           <div className='modal-background' />
@@ -118,7 +136,7 @@ class EntityFrame extends Component {
               />
             </header>
             <section className='modal-card-body'>
-              <pre>{this.state.report_text}</pre>
+              <pre>{this.getHighlightedText(report_text, highlights)}</pre>
             </section>
             <footer className='modal-card-foot' />
           </div>
