@@ -1,22 +1,11 @@
 import React, { Component } from 'react';
-import Moment from 'react-moment';
-import 'moment-timezone';
-import { FaCode, FaFileAlt, FaStop, FaTrash } from 'react-icons/fa';
 import ReactJson from 'react-json-view';
 import axios from 'axios';
+import JobItem from './JobItem';
 
-class TableJobs extends Component {
+export default class TableJobs extends Component {
   constructor(props) {
     super(props);
-    this.getStatus = this.getStatus.bind(this);
-    this.keyUpHandler = this.keyUpHandler.bind(this);
-    this.toggle = this.toggle.bind(this);
-    this.showJSON = this.showJSON.bind(this);
-    this.showNLPQL = this.showNLPQL.bind(this);
-    this.killJob = this.killJob.bind(this);
-    this.jobToggle = this.jobToggle.bind(this);
-    this.deleteJob = this.deleteJob.bind(this);
-    this.takeSeriousAction = this.takeSeriousAction.bind(this);
     this.downloadLink = React.createRef();
 
     if (props.filter !== '') {
@@ -24,6 +13,8 @@ class TableJobs extends Component {
     }
 
     this.state = {
+      limit: 20,
+      page: 1,
       jobs: props.jobs,
       stats: {},
       performance: {},
@@ -42,40 +33,40 @@ class TableJobs extends Component {
     };
   }
 
-  download = (url, fileName) => {
-    const { current: node } = this.downloadLink;
-    axios
-      .get(url, {
-        headers: { Authorization: 'Bearer ' + this.props.accessToken }
-      })
-      .then(response => {
-        var binaryData = [];
-        binaryData.push(response.data);
-        var windowUrl = window.URL || window.webkitURL;
-        var url = windowUrl.createObjectURL(new Blob(binaryData, {type: "text/csv"}))
-        node.href = url;
-        node.download = `${fileName}.csv`;
-        node.click();
-        windowUrl.revokeObjectURL(url);
-      })
-      .catch(err => {
-        console.error(err);
+  componentDidMount() {
+    const { filter } = this.state;
+    this.setJobs();
+
+    if (filter !== '') {
+      document.getElementById('jobs_filter').value = filter;
+    }
+  }
+
+  componentDidUpdate(prevProps) {
+    if (this.props.jobs !== prevProps.jobs) {
+      this.setJobs();
+    }
+
+    if (this.props.filter !== this.state.filter) {
+      this.setState({
+        filter: this.props.filter
       });
+    }
   }
 
-  toggle() {
-    this.setState({
-      modal: !this.state.modal
-    });
-  }
+  toggle = () => {
+    this.setState(state => ({
+      modal: !state.modal
+    }));
+  };
 
-  jobToggle() {
-    this.setState({
-      job_modal: !this.state.job_modal
-    });
-  }
+  jobToggle = () => {
+    this.setState(state => ({
+      job_modal: !state.job_modal
+    }));
+  };
 
-  showJSON(job, event) {
+  showJSON = (job, event) => {
     this.setState({
       modal: true,
       config: JSON.parse(job.config),
@@ -83,9 +74,9 @@ class TableJobs extends Component {
       modal_type: 'JSON',
       nlpql: ''
     });
-  }
+  };
 
-  showNLPQL(job, event) {
+  showNLPQL = (job, event) => {
     this.setState({
       modal: true,
       config: {},
@@ -93,9 +84,9 @@ class TableJobs extends Component {
       modal_type: 'NLPQL',
       nlpql: job.nlpql
     });
-  }
+  };
 
-  killJob(jobId) {
+  killJob = jobId => {
     this.setState({
       job_modal: true,
       job_modal_title: 'Kill job ' + jobId,
@@ -103,9 +94,9 @@ class TableJobs extends Component {
       job_id: jobId,
       job_danger_status: ''
     });
-  }
+  };
 
-  deleteJob(jobId) {
+  deleteJob = jobId => {
     this.setState({
       job_modal: true,
       job_modal_title: 'Delete job ' + jobId,
@@ -113,27 +104,31 @@ class TableJobs extends Component {
       job_id: jobId,
       job_danger_status: ''
     });
-  }
+  };
 
-  takeSeriousAction() {
+  takeSeriousAction = () => {
+    const { job_id, job_modal_type } = this.state;
+    const { url, accessToken, refreshJobs } = this.props;
+    let action_url = url + '/delete_job/' + job_id;
+
     this.setState({
       can_continue_action: false
     });
-    let action_url = this.props.url + '/delete_job/' + this.state.job_id;
-    if (this.state.job_modal_type === 'KILL') {
-      action_url = this.props.url + '/kill_job/' + this.state.job_id;
+
+    if (job_modal_type === 'KILL') {
+      action_url = url + '/kill_job/' + job_id;
     }
 
     axios
       .get(action_url, {
-        headers: { Authorization: 'Bearer ' + this.props.accessToken }
+        headers: { Authorization: 'Bearer ' + accessToken }
       })
       .then(response => {
         this.setState({
           job_danger_status: response.data,
           job_id: -1
         });
-        this.props.refreshJobs();
+        refreshJobs();
         setTimeout(() => {
           this.setState({
             job_modal: false,
@@ -141,32 +136,15 @@ class TableJobs extends Component {
           });
         }, 100);
       });
-  }
-
-  getStatus(row) {
-    if (row.status !== 'IN_PROGRESS') {
-      return <span>{row.status}</span>;
-    } else {
-      let luigi =
-        this.props.luigi +
-        '/static/visualiser/index.html#search__search=job=' +
-        row.nlp_job_id;
-      return (
-        <span>
-          <a target='_blank' href={luigi}>
-            {row.status}
-          </a>
-        </span>
-      );
-    }
-  }
+  };
 
   getJobStats = IDs => {
-    const url = this.props.url + `/stats/${IDs}`;
+    const { url, accessToken } = this.props;
+    const stats_url = url + `/stats/${IDs}`;
 
     axios
-      .get(url, {
-        headers: { Authorization: 'Bearer ' + this.props.accessToken }
+      .get(stats_url, {
+        headers: { Authorization: 'Bearer ' + accessToken }
       })
       .then(response => {
         this.setState({
@@ -179,11 +157,12 @@ class TableJobs extends Component {
   };
 
   getJobPerformance = IDs => {
-    const url = this.props.url + `/performance/${IDs}`;
+    const { url, accessToken } = this.props;
+    const performance_url = url + `/performance/${IDs}`;
 
     axios
-      .get(url, {
-        headers: { Authorization: 'Bearer ' + this.props.accessToken }
+      .get(performance_url, {
+        headers: { Authorization: 'Bearer ' + accessToken }
       })
       .then(response => {
         this.setState({
@@ -195,55 +174,83 @@ class TableJobs extends Component {
       });
   };
 
-  keyUpHandler() {
+  keyUpHandler = () => {
     let txt = document.getElementById('jobs_filter').value.toLowerCase();
     this.props.getFilter(txt);
-  }
+  };
 
-  componentDidUpdate(prevProps) {
-    if (this.props.jobs.length !== prevProps.jobs.length) {
-      const { jobs } = this.props;
-
-      this.setState(
-        {
-          jobs: jobs
-        },
-        () => {
-          const IDs = jobs.map(job => {
-            return job.nlp_job_id;
-          });
-
-          this.getJobPerformance(IDs);
-          this.getJobStats(IDs);
-        }
-      );
-    }
-
-    if (this.props.filter !== this.state.filter) {
-      this.setState({
-        filter: this.props.filter
-      });
-      // this.props.getFilter(this.props.filter);
-    }
-  }
-
-  componentDidMount() {
+  setJobs = () => {
     const { jobs } = this.props;
+    const { limit, page } = this.state;
+    const start = (page - 1) * limit;
+    const limitedJobs = jobs.slice(start, start + limit);
 
-    if (this.state.filter !== '') {
-      document.getElementById('jobs_filter').value = this.state.filter;
+    this.setState(
+      {
+        jobs: limitedJobs
+      },
+      () => {
+        const IDs = limitedJobs.map(job => {
+          return job.nlp_job_id;
+        });
+
+        this.getJobPerformance(IDs);
+        this.getJobStats(IDs);
+      }
+    );
+  };
+
+  nextPage = () => {
+    const { jobs } = this.props;
+    const { limit, page } = this.state;
+    const last_page = Math.ceil(jobs.length / limit);
+    const next = page + 1;
+
+    if (next > last_page) {
+      return;
     }
 
-    const IDs = jobs.map(job => {
-      return job.nlp_job_id;
-    });
+    this.setState(
+      state => ({
+        page: state.page + 1
+      }),
+      this.setJobs
+    );
+  };
 
-    this.getJobPerformance(IDs);
-    this.getJobStats(IDs);
-  }
+  prevPage = () => {
+    const { page } = this.state;
+    const prev = page - 1;
+
+    if (prev < 1) {
+      return;
+    }
+
+    this.setState(
+      state => ({
+        page: state.page - 1
+      }),
+      this.setJobs
+    );
+  };
 
   render() {
-    const { stats, performance } = this.state;
+    const {
+      stats,
+      performance,
+      page,
+      limit,
+      jobs,
+      modal,
+      modal_title,
+      modal_type,
+      nlpql,
+      config,
+      job_modal,
+      job_modal_title,
+      job_modal_type
+    } = this.state;
+    const { url, luigi } = this.props;
 
     const header_items = [
       'Name',
@@ -255,83 +262,6 @@ class TableJobs extends Component {
       'Actions'
     ].map(h => {
       return <th key={h}>{h}</th>;
-    });
-
-    let job_items = this.state.jobs.map(p => {
-      let cohort_size = null;
-      let accuracy = null;
-
-      if (stats[p.nlp_job_id]) {
-        cohort_size = stats[p.nlp_job_id].final_subjects;
-      }
-
-      if (performance[p.nlp_job_id]) {
-        accuracy = performance[p.nlp_job_id].accuracy_score;
-      }
-
-      return (
-        <tr className='JobRow' key={p.nlp_job_id}>
-          <td
-            onClick={e => this.props.selectJob(p, e)}
-            className='PhenotypeName'
-          >
-            <span>{p.phenotype_name}</span>
-          </td>
-          <td
-            style={{ minWidth: '120px' }}
-            onClick={e => this.props.selectJob(p, e)}
-          >
-            <Moment format='MMM D, YYYY h:mm a'>{p.date_started}</Moment>
-          </td>
-          <td onClick={e => this.props.selectJob(p, e)}>{this.getStatus(p)}</td>
-          <td>{cohort_size}</td>
-          <td>{accuracy}</td>
-          <td className='has-text-centered'>
-            <a
-              onClick={() => this.download(`${this.props.url}/job_results/${p.nlp_job_id}/phenotype_intermediate`, 'phenotype_intermediate')}
-            >
-              Features
-            </a>
-            <span> | </span>
-            <a
-              onClick={() => this.download(`${this.props.url}/job_results/${p.nlp_job_id}/phenotype`, 'phenotype')}
-            >
-              Cohort
-            </a>
-            <br />
-            <a
-              onClick={() => this.download(`${this.props.url}/job_results/${p.nlp_job_id}/annotations`, 'annotations')}
-            >
-              Annotations
-            </a>
-          </td>
-          <td style={{ minWidth: '100px' }}>
-            <span
-              title='View NLPQL'
-              className='JobListIcons'
-              onClick={e => this.showNLPQL(p, e)}
-            >
-              <FaFileAlt />
-            </span>
-            <span title='View JSON' onClick={e => this.showJSON(p, e)}>
-              <FaCode />
-            </span>
-            <span style={{ paddingRight: '20px' }}>&nbsp;</span>
-            {p.status === 'IN_PROGRESS' ? (
-              <span title='Kill Job' onClick={e => this.killJob(p.nlp_job_id)}>
-                <FaStop />
-              </span>
-            ) : (
-              <span
-                title='Delete Job'
-                onClick={e => this.deleteJob(p.nlp_job_id)}
-              >
-                <FaTrash />
-              </span>
-            )}
-          </td>
-        </tr>
-      );
     });
 
     return (
@@ -351,17 +281,57 @@ class TableJobs extends Component {
             </div>
           </div>
         </div>
+        <nav className='pagination'>
+          <a className='pagination-previous' onClick={this.prevPage}>
+            Previous
+          </a>
+          <a className='pagination-next' onClick={this.nextPage}>
+            Next page
+          </a>
+          <ul className='pagination-list'>
+            <li>
+              <span className='pagination-ellipsis'>{page}</span>
+            </li>
+            <li>
+              <span className='pagination-ellipsis'>of</span>
+            </li>
+            <li>
+              <span className='pagination-ellipsis'>
+                {Math.ceil(this.props.jobs.length / limit)}
+              </span>
+            </li>
+          </ul>
+        </nav>
         <table className='JobTable table is-striped'>
           <thead>
             <tr>{header_items}</tr>
           </thead>
-          <tbody>{job_items}</tbody>
+          <tbody>
+            {jobs.map((job, index) => {
+              return (
+                <JobItem
+                  key={'job' + index}
+                  luigi={luigi}
+                  selectJob={this.props.selectJob}
+                  showNLPQL={this.showNLPQL}
+                  showJSON={this.showJSON}
+                  killJob={this.killJob}
+                  deleteJob={this.deleteJob}
+                  job={job}
+                  url={url}
+                  stats={stats}
+                  performance={performance}
+                  downloadLink={this.downloadLink}
+                />
+              );
+            })}
+          </tbody>
         </table>
-        <div className={this.state.modal ? 'modal is-active' : 'modal'}>
+        <div className={modal ? 'modal is-active' : 'modal'}>
           <div className='modal-background' />
           <div className='modal-card'>
             <header className='modal-card-head'>
-              <p className='modal-card-title'>{this.state.modal_title}</p>
+              <p className='modal-card-title'>{modal_title}</p>
               <button
                 className='delete'
                 aria-label='close'
@@ -369,11 +339,11 @@ class TableJobs extends Component {
               />
             </header>
             <section className='modal-card-body'>
-              {this.state.modal_type === 'NLPQL' ? (
-                <div className='ReportTextPreview'>{this.state.nlpql}</div>
+              {modal_type === 'NLPQL' ? (
+                <div className='ReportTextPreview'>{nlpql}</div>
               ) : (
                 <ReactJson
-                  src={this.state.config}
+                  src={config}
                   displayObjectSize={false}
                   displayDataTypes={false}
                 />
@@ -382,11 +352,11 @@ class TableJobs extends Component {
             <footer className='modal-card-foot' />
           </div>
         </div>
-        <div className={this.state.job_modal ? 'modal is-active' : 'modal'}>
+        <div className={job_modal ? 'modal is-active' : 'modal'}>
           <div className='modal-background' />
           <div className='modal-card'>
             <header className='modal-card-head'>
-              <p className='modal-card-title'>{this.state.job_modal_title}</p>
+              <p className='modal-card-title'>{job_modal_title}</p>
               <button
                 className='delete'
                 aria-label='close'
@@ -395,7 +365,7 @@ class TableJobs extends Component {
             </header>
             <section className='modal-card-body'>
               {'Are you sure you want to ' +
-                this.state.job_modal_type.toLowerCase() +
+                job_modal_type.toLowerCase() +
                 ' this job?'}
             </section>
             <footer className='modal-card-foot'>
@@ -411,10 +381,8 @@ class TableJobs extends Component {
             </footer>
           </div>
         </div>
-        <a className="download-link" ref={this.downloadLink}></a>
+        <a className='download-link' ref={this.downloadLink} />
       </div>
     );
   }
 }
-
-export default TableJobs;
