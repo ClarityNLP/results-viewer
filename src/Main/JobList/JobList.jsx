@@ -32,11 +32,6 @@ class JobList extends Component {
   constructor(props) {
     super(props);
 
-    this.selectJob = this.selectJob.bind(this);
-    this.resetJobsList = this.resetJobsList.bind(this);
-    this.getAllJobs = this.getAllJobs.bind(this);
-    this.getFilter = this.getFilter.bind(this);
-
     this.state = {
       jobs: [],
       filtered_jobs: [],
@@ -47,7 +42,7 @@ class JobList extends Component {
     };
   }
 
-  getFilter(filter) {
+  getFilter = filter => {
     setTimeout(() => {
       let new_jobs = this.state.jobs.filter(f => {
         let name = f.phenotype_name.toLowerCase();
@@ -64,9 +59,9 @@ class JobList extends Component {
         filtered_jobs: new_jobs
       });
     }, 25);
-  }
+  };
 
-  getAllJobs() {
+  getAllJobs = () => {
     this.setState(prevState => ({
       jobs: [],
       show_list: true
@@ -89,7 +84,7 @@ class JobList extends Component {
           filtered_jobs: filtered_jobs
         }));
       });
-  }
+  };
 
   componentDidMount() {
     this.getAllJobs();
@@ -111,14 +106,14 @@ class JobList extends Component {
     }
   }
 
-  resetJobsList() {
+  resetJobsList = () => {
     this.setState(prevState => ({
       job: {},
       show_list: true
     }));
-  }
+  };
 
-  selectJob(p, e) {
+  selectJob = (p, e) => {
     //console.log(p);
     if (p !== null && p['nlp_job_id'] !== -1) {
       this.setState(prevState => ({
@@ -126,7 +121,7 @@ class JobList extends Component {
         show_list: false
       }));
     }
-  }
+  };
 
   render() {
     return (
