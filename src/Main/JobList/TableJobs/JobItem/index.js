@@ -15,6 +15,19 @@ export default class JobItem extends Component {
   }
 
   componentDidMount() {
+    this.setPerformanceAndStats();
+  }
+
+  componentDidUpdate(prevProps) {
+    if (
+      this.props.stats !== prevProps.stats ||
+      this.props.performance !== prevProps.performance
+    ) {
+      this.setPerformanceAndStats();
+    }
+  }
+
+  setPerformanceAndStats = () => {
     const { job, stats, performance } = this.props;
     let new_cohort_size = null;
     let new_accuracy = null;
@@ -31,7 +44,7 @@ export default class JobItem extends Component {
       cohort_size: new_cohort_size,
       accuracy: new_accuracy
     });
-  }
+  };
 
   download = (url, fileName) => {
     const { accessToken, downloadLink } = this.props;

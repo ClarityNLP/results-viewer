@@ -311,6 +311,7 @@ export default class TableJobs extends Component {
               return (
                 <JobItem
                   key={'job' + index}
+                  accessToken={this.props.accessToken}
                   luigi={luigi}
                   selectJob={this.props.selectJob}
                   showNLPQL={this.showNLPQL}
