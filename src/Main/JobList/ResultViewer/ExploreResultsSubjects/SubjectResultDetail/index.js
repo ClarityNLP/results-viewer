@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import PhenotypeDetail from './PhenotypeDetail';
 import axios from 'axios';
+import { FaArrowLeft, FaArrowRight } from 'react-icons/fa';
 
 const placeholder = null;
 
@@ -11,7 +12,7 @@ class SubjectResultDetail extends Component {
     this.showPhenotype = this.showPhenotype.bind(this);
     this.isActivePhenotype = this.isActivePhenotype.bind(this);
     this.getChildButtons = this.getChildButtons.bind(this);
-    this.showPhenotypeTypDetail = this.showPhenotypeTypDetail.bind(this);
+    this.showPhenotypeDetail = this.showPhenotypeDetail.bind(this);
 
     this.state = {
       subject: props.subject,
@@ -70,17 +71,17 @@ class SubjectResultDetail extends Component {
   }
 
   showPhenotype(data, index, e) {
-    // console.log(data);
-    this.setState({
+    this.setState(state => ({
       selected_result: data,
       selected_result_index: index,
-      results: this.state.orig_results
-    });
+      results: state.orig_results.filter(result => {
+        return data.name === result.nlpql_feature;
+      })
+    }));
   }
 
-  showPhenotypeTypDetail(name) {
+  showPhenotypeDetail(name) {
     if (this.state.loading) {
-      console.log('wait a minute for loading');
       return;
     }
     this.setState(
@@ -153,7 +154,7 @@ class SubjectResultDetail extends Component {
           <div key={name}>
             <button
               className='PhenotypeDetailButtons button'
-              onClick={e => this.showPhenotypeTypDetail(name)}
+              onClick={e => this.showPhenotypeDetail(name)}
             >
               <span className='PhenotypeSubDetailButtons'>{name}</span>
             </button>
@@ -206,7 +207,7 @@ class SubjectResultDetail extends Component {
           config={config}
           patient_id={subject._id}
           job_id={this.state.job_id}
-          showPhenotypeTypDetail={this.showPhenotypeTypDetail}
+          showPhenotypeDetail={this.showPhenotypeDetail}
         />
       );
     });
@@ -227,12 +228,6 @@ class SubjectResultDetail extends Component {
               >
                 Previous
               </a>
-              <a
-                className='pagination-next'
-                onClick={e => this.props.navigateSubject(1, e)}
-              >
-                Next page
-              </a>
               <ul className='pagination-list'>
                 <li>
                   <span className='pagination-ellipsis'>
@@ -246,6 +241,12 @@ class SubjectResultDetail extends Component {
                   <span className='pagination-ellipsis'>{total}</span>
                 </li>
               </ul>
+              <a
+                className='pagination-next'
+                onClick={e => this.props.navigateSubject(1, e)}
+              >
+                Next page
+              </a>
             </nav>
           </div>
         </div>

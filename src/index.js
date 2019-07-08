@@ -1,5 +1,5 @@
 import React from 'react';
-import registerServiceWorker from './registerServiceWorker';
+// import registerServiceWorker from './registerServiceWorker';
 import ReactDOM from 'react-dom';
 import axios from 'axios';
 import { loadUser } from 'redux-oidc';

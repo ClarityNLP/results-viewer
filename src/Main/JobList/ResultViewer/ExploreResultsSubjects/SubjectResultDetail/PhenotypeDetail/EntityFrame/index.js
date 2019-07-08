@@ -1,7 +1,5 @@
 import React, { Component } from 'react';
 import axios from 'axios';
-import Moment from 'react-moment';
-import 'moment-timezone';
 
 class EntityFrame extends Component {
   constructor(props) {
@@ -53,7 +51,7 @@ class EntityFrame extends Component {
     if (text === '' || highlights.length <= 0) return text;
 
     let s = text;
-    let foundText = /[0-9]\:REPLACETEXT/g;
+    let foundText = /[0-9]:REPLACETEXT/g;
 
     for (let h in highlights) {
       let highlight = highlights[h].toString();
@@ -88,12 +86,7 @@ class EntityFrame extends Component {
     const { report_text } = this.state;
     const { data } = this.props;
     const detail = data['detail'];
-    const {
-      result_content,
-      highlights,
-      sentence,
-      date
-    } = detail.result_display;
+    const { highlights, sentence } = detail.result_display;
 
     return (
       <div key={data['id']} className='EntityFrame'>
@@ -109,14 +102,7 @@ class EntityFrame extends Component {
                   {data['feature']}
                 </span>
               )}
-
-              <span className='is-size-7 has-text-weight-bold'>
-                <Moment format='MMM D, YYYY h:mm a'>{date}</Moment>
-              </span>
             </p>
-          </div>
-          <div className='mb-10'>
-            <p>{this.getHighlightedText(result_content, highlights)}</p>
           </div>
           <div className='mb-10'>
             <p>{this.getHighlightedText(sentence, highlights)}</p>

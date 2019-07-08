@@ -14,10 +14,6 @@ export default class JobItem extends Component {
     };
   }
 
-  componentDidMount() {
-    this.setPerformanceAndStats();
-  }
-
   componentDidUpdate(prevProps) {
     if (
       this.props.stats !== prevProps.stats ||

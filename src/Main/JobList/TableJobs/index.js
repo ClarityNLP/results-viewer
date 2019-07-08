@@ -194,8 +194,10 @@ export default class TableJobs extends Component {
           return job.nlp_job_id;
         });
 
-        this.getJobPerformance(IDs);
-        this.getJobStats(IDs);
+        if (IDs.length > 0) {
+          this.getJobPerformance(IDs);
+          this.getJobStats(IDs);
+        }
       }
     );
   };
@@ -382,7 +384,9 @@ export default class TableJobs extends Component {
             </footer>
           </div>
         </div>
-        <a className='download-link' ref={this.downloadLink} />
+        <a className='download-link' ref={this.downloadLink}>
+          reference to download links
+        </a>
       </div>
     );
   }

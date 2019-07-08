@@ -1,136 +1,25 @@
 import React, { Component } from 'react';
 import axios from 'axios';
-import _ from 'lodash';
 import uuid from 'uuid';
+import ResultData from './ResultData';
 
 const ALL = 4;
-const page_size = 100;
-
-class ResultData {
-  constructor(callback, job, get_url, accessToken) {
-    this._dataList = [];
-    this._end = page_size;
-    this._pending = false;
-    this._dataVersion = 0;
-    this._callback = callback;
-    this.job = job;
-    this.get_url = get_url;
-    this.new_last_id = '';
-    this.size = page_size;
-    this.no_more = false;
-    this.columns = [];
-    this.accessToken = accessToken;
-
-    this.getDataStore(job, get_url, true, null, accessToken);
-  }
-
-  getDataStore(job, get_url, first, resolve, accessToken) {
-    if (first) {
-      axios
-        .get(get_url, {
-          headers: { Authorization: 'Bearer ' + accessToken }
-        })
-        .then(response => {
-          if (response.data.success) {
-            let results = response.data.results;
-            this.new_last_id = response.data.new_last_id;
-            this.size = response.data.count;
-            this.no_more = response.data.no_more;
-            this.columns = response.data.columns;
-            this._dataList = results;
-          }
-          this._callback(page_size);
-        });
-    } else {
-      axios
-        .get(get_url + '?last_id=' + this.new_last_id, {
-          headers: { Authorization: 'Bearer ' + accessToken }
-        })
-        .then(response => {
-          if (response.data.success) {
-            let results = response.data.results;
-            if (resolve !== null) {
-              resolve({
-                last_id: response.data.new_last_id,
-                no_more: response.data.no_more,
-                results: results
-              });
-            }
-          }
-        });
-    }
-  }
-
-  appendResults(results) {
-    this._dataList = _.concat(this._dataList, results);
-  }
-
-  getDataVersion() {
-    return this._dataVersion;
-  }
-
-  getSize() {
-    return this.size;
-  }
-
-  fetchRange(end) {
-    if (this._pending) {
-      return;
-    }
-
-    this._pending = true;
-    return new Promise(resolve => {
-      this.getDataStore(this.job, this.get_url, false, resolve);
-    }).then(res => {
-      console.log('done loading data store');
-      this._pending = false;
-      this._end = end;
-      this._dataVersion++;
-      this.new_last_id = res.last_id;
-      this.no_more = res.no_more;
-      this.appendResults(res.results);
-
-      this._callback(end);
-    });
-  }
-
-  getObjectAt(index) {
-    if (index >= this._end) {
-      this.fetchRange(Math.min(this.size, index + page_size));
-      return null;
-    }
-    if (this._dataList.length > index) {
-      return this._dataList[index];
-    }
-    return null;
-  }
-}
 
 class RawResultsView extends Component {
   constructor(props) {
     super(props);
 
-    this.updateData = this.updateData.bind(this);
-    this.checkExportApiHealth = this.checkExportApiHealth.bind(this);
-    this.openExportModal = this.openExportModal.bind(this);
-    this.toggle = this.toggle.bind(this);
-    this.toggleAlert = this.toggleAlert.bind(this);
-
     let final_results = props.mode === ALL;
     let job_id = props.job.nlp_job_id;
     let get_url =
-      this.props.url +
-      '/phenotype_paged_results/' +
-      job_id +
-      '/' +
-      final_results;
+      props.url + '/phenotype_paged_results/' + job_id + '/' + final_results;
 
     this.state = {
       ResultData: new ResultData(
         this.updateData,
         props.job,
         get_url,
-        this.props.accessToken
+        props.accessToken
       ),
       end: 0,
       mode: props.mode,
@@ -144,57 +33,20 @@ class RawResultsView extends Component {
     this.checkExportApiHealth();
   }
 
-  toggle() {
-    this.setState({
-      modal: !this.state.modal
-    });
-  }
-
-  checkExportApiHealth() {
-    let __this = this;
-    axios
-      .get(`https://${window._env_.REACT_APP_API_HOST}/nlp/export_ohdsi`, {
-        headers: { Authorization: 'Bearer ' + this.props.accessToken }
-      })
-      .then(function(response) {
-        __this.setState({
-          exportApiHealth: true
-        });
-      })
-      .catch(function(error) {
-        __this.setState({
-          exportApiHealth: false
-        });
-      });
-  }
-
   componentDidUpdate(prevProps) {
-    if (prevProps.mode !== this.props.mode) {
-      let final_results = this.props.mode === ALL;
-      let job_id = this.props.job.nlp_job_id;
+    const { mode, job, url, accessToken } = this.props;
+
+    if (prevProps.mode !== mode) {
+      let final_results = mode === ALL;
+      let job_id = job.nlp_job_id;
       let get_url =
-        this.props.url +
-        '/phenotype_paged_results/' +
-        job_id +
-        '/' +
-        final_results;
+        url + '/phenotype_paged_results/' + job_id + '/' + final_results;
 
       this.setState({
-        ResultData: new ResultData(
-          this.updateData,
-          this.props.job,
-          get_url,
-          this.props.accessToken
-        ),
-        mode: this.props.mode
+        ResultData: new ResultData(this.updateData, job, get_url, accessToken),
+        mode: mode
       });
     }
-  }
-
-  updateData(end) {
-    this.setState({
-      end: end
-    });
   }
 
   componentWillUnmount() {
@@ -204,7 +56,38 @@ class RawResultsView extends Component {
     });
   }
 
-  toggleAlert(response) {
+  toggle = () => {
+    this.setState(state => ({
+      modal: !state.modal
+    }));
+  };
+
+  checkExportApiHealth = () => {
+    const { accessToken } = this.props;
+
+    axios
+      .get(`https://${window._env_.REACT_APP_API_HOST}/nlp/export_ohdsi`, {
+        headers: { Authorization: 'Bearer ' + accessToken }
+      })
+      .then(response => {
+        this.setState({
+          exportApiHealth: true
+        });
+      })
+      .catch(error => {
+        this.setState({
+          exportApiHealth: false
+        });
+      });
+  };
+
+  updateData = end => {
+    this.setState({
+      end: end
+    });
+  };
+
+  toggleAlert = response => {
     if (response === true) {
       this.setState({
         successAlert: true,
@@ -216,21 +99,22 @@ class RawResultsView extends Component {
         failureAlert: true
       });
     }
-  }
+  };
 
-  openExportModal() {
+  openExportModal = () => {
     this.toggle();
     this.setState({
       successAlert: false,
       failureAlert: false
     });
-  }
+  };
 
   // Function to export intermediate results to OMOP database
-  exportToOMOP() {
-    let __this = this;
+  exportToOMOP = () => {
+    const { job, accessToken } = this.props;
+
     let data = JSON.stringify({
-      job_id: this.props.job.nlp_job_id,
+      job_id: job.nlp_job_id,
       result_name: document.getElementById('omopResultName').value,
       omop_domain: document.getElementById('omopDomain').value,
       concept_id: document.getElementById('omopConceptId').value
@@ -243,37 +127,27 @@ class RawResultsView extends Component {
         {
           headers: {
             'Content-Type': 'application/json',
-            Authorization: 'Bearer ' + this.props.accessToken
+            Authorization: 'Bearer ' + accessToken
           }
         }
       )
-
-      .then(function(response) {
-        let data = eval(response);
+      .then(response => {
+        let data = response;
         let message = data['data'];
-        __this.toggleAlert(true);
-        __this.setState({
+        this.toggleAlert(true);
+        this.setState({
           alertMessage: message
         });
       })
-      .catch(function(error) {
-        let data = eval(error.response);
+      .catch(error => {
+        let data = error.response;
         let message = data['data'];
-        __this.toggleAlert(false);
-        __this.setState({
+        this.toggleAlert(false);
+        this.setState({
           alertMessage: message
         });
       });
-  }
-
-  populateResultListInModal(result_names) {
-    let array = Array.from(result_names);
-    let items = [];
-    for (let i = 0; i < array.length; i++) {
-      items.push(<option key={array[i]}>{array[i]}</option>);
-    }
-    return items;
-  }
+  };
 
   getHeadings = () => {
     const { ResultData } = this.state;
@@ -289,6 +163,25 @@ class RawResultsView extends Component {
     return <tr key={uuid.v4()}>{tmp}</tr>;
   };
 
+  createListFromObject = object => {
+    if (!object) return;
+    let list = [];
+
+    for (let param in object) {
+      console.log(param);
+
+      list.push(
+        <li>
+          <span>
+            {param} : {object[param]}
+          </span>
+        </li>
+      );
+    }
+
+    return list;
+  };
+
   getRows = () => {
     const { ResultData } = this.state;
 
@@ -297,7 +190,15 @@ class RawResultsView extends Component {
 
       for (let prop in result) {
         if (result.hasOwnProperty(prop)) {
-          tmp.push(<td key={uuid.v4()}>{result[prop]}</td>);
+          if (typeof result[prop] === 'object') {
+            tmp.push(
+              <td key={uuid.v4()}>
+                <ul>{this.createListFromObject(result[prop])}</ul>
+              </td>
+            );
+          } else {
+            tmp.push(<td key={uuid.v4()}>{result[prop]}</td>);
+          }
         }
       }
 
@@ -306,25 +207,34 @@ class RawResultsView extends Component {
   };
 
   render() {
-    let { ResultData } = this.state;
+    const {
+      ResultData,
+      exportApiHealth,
+      modal,
+      alertMessage,
+      successAlert,
+      failureAlert,
+      report_text
+    } = this.state;
+    const { job } = this.props;
 
     // iterating over the results to get the unique nlpql_feature names
-    let result_names = new Set();
+    let result_names = [];
 
     ResultData._dataList.forEach(function(resultData) {
-      result_names.add(resultData.nlpql_feature);
+      result_names.push(resultData.nlpql_feature);
     });
 
     return (
       <React.Fragment>
-        {this.state.ResultData.getSize() > 0 ? (
+        {ResultData.getSize() > 0 ? (
           <div className='RawResultsTable column is-full'>
             <table className='table is-striped is-bordered'>
               <thead>{this.getHeadings()}</thead>
               <tbody>{this.getRows()}</tbody>
             </table>
 
-            {this.state.exportApiHealth === true ? (
+            {exportApiHealth === true ? (
               <div className='exportButton'>
                 <button
                   className='button is-priamry is-large'
@@ -336,12 +246,12 @@ class RawResultsView extends Component {
             ) : null}
 
             <div id='exportResultModal'>
-              <div className={this.state.modal ? 'modal is-active' : 'modal'}>
+              <div className={modal ? 'modal is-active' : 'modal'}>
                 <div className='modal-background' />
                 <div className='modal-card'>
                   <header className='modal-card-head'>
                     <p className='modal-card-title'>
-                      Export Results - Job ID: {this.props.job.nlp_job_id}
+                      Export Results - Job ID: {job.nlp_job_id}
                     </p>
                     <button
                       className='delete'
@@ -351,15 +261,13 @@ class RawResultsView extends Component {
                   </header>
                   <section className='modal-card-body'>
                     <form>
-                      {this.state.successAlert === true ? (
+                      {successAlert === true ? (
                         <div class='notification is-success'>
-                          {this.state.alertMessage}
+                          {alertMessage}
                         </div>
                       ) : null}
-                      {this.state.failureAlert === true ? (
-                        <div class='notification is-danger'>
-                          {this.state.alertMessage}
-                        </div>
+                      {failureAlert === true ? (
+                        <div class='notification is-danger'>{alertMessage}</div>
                       ) : null}
                       <div className='field'>
                         <label className='label' htmlFor='resultName'>
@@ -370,7 +278,9 @@ class RawResultsView extends Component {
                           name='resultName'
                           id='omopResultName'
                         >
-                          {this.populateResultListInModal(result_names)}
+                          {result_names.map((item, index) => {
+                            return <option key={'item' + index}>{item}</option>;
+                          })}
                         </select>
                       </div>
                       <div className='field'>
@@ -395,7 +305,7 @@ class RawResultsView extends Component {
                           <option>Measurement</option>
                         </select>
                       </div>
-                      <pre>{this.state.report_text}</pre>
+                      <pre>{report_text}</pre>
                     </form>
                   </section>
                   <footer className='modal-card-foot'>

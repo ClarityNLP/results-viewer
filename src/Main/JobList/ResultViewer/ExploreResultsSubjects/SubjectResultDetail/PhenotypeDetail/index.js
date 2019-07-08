@@ -2,18 +2,14 @@ import React, { Component } from 'react';
 import axios from 'axios';
 import EntityFrame from './EntityFrame';
 import { FaCheck, FaTimes, FaStickyNote } from 'react-icons/fa';
+import Moment from 'react-moment';
+import 'moment-timezone';
 
 const suffixes = ['_1', '_2'];
 
 class PhenotypeDetail extends Component {
   constructor(props) {
     super(props);
-    this.resetViewAll = this.resetViewAll.bind(this);
-    this.writeFeedback = this.writeFeedback.bind(this);
-    this.saveComments = this.saveComments.bind(this);
-    this.toggle = this.toggle.bind(this);
-    this.toggleAlert = this.toggleAlert.bind(this);
-    this.onDismiss = this.onDismiss.bind(this);
 
     this.state = {
       view_mode: 'all',
@@ -45,21 +41,21 @@ class PhenotypeDetail extends Component {
   }
 
   // Function to save the comment entered by the user
-  saveComments() {
+  saveComments = () => {
     let comment = document.getElementById('feedbackComments').value;
     this.user_comments = comment;
     this.toggle();
-  }
+  };
 
-  onDismiss() {
+  onDismiss = () => {
     this.setState({
       successAlert: false,
       failureAlert: false
     });
-  }
+  };
 
   // Function to toggle between success and failure alerts
-  toggleAlert(response) {
+  toggleAlert = response => {
     if (response === true) {
       this.setState({
         successAlert: true,
@@ -71,10 +67,10 @@ class PhenotypeDetail extends Component {
         failureAlert: true
       });
     }
-  }
+  };
 
   // Function to write nlpql feedback back to mongoDB
-  writeFeedback(option) {
+  writeFeedback = option => {
     let data = {};
     data['job_id'] = this.props.job_id;
     data['patient_id'] = Number(this.props.patient_id);
@@ -105,9 +101,9 @@ class PhenotypeDetail extends Component {
         Authorization: 'Bearer ' + this.props.accessToken
       }
     });
-  }
+  };
 
-  resetViewAll(detail_results) {
+  resetViewAll = detail_results => {
     if (!detail_results) {
       detail_results = this.detailed_results;
     }
@@ -152,7 +148,7 @@ class PhenotypeDetail extends Component {
     this.setState({
       results: results
     });
-  }
+  };
 
   componentDidMount() {
     let get_url = this.url + '/phenotype_results_by_id/' + this.id_string;
@@ -179,25 +175,38 @@ class PhenotypeDetail extends Component {
     }
   }
 
-  toggle() {
+  toggle = () => {
     this.setState({
       modal: !this.state.modal
     });
-  }
+  };
 
   render() {
     const { correct_btn, incorrect_btn } = this.state;
     let { selected_result, selected_result_index, results } = this.state;
+
     let results_view = results.map(d => {
+      const detail = d['detail'];
+      const { result_content, date } = detail.result_display;
+
       return (
-        <EntityFrame
-          accessToken={this.props.accessToken}
-          key={d['index']}
-          data={d}
-          url={this.url}
-          showPhenotypeTypDetail={this.props.showPhenotypeTypDetail}
-          nlpql_feature={selected_result.nlpql_feature}
-        />
+        <React.Fragment key={d['index']}>
+          <div className='column'>
+            <h5 className='has-text-weight-semibold'>
+              <span>
+                <Moment format='DD/MM/YYYY'>{date}</Moment>
+              </span>
+              <span> : {result_content}</span>
+            </h5>
+          </div>
+          <EntityFrame
+            accessToken={this.props.accessToken}
+            data={d}
+            url={this.url}
+            showPhenotypeTypDetail={this.props.showPhenotypeTypDetail}
+            nlpql_feature={selected_result.nlpql_feature}
+          />
+        </React.Fragment>
       );
     });
 
