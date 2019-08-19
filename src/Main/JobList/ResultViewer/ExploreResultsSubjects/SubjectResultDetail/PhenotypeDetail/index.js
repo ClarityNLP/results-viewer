@@ -73,7 +73,7 @@ class PhenotypeDetail extends Component {
   writeFeedback = option => {
     let data = {};
     data['job_id'] = this.props.job_id;
-    data['patient_id'] = Number(this.props.patient_id);
+    data['patient_id'] = this.props.patient_id;
     data['comments'] = this.user_comments;
 
     if (option === 1) {
@@ -199,13 +199,15 @@ class PhenotypeDetail extends Component {
               <span> : {result_content}</span>
             </h5>
           </div>
-          <EntityFrame
-            accessToken={this.props.accessToken}
-            data={d}
-            url={this.url}
-            showPhenotypeTypDetail={this.props.showPhenotypeTypDetail}
-            nlpql_feature={selected_result.nlpql_feature}
-          />
+          {d.detail.result_display.sentence ? (
+            <EntityFrame
+              accessToken={this.props.accessToken}
+              data={d}
+              url={this.url}
+              showPhenotypeTypDetail={this.props.showPhenotypeTypDetail}
+              nlpql_feature={selected_result.nlpql_feature}
+            />
+          ) : null}
         </React.Fragment>
       );
     });

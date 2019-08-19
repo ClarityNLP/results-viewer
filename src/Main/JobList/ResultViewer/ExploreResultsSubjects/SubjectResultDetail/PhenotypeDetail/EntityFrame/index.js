@@ -54,7 +54,7 @@ class EntityFrame extends Component {
     let foundText = /[0-9]:REPLACETEXT/g;
 
     for (let h in highlights) {
-      let highlight = highlights[h].toString();
+      let highlight = highlights[h].toString().replace(/[^\w\s]/gi, '');
       if (highlight.trim() === '') break;
 
       highlight = new RegExp(highlight, 'g');
@@ -104,9 +104,11 @@ class EntityFrame extends Component {
               )}
             </p>
           </div>
-          <div className='mb-10'>
-            <p>{this.getHighlightedText(sentence, highlights)}</p>
-          </div>
+          {sentence ? (
+            <div className='mb-10'>
+              <p>{this.getHighlightedText(sentence, highlights)}</p>
+            </div>
+          ) : null}
         </div>
         <div className={this.state.report_modal ? 'modal is-active' : 'modal'}>
           <div className='modal-background' />
@@ -122,7 +124,11 @@ class EntityFrame extends Component {
               />
             </header>
             <section className='modal-card-body'>
-              <pre>{this.getHighlightedText(report_text, highlights)}</pre>
+              <pre>
+                {report_text
+                  ? this.getHighlightedText(report_text, highlights)
+                  : null}
+              </pre>
             </section>
             <footer className='modal-card-foot' />
           </div>
