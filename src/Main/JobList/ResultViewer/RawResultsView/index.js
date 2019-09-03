@@ -66,7 +66,7 @@ class RawResultsView extends Component {
     const { accessToken } = this.props;
 
     axios
-      .get(`https://${window._env_.REACT_APP_API_HOST}/nlp/export_ohdsi`, {
+      .get(`${window.location.protocol}//${window._env_.API_HOST}/nlp/export_ohdsi`, {
         headers: { Authorization: 'Bearer ' + accessToken }
       })
       .then(response => {
@@ -122,7 +122,7 @@ class RawResultsView extends Component {
 
     axios
       .post(
-        `https://${window._env_.REACT_APP_API_HOST}/nlp/export_ohdsi`,
+        `${window.location.protocol}://${window._env_.API_HOST}/nlp/export_ohdsi`,
         data,
         {
           headers: {

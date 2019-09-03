@@ -54,8 +54,8 @@ class QueryBuilder extends Component {
   componentWillMount() {
     if (query_param) {
       const url =
-        'https://' +
-        window._env_.REACT_APP_API_HOST +
+        window.location.protocol + '//' +
+        window._env_.API_HOST +
         '/nlp/get_query/' +
         query_param;
 
@@ -79,9 +79,9 @@ class QueryBuilder extends Component {
       });
     }
 
-    const url = `https://${
-      process.env.REACT_APP_SOLR_URL
-    }/solr/sample/select?facet.field=source&facet=on&fl=facet_counts&indent=on&q=*:*&rows=1&wt=json`;
+    const url = `${window.location.protocol}//${
+      window._env_.SOLR_URL
+    }/sample/select?facet.field=source&facet=on&fl=facet_counts&indent=on&q=*:*&rows=1&wt=json`;
 
     return axios
       .get(url, {

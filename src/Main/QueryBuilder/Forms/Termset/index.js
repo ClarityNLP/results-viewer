@@ -6,7 +6,7 @@ import Axios from 'axios';
 
 const initialState = {
   termExpanderUrl:
-    'https://' + window._env_.REACT_APP_API_HOST + '/nlp/nlpql_expander',
+    window.location.protocol + '//' + window._env_.API_HOST + '/nlp/nlpql_expander',
   collapse: true,
   termsetName: '',
   termsetTerms: '',
