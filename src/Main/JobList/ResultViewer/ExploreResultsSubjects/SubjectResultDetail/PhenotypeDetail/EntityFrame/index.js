@@ -48,7 +48,9 @@ class EntityFrame extends Component {
 
     if (!text) return '';
 
-    if (text === '' || highlights.length <= 0) return text;
+    if (text === '' || highlights.length < 1) return text;
+
+    console.log('HIGHLIGHTS:', highlights);
 
     let s = text;
     let foundText = /[0-9]:REPLACETEXT/g;
@@ -57,7 +59,11 @@ class EntityFrame extends Component {
       let highlight = highlights[h].toString().replace(/[^\w\s]/gi, '');
       if (highlight.trim() === '') break;
 
-      highlight = new RegExp(highlight, 'g');
+      try {
+        highlight = new RegExp(highlight, 'g');
+      } catch (e) {
+        console.log('Error:', e);
+      }
 
       s = s.replace(highlight, this.replacer(h));
     }
