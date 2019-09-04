@@ -12,7 +12,7 @@ import './style/style.scss';
 // registerServiceWorker(); //TODO causing issue on USER_EXPIRED
 
 const history = createBrowserHistory({
-  basename: window._env_.PUBLIC_URL
+  basename: process.env.PUBLIC_URL
 });
 
 const initialState = {};
