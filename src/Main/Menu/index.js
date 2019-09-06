@@ -56,9 +56,10 @@ export default class Menu extends Component {
 
   render() {
     const {
-      REACT_APP_DASHBOARD_URL,
-      REACT_APP_INGEST_URL,
-      REACT_APP_DOCUMETATION_URL
+      DASHBOARD_URL,
+      INGEST_URL,
+      RESULTS_URL,
+      DOCUMETATION_URL
     } = window._env_;
 
     const { builderActive, resultsActive } = this.state;
@@ -68,7 +69,7 @@ export default class Menu extends Component {
         <nav id='menu' className={this.props.isMenuOpen ? 'open' : ''}>
           <div className='nav-links'>
             <a
-              href={`https://${REACT_APP_DASHBOARD_URL}`}
+              href={`${window.location.protocol}//${DASHBOARD_URL}`}
               className='nav-link has-text-centered'
             >
               <span className='link-icon is-size-4'>
@@ -77,7 +78,7 @@ export default class Menu extends Component {
               Dashboard
             </a>
             <a
-              href={`https://${REACT_APP_INGEST_URL}`}
+              href={`${window.location.protocol}//${INGEST_URL}`}
               className='nav-link has-text-centered'
             >
               <span className='link-icon is-size-4'>
@@ -87,7 +88,7 @@ export default class Menu extends Component {
             </a>
             <a
               href='/runner'
-
+              href={`${window.location.protocol}//${RESULTS_URL}/runner`}
               className={`nav-link has-text-centered ${
                 builderActive ? 'active' : ''
               }`}
@@ -99,7 +100,7 @@ export default class Menu extends Component {
             </a>
 
             <a
-              href='/'
+              href={`${window.location.protocol}//${RESULTS_URL}/`}
               className={`nav-link has-text-centered ${
                 resultsActive ? 'active' : ''
               }`}
@@ -110,7 +111,7 @@ export default class Menu extends Component {
               Results
             </a>
             <a
-              href={REACT_APP_DOCUMETATION_URL}
+              href={DOCUMETATION_URL}
               className='nav-link has-text-centered'
             >
               <span className='link-icon is-size-4'>
