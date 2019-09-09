@@ -93,8 +93,22 @@ class EntityFrame extends Component {
   render() {
     const { report_text } = this.state;
     const { data } = this.props;
-    const detail = data['detail'];
-    const { highlights, sentence } = detail.result_display;
+    const { detail } = data;
+    const { result_display } = detail;
+    let highlights = [];
+    let sentence = '';
+
+    if (result_display.sentence && result_display.sentence !== '') {
+      sentence = result_display.sentence;
+    } else {
+      sentence = data.sentence;
+    }
+
+    if (result_display.highlights && result_display.highlights !== '') {
+      highlights = result_display.highlights;
+    } else {
+      highlights = [data.sentence.substr(data.start, data.end)];
+    }
 
     return (
       <div key={data['id']} className='EntityFrame'>
@@ -112,11 +126,9 @@ class EntityFrame extends Component {
               )}
             </p>
           </div>
-          {sentence ? (
-            <div className='mb-10'>
-              <p>{this.getHighlightedText(sentence, highlights)}</p>
-            </div>
-          ) : null}
+          <div className='mb-10'>
+            <p>{this.getHighlightedText(sentence, highlights)}</p>
+          </div>
         </div>
         <div className={this.state.report_modal ? 'modal is-active' : 'modal'}>
           <div className='modal-background' />
