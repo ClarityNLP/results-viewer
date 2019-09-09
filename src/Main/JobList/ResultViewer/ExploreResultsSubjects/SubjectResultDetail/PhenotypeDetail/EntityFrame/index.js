@@ -56,7 +56,9 @@ class EntityFrame extends Component {
     let foundText = /[0-9]:REPLACETEXT/g;
 
     for (let h in highlights) {
-      let highlight = highlights[h].toString().replace(/[^\w\s]/gi, '');
+      let highlight = highlights[h]
+        .toString()
+        .replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
       if (highlight.trim() === '') break;
 
       try {
