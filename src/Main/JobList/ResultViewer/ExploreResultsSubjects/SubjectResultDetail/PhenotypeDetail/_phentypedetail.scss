@@ -1,0 +1,16 @@
+.PhenotypeDetailMain {
+  .columns {
+    margin: 0;
+  }
+
+  .highlight- {
+    &green {
+      background-color: lime;
+      color: white;
+    }
+    &red {
+      background-color: red;
+      color: white;
+    }
+  }
+}

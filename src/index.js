@@ -1,5 +1,5 @@
 import React from 'react';
-import registerServiceWorker from './registerServiceWorker';
+// import registerServiceWorker from './registerServiceWorker';
 import ReactDOM from 'react-dom';
 import axios from 'axios';
 import { loadUser } from 'redux-oidc';
@@ -11,12 +11,14 @@ import './style/style.scss';
 
 // registerServiceWorker(); //TODO causing issue on USER_EXPIRED
 
-const history = createBrowserHistory();
+const history = createBrowserHistory({
+  basename: process.env.PUBLIC_URL
+});
 
 const initialState = {};
 
 const apiClient = axios.create({
-  baseURL: `https://${window._env_.REACT_APP_API_HOST}`,
+  baseURL: `${window.location.protocol}//${window._env_.API_HOST}`,
   responseType: 'json',
   withCredentials: true
 });

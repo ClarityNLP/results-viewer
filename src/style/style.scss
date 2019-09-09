@@ -1,5 +1,5 @@
-@import "util/reset";
-@import "util/normalize";
+@import 'util/reset';
+@import 'util/normalize';
 
 // Set ClarityNLP brand colors
 $purple: #79589f;
@@ -8,11 +8,6 @@ $purple: #79589f;
 $primary: $purple;
 $link: $purple;
 
-@import "../../node_modules/bulma/bulma.sass";
+@import '../../node_modules/bulma/bulma.sass';
 
-@import "elements/slideout";
-@import "elements/menu";
-@import "elements/navbar-sso";
-@import "elements/transient";
-
-@import "main";
+@import '../Main/main';
