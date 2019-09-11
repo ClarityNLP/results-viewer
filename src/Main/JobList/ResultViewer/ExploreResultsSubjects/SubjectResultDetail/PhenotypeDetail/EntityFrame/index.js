@@ -104,7 +104,7 @@ class EntityFrame extends Component {
       sentence = detail.sentence;
     }
 
-    if (result_display.highlights && result_display.highlights !== '') {
+    if (result_display.highlights && result_display.highlights > 0) {
       highlights = result_display.highlights;
     } else {
       highlights = [sentence.substr(detail.start, detail.end)];
