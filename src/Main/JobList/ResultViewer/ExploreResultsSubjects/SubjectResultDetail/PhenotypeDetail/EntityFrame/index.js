@@ -50,8 +50,6 @@ class EntityFrame extends Component {
 
     if (text === '' || highlights.length < 1) return text;
 
-    console.log('HIGHLIGHTS:', highlights);
-
     let s = text;
     let foundText = /[0-9]:REPLACETEXT/g;
 
@@ -73,21 +71,23 @@ class EntityFrame extends Component {
     const splitText = s.split(foundText);
     const matches = s.match(foundText);
 
-    const highlightedText = splitText.reduce(
-      (arr, element, index) =>
-        matches[index]
-          ? [
-              ...arr,
-              element,
-              <span key={'highlight' + index} className='full-highlighting'>
-                {highlights[parseInt(matches[index], 10)]}
-              </span>
-            ]
-          : [...arr, element],
-      []
-    );
-
-    return highlightedText;
+    if (splitText.length > 1) {
+      return splitText.reduce(
+        (arr, element, index) =>
+          matches[index]
+            ? [
+                ...arr,
+                element,
+                <span key={'highlight' + index} className='full-highlighting'>
+                  {highlights[parseInt(matches[index], 10)]}
+                </span>
+              ]
+            : [...arr, element],
+        []
+      );
+    } else {
+      return text;
+    }
   }
 
   render() {
@@ -101,13 +101,13 @@ class EntityFrame extends Component {
     if (result_display.sentence && result_display.sentence !== '') {
       sentence = result_display.sentence;
     } else {
-      sentence = data.sentence;
+      sentence = detail.sentence;
     }
 
     if (result_display.highlights && result_display.highlights !== '') {
       highlights = result_display.highlights;
     } else {
-      highlights = [data.sentence.substr(data.start, data.end)];
+      highlights = [sentence.substr(detail.start, detail.end)];
     }
 
     return (
