@@ -191,7 +191,7 @@ class PhenotypeDetail extends Component {
 
       let date;
 
-      if (result_display.date !== '') {
+      if (result_display.date && result_display.date !== '') {
         date = result_display.date;
       } else {
         date = detail.report_date;
@@ -204,7 +204,13 @@ class PhenotypeDetail extends Component {
               <span>
                 <Moment format='DD/MM/YYYY'>{date}</Moment>
               </span>
-              <span> : {result_display.result_content}</span>
+              <span>
+                {' '}
+                :{' '}
+                {result_display.result_content
+                  ? result_display.result_content
+                  : null}
+              </span>
             </h5>
           </div>
           <EntityFrame
