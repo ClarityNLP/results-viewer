@@ -187,11 +187,21 @@ class PhenotypeDetail extends Component {
 
     let results_view = results.map(d => {
       const { detail } = d;
-      const { result_display } = detail;
+      let { result_display } = detail;
 
       let date;
 
-      if (result_display.date && result_display.date !== '') {
+      if (result_display === undefined || result_display === null) {
+        result_display = {
+          result_content: '',
+          date: '',
+          sentence: '',
+          start: 0,
+          end: 0
+        };
+      }
+
+      if (result_display.date !== '') {
         date = result_display.date;
       } else {
         date = detail.report_date;
@@ -204,13 +214,7 @@ class PhenotypeDetail extends Component {
               <span>
                 <Moment format='DD/MM/YYYY'>{date}</Moment>
               </span>
-              <span>
-                {' '}
-                :{' '}
-                {result_display.result_content
-                  ? result_display.result_content
-                  : null}
-              </span>
+              <span> : {result_display.result_content}</span>
             </h5>
           </div>
           <EntityFrame
