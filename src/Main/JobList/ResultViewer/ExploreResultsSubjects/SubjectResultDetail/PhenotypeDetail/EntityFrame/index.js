@@ -94,20 +94,35 @@ class EntityFrame extends Component {
     const { report_text } = this.state;
     const { data } = this.props;
     const { detail } = data;
-    const { result_display } = detail;
+    let { result_display } = detail;
     let highlights = [];
     let sentence = '';
 
+     if (result_display === undefined || result_display === null) {
+        result_display = {
+          'date': '',
+          'sentence': '',
+          'start': 0,
+          'end': 0
+        }
+     }
+
     if (result_display.sentence && result_display.sentence !== '') {
       sentence = result_display.sentence;
-    } else {
+    } else if (detail.sentence) {
       sentence = detail.sentence;
+    } else {
+      sentence = ''
     }
 
     if (result_display.highlights && result_display.highlights > 0) {
       highlights = result_display.highlights;
     } else {
-      highlights = [sentence.substr(detail.start, detail.end)];
+      if (sentence && sentence.length > 0) {
+        highlights = [sentence.substr(detail.start, detail.end)];
+      } else {
+        highlights = []
+      }
     }
 
     return (

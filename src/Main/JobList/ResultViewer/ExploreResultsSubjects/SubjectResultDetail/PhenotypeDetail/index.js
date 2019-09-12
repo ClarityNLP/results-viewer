@@ -187,9 +187,18 @@ class PhenotypeDetail extends Component {
 
     let results_view = results.map(d => {
       const { detail } = d;
-      const { result_display } = detail;
+      let { result_display } = detail;
 
       let date;
+
+      if (result_display === undefined || result_display === null) {
+        result_display = {
+          'date': '',
+          'sentence': '',
+          'start': 0,
+          'end': 0
+        }
+      }
 
       if (result_display.date !== '') {
         date = result_display.date;
