@@ -186,8 +186,26 @@ class PhenotypeDetail extends Component {
     let { selected_result, selected_result_index, results } = this.state;
 
     let results_view = results.map(d => {
-      const detail = d['detail'];
-      const { result_content, date } = detail.result_display;
+      const { detail } = d;
+      let { result_display } = detail;
+
+      let date;
+
+      if (result_display === undefined || result_display === null) {
+        result_display = {
+          result_content: '',
+          date: '',
+          sentence: '',
+          start: 0,
+          end: 0
+        };
+      }
+
+      if (result_display.date !== '') {
+        date = result_display.date;
+      } else {
+        date = detail.report_date;
+      }
 
       return (
         <React.Fragment key={d['index']}>
@@ -196,18 +214,16 @@ class PhenotypeDetail extends Component {
               <span>
                 <Moment format='DD/MM/YYYY'>{date}</Moment>
               </span>
-              <span> : {result_content}</span>
+              <span> : {result_display.result_content}</span>
             </h5>
           </div>
-          {d.detail.result_display.sentence ? (
-            <EntityFrame
-              accessToken={this.props.accessToken}
-              data={d}
-              url={this.url}
-              showPhenotypeTypDetail={this.props.showPhenotypeTypDetail}
-              nlpql_feature={selected_result.nlpql_feature}
-            />
-          ) : null}
+          <EntityFrame
+            accessToken={this.props.accessToken}
+            data={d}
+            url={this.url}
+            showPhenotypeTypDetail={this.props.showPhenotypeTypDetail}
+            nlpql_feature={selected_result.nlpql_feature}
+          />
         </React.Fragment>
       );
     });

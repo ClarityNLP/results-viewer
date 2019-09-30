@@ -48,16 +48,22 @@ class EntityFrame extends Component {
 
     if (!text) return '';
 
-    if (text === '' || highlights.length <= 0) return text;
+    if (text === '' || highlights.length < 1) return text;
 
     let s = text;
     let foundText = /[0-9]:REPLACETEXT/g;
 
     for (let h in highlights) {
-      let highlight = highlights[h].toString().replace(/[^\w\s]/gi, '');
+      let highlight = highlights[h]
+        .toString()
+        .replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
       if (highlight.trim() === '') break;
 
-      highlight = new RegExp(highlight, 'g');
+      try {
+        highlight = new RegExp(highlight, 'g');
+      } catch (e) {
+        console.log('Error:', e);
+      }
 
       s = s.replace(highlight, this.replacer(h));
     }
@@ -65,28 +71,59 @@ class EntityFrame extends Component {
     const splitText = s.split(foundText);
     const matches = s.match(foundText);
 
-    const highlightedText = splitText.reduce(
-      (arr, element, index) =>
-        matches[index]
-          ? [
-              ...arr,
-              element,
-              <span key={'highlight' + index} className='full-highlighting'>
-                {highlights[parseInt(matches[index], 10)]}
-              </span>
-            ]
-          : [...arr, element],
-      []
-    );
-
-    return highlightedText;
+    if (splitText.length > 1) {
+      return splitText.reduce(
+        (arr, element, index) =>
+          matches[index]
+            ? [
+                ...arr,
+                element,
+                <span key={'highlight' + index} className='full-highlighting'>
+                  {highlights[parseInt(matches[index], 10)]}
+                </span>
+              ]
+            : [...arr, element],
+        []
+      );
+    } else {
+      return text;
+    }
   }
 
   render() {
     const { report_text } = this.state;
     const { data } = this.props;
-    const detail = data['detail'];
-    const { highlights, sentence } = detail.result_display;
+    const { detail } = data;
+    let { result_display } = detail;
+    let highlights = [];
+    let sentence = '';
+
+     if (result_display === undefined || result_display === null) {
+        result_display = {
+          'date': '',
+          'sentence': '',
+          'start': 0,
+          'end': 0
+        }
+     }
+
+    if (result_display.sentence && result_display.sentence !== '') {
+      sentence = result_display.sentence;
+    } else if (detail.sentence) {
+      sentence = detail.sentence;
+    } else {
+      sentence = ''
+    }
+
+    if (result_display.highlights && result_display.highlights > 0) {
+      highlights = result_display.highlights;
+    } else {
+      if (sentence && sentence.length > 0) {
+        highlights = [sentence.substr(detail.start, detail.end)];
+      } else {
+        highlights = []
+      }
+    }
 
     return (
       <div key={data['id']} className='EntityFrame'>
@@ -104,11 +141,9 @@ class EntityFrame extends Component {
               )}
             </p>
           </div>
-          {sentence ? (
-            <div className='mb-10'>
-              <p>{this.getHighlightedText(sentence, highlights)}</p>
-            </div>
-          ) : null}
+          <div className='mb-10'>
+            <p>{this.getHighlightedText(sentence, highlights)}</p>
+          </div>
         </div>
         <div className={this.state.report_modal ? 'modal is-active' : 'modal'}>
           <div className='modal-background' />
